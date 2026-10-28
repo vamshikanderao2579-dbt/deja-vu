@@ -22,7 +22,7 @@
 - Quiet ⓘ footer; 👍/Not quite removed; live background learning with provenance; stated changes confirm the card.
 - Profiles switcher (4 people); per-profile suggestions and demo scripts; Play demo conversation; `scripts/record-demo.js`.
 - Replay cache + `MUSE_ENABLED`; deterministic learning prompts → recorded demos replay in ~1–1.5 s.
-- Key-card-only quick checks (no more avatar/brand-pitch checks on dinner questions); agent identity fixed ("You are Charmander, Alex's agent").
+- Key-card-only quick checks (no more avatar/brand-pitch checks on dinner questions); agent identity fixed ("You are Sparky, Alex's agent").
 - Answers now see recent turns ("lunch near the hotel" → knows it's the Inn at Sunset Cliffs).
 - San Diego trip demo scripts recorded for all 4 profiles.
 - Spend Oct 28: ~$8.85 of a $10 cap.

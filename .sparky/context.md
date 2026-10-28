@@ -14,9 +14,9 @@ Agents are really good at inferring context from chats. But confirmed memory is 
 ## How it works (product)
 - Chat history → short **cards** (≤14 words) grouped by topic (food, travel, family, work, style…). Each card is **guessed (~)**, **confirmed (✓)** or **locked 🔒** (sensitive: unused until the user says yes). Every card is dated (learned / last mentioned / confirmed) and **Why?** opens the exact conversation and time.
 - **Quick checks:** when a *key* card for this answer is guessed, changed, or a year old, the agent asks once, in chat: ✓ Still true / ✕ Not anymore / 🎙. Never style or agent-identity cards; once per chat; cooldown; confirmed cards left alone 6 months.
-- **Not anymore** → card forgotten, original question answered immediately, and a normal agent message offers **💬 Chat about it** / **Skip for now** (never blocks). Chat about it pre-fills: "Hey Charmander, my Food preference '…' has changed. Now I'd like ". The reply becomes a confirmed card.
+- **Not anymore** → card forgotten, original question answered immediately, and a normal agent message offers **💬 Chat about it** / **Skip for now** (never blocks). Chat about it pre-fills: "Hey Sparky, my Food preference '…' has changed. Now I'd like ". The reply becomes a confirmed card.
 - **Memory deck** (sidebar → Memory → topic): pure swiping; at the end, one summary "You removed N cards… Chat about them / Skip for now" → pre-filled bulleted message, one line per removed card.
-- **Live learning:** every chat exchange is learned from in the background; new cards arrive quietly ("Charmander noticed: …"). A change you state in chat ("Sam eats chicken and fish now") becomes a confirmed card.
+- **Live learning:** every chat exchange is learned from in the background; new cards arrive quietly ("Sparky noticed: …"). A change you state in chat ("Sam eats chicken and fish now") becomes a confirmed card.
 - **Style cards** (how you want answers: no em dashes, 5 hashtags, short) are always included.
 - **Answers** see only the relevant cards plus the recent turns of the conversation. After an answer only a quiet **ⓘ** (cards used → tap a card to open it in Memory, tokens saved).
 - **Voice:** Muse Voice Transcribe (realtime WebSocket) for answering cards and dictation.
@@ -35,8 +35,8 @@ Real data: 5 weeks of Vamshi's Muse chats (~113,600 tokens) → ~44 cards (~400 
 - Repo: `~/Desktop/personal-context-hackathon/deja-vu` (remote: github.com/vamshikanderao2579-dbt/deja-vu, pushed by the user; first commit squashed by them).
 - **Uncommitted local work** from Oct 28 night: profiles, replay cache, live learning, quiet ⓘ footer, two-choice cards, inline chat-about-it, deck end summary, multi-line composer, San Diego demo scripts, tests (26), eval personas. User reviews and commits.
 - Deck (claude.ai artifact, private until shared): https://claude.ai/artifact/DJKtjUyCdDRghS4rW61hJr. 12 slides, Meta blue palette, Geist font, speaker notes. Slide files live in a scratchpad folder of the old chat; to edit, `read` the artifact first.
-- App: `npm run dev` → http://localhost:3000. Avatar/name: `AGENT_NAME=Charmander`, `AGENT_AVATAR=charmander.png` (local only, git-ignored; public build uses "Pip").
-- Private (git-ignored): `data/private/` (real histories, answer keys, real eval results, replay cache, profiles), `.env`, `public/charmander.png`, `data/spend.json`, `EYI Package*` exports.
+- App: `npm run dev` → http://localhost:3000. Avatar/name: `AGENT_NAME=Sparky`, Pip face (no avatar file).
+- Private (git-ignored): `data/private/` (real histories, answer keys, real eval results, replay cache, profiles), `.env`, `data/spend.json`, `EYI Package*` exports.
 
 ## Key files
 `server.js` routes · `src/agent.js` extraction, relevance (+key cards), answers, live learning, card rewrite · `src/cards.js` merge/budgets/actions · `src/cue.js` don't-nag rule · `src/llm.js` client + spend cap + replay cache · `src/store.js` profiles, state, live history · `src/voice.js` · `src/prompts.js` · `public/` app · `eval/run.js` · `scripts/` (check-api, import-muse-export, make-demo-memory, record-demo) · `test/` · `docs/eval.md`, `docs/plan.md`, `docs/status.md`.

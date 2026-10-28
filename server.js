@@ -7,7 +7,8 @@ import * as store from './src/store.js';
 import { distill, selectRelevant, answer, rewriteCard, learnFrom } from './src/agent.js';
 import { decideCue, checkReason, applyFeedback } from './src/cue.js';
 import { transcribe, interpret } from './src/voice.js';
-import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards } from './src/cards.js';
+import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState } from './src/cards.js';
+import { todayMs } from './src/config.js';
 
 const PUBLIC = join(ROOT, 'public');
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
@@ -34,7 +35,7 @@ route('POST', '/api/distill', async () => {
 });
 
 route('POST', '/api/chat', async (body) => {
-  const { message, mode = 'cards', conversationId = 'default', skipCue = false } = body;
+  const { message, mode = 'cards', conversationId = 'default', skipCue = false, demo = false } = body;
   if (!message?.trim()) throw httpError(400, 'message is required');
   // Finish learning from the previous message first, so memory is up to date
   // (and a replayed demo sees exactly what the live run saw).
@@ -48,8 +49,11 @@ route('POST', '/api/chat', async (body) => {
     ({ relevant, key = [], stakes } = await selectRelevant(message, s.cards));
     if (!skipCue) {
       // Ask only about a card central to this answer; never style or agent-identity cards.
-      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant');
-      const cue = decideCue({ relevant: askable, stakes, conversationId, cueLog: s.cueLog });
+      // Sensitive (locked) cards are only ever reviewed in Memory, never raised mid-task.
+      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending');
+      // A scripted demo spans several "days": only the once-per-chat rule applies.
+      const log = demo ? s.cueLog.filter((e) => e.conversationId === conversationId) : s.cueLog;
+      const cue = decideCue({ relevant: askable, stakes, conversationId, cueLog: log });
       if (cue) {
         s.cueLog.push({ cardId: cue.cardId, conversationId, at: new Date().toISOString(), outcome: null });
         save();
@@ -88,7 +92,9 @@ function learnInBackground(conv) {
       if (!added.length) return;
       s.cards = cards;
       const at = new Date().toISOString();
-      s.learned = [...(s.learned ?? []), ...added.map((c) => ({ id: c.id, text: c.text, category: c.category, at }))].slice(-20);
+      // Locked (sensitive) learnings are saved quietly, never announced.
+      const shareable = added.filter((c) => c.status !== 'pending');
+      s.learned = [...(s.learned ?? []), ...shareable.map((c) => ({ id: c.id, text: c.text, category: c.category, at }))].slice(-20);
       save();
     } catch (err) {
       console.warn('[learn]', err.message);
@@ -190,7 +196,7 @@ function statePayload() {
     profile: { id: store.profile.id, name: store.profile.name, about: store.profile.about, suggestions: store.profile.suggestions ?? [], script: store.profile.script ?? [] },
     museEnabled: config.museEnabled,
     agent: config.agent,
-    cards: s.cards.map((c) => ({ ...publicCard(c), checkReason: checkReason(c) })),
+    cards: s.cards.map((c) => ({ ...publicCard(c), checkReason: seasonState(c, todayMs())?.active === false ? null : checkReason(c), seasonState: seasonState(c, todayMs()) })),
     budget: budgetStats(s.cards),
     fullHistoryTokens: fullHistoryTokens(),
     cuesShown: s.cueLog.length,

@@ -196,6 +196,7 @@
         "m008",
         "m058"
       ],
+      "sub": "Job",
       "created": "2026-10-20T09:00:00",
       "last_seen": "2026-10-12T09:10:00",
       "last_confirmed": "2026-10-12T09:15:00",
@@ -212,6 +213,7 @@
       "sources": [
         "m035"
       ],
+      "sub": "Job",
       "created": "2026-10-20T09:00:00",
       "last_seen": "2025-06-09T08:20:00",
       "last_confirmed": "2026-10-02T08:30:00",
@@ -228,10 +230,28 @@
       "sources": [
         "m043"
       ],
+      "sub": "Job",
       "created": "2026-10-20T09:00:00",
       "last_seen": "2026-02-05T12:30:00",
       "last_confirmed": null,
       "first_seen": "2026-02-05T12:30:00"
+    },
+    {
+      "id": "work-4",
+      "category": "work",
+      "type": "preference",
+      "text": "Saturday mornings are for the family recipe website",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m068"
+      ],
+      "sub": "Personal",
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-07-12T10:00:00",
+      "last_confirmed": null,
+      "first_seen": "2026-07-12T10:00:00"
     },
     {
       "id": "shopping-1",
@@ -330,6 +350,98 @@
       "last_seen": "2026-08-14T16:00:00",
       "last_confirmed": null,
       "first_seen": "2026-08-14T16:00:00"
+    },
+    {
+      "id": "seasonal-2",
+      "category": "seasonal",
+      "type": "lesson",
+      "text": "Order the turkey by Nov 15; it sold out last year",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "m064"
+      ],
+      "sub": "Thanksgiving",
+      "season": {
+        "name": "Thanksgiving",
+        "start": "10-25",
+        "end": "11-30",
+        "recurring": true
+      },
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-11-20T19:10:00",
+      "last_confirmed": null,
+      "first_seen": "2025-11-20T19:10:00"
+    },
+    {
+      "id": "seasonal-1",
+      "category": "seasonal",
+      "type": "preference",
+      "text": "Hosts Thanksgiving for 8; Mom brings the pumpkin pie",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m062"
+      ],
+      "sub": "Thanksgiving",
+      "season": {
+        "name": "Thanksgiving",
+        "start": "10-25",
+        "end": "11-30",
+        "recurring": true
+      },
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-11-20T19:10:00",
+      "last_confirmed": "2025-11-24T19:00:00",
+      "first_seen": "2025-11-20T19:10:00"
+    },
+    {
+      "id": "seasonal-3",
+      "category": "seasonal",
+      "type": "preference",
+      "text": "Christmas Eve at home; Christmas Day drive to Sam's parents in Milwaukee",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m065"
+      ],
+      "sub": "Christmas",
+      "season": {
+        "name": "Christmas",
+        "start": "12-01",
+        "end": "12-31",
+        "recurring": true
+      },
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-12-08T20:30:00",
+      "last_confirmed": null,
+      "first_seen": "2025-12-08T20:30:00"
+    },
+    {
+      "id": "seasonal-4",
+      "category": "seasonal",
+      "type": "preference",
+      "text": "Maya's stocking gifts around $50 total",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m067"
+      ],
+      "sub": "Christmas",
+      "season": {
+        "name": "Christmas",
+        "start": "12-01",
+        "end": "12-31",
+        "recurring": true
+      },
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-12-08T20:30:00",
+      "last_confirmed": null,
+      "first_seen": "2025-12-08T20:30:00"
     }
   ]
 }

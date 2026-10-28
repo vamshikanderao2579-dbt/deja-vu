@@ -6,8 +6,8 @@ Spend today: **$7.79** of the $10 cap. Nothing committed since your push. All ch
 
 **1. Simpler cards (your UX ask)**
 - Every card now has two choices: ✓ Still true / ✕ Not anymore, plus a 🎙 mic. Swipe up and the edit/note boxes are gone.
-- ✕ forgets the card, then asks "Want to tell Charmander what changed?" with **Skip** (one tap, nothing else happens) or **💬 Chat about it**.
-- Chat about it lands you in chat with the sentence started: *"Hey Charmander, my Food preference '…' has changed. Now I'd like "*. You finish it, the agent saves the new card as confirmed, then answers your original question with it.
+- ✕ forgets the card, then asks "Want to tell Sparky what changed?" with **Skip** (one tap, nothing else happens) or **💬 Chat about it**.
+- Chat about it lands you in chat with the sentence started: *"Hey Sparky, my Food preference '…' has changed. Now I'd like "*. You finish it, the agent saves the new card as confirmed, then answers your original question with it.
 - Same flow in the Memory swipe deck. Voice still works: "Nope, it's Wednesdays now" updates the card directly.
 - Tested live end to end: latte → "a hot masala chai, no coffee" → saved "Prefers hot masala chai; avoids coffee" ✓ → answered "your usual hot masala chai".
 
@@ -37,7 +37,7 @@ Honest notes: on Nidhi's real history the summary wins (93 vs 86), because nothi
 
 1. **Review and commit** tonight's local changes (`git status`; nothing private is staged: `data/private/` is ignored).
 2. **Speed.** 6 s is still slow on stage. Options: run relevance in parallel with a "thinking" bubble, cache relevance per topic, or move relevance to Muse Spark Open on Baseten/Modal (also earns the open-weights bonus).
-3. **Retake app screenshots** for slides 6 and 7 (the current ones show the old 3-button card) with the avatar set to Pip, not Charmander.
+3. **Retake app screenshots** for slides 6 and 7 (the current ones show the old 3-button card) with the avatar set to Pip, not Sparky.
 4. **Deploy:** Render or Railway, `npm start`, env vars from `.env`, spend cap on. Add the live URL to the README and last slide.
 5. **Video (3 min):** follow the deck's speaker notes. Demo beats: quick check → ✕ → chat about it → answer changes; Memory deck with "Why?" and the exact conversation; one voice reply; slide 10 numbers.
 6. **Submit Nov 3** (not Nov 4). List both of you; confirm a 2-person team is OK in the indie track.

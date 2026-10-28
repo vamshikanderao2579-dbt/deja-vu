@@ -5,7 +5,7 @@
 |---|---|---|
 | Idea | User-owned **confirmed memory** for personal agents (inferred vs confirmed) | Fits Meta's personal-agent strategy; differentiates from coding-assistant entries; every agent infers, none asks |
 | Name | **Déjà Vu**; team **Keyholders** | Memorable; "keys to your own context" |
-| Agent | **Charmander** locally, **Pip** in public builds | IP safety (see rules) |
+| Agent | **Sparky** with the original Pip face (Muse Image mascot planned) | IP safety: no branded characters (see rules) |
 | Memory format | `me.json` source of truth; compact text for the model; `me.md` export | Unbreakable UI + token-efficient prompts + portability |
 | Cards | Preferences + **lessons**; multiple facets per topic (not either/or) | e.g. beach card and mountain card, each with detail |
 | Budgets | 10 topics × 8 cards × 14 words | Predictable cost: bounded context = cost control |
@@ -25,19 +25,23 @@
 | Demo story | San Diego trip: flights → hotel near Sunset Cliffs → "just landed, lunch near the hotel" → sunset | Realistic, matches the team's real trip |
 | Deck design | Bar = Vamshi's "Sandcastle" deck: dark, minimal text, mono eyebrows, gradient phrases, icon flows; **Meta blue palette**; closer without emoji, hero 98px weight 700 | User feedback |
 | Discord | Vague intro, no mechanics revealed | Public channel of 20K builders |
+| Unanswered checks | No answer within 8 s, or typing a new message, counts as skip; the agent answers anyway | Never block the user |
+| Demo realism | One ✕ + Chat about it, two unanswered checks, across three "days" | All-✓ demos feel fake |
+| Next: answer first, check after | One call; card above the answer; continuing = implicit yes; ✕ → chat → optional redo; deferred check after the task | Blocking checks were boring and cost a second call (user idea, agreed) |
+| Next: Seasonal topic | Occasion sub-topics with recurring windows | Cards that matter every year, dormant otherwise (user idea, agreed) |
 
 ## Rejected (and why)
 - **Repo-onboarding / dev-productivity idea**: Claude/OpenAI own that space; less exciting to Meta.
 - **"Cue"** as product name; other names offered (Marbles, Keepsake, Nod, Elephant): user chose Déjà Vu.
 - **Ads / segmentation / premium unlock**: kills the trust story and contradicts "free for everyone".
 - **Calling it "a settings tab for Muse"**: pitch it as a context layer any agent could adopt.
-- **Charmander in the public repo/video**: IP risk.
+- **Sparky / any Pokémon avatar or name**: IP risk; renamed the agent Sparky and deleted the images.
 - **Edit by typing / swipe-up edit / 💬 note button**: too much typing.
 - **Popups after "Not anymore"** in chat and per-swipe popups in the deck: annoying.
 - **👍 / Not quite buttons**: small value, visual noise.
 - **Chips listing every card under each answer**: overwhelming (moved behind ⓘ).
 - **Fireworks credits**: a third provider adds risk for $25.
 - **Eval vs raw full history only**: straw man; added the summary baseline.
-- **Bracketed "[applied: …]" notes in answers and "Charmander here" intros**: removed via prompt.
-- **Cards about the agent itself** (avatar, Pikachu → Charmander): settings, not user facts; filtered.
+- **Bracketed "[applied: …]" notes in answers and "Sparky here" intros**: removed via prompt.
+- **Cards about the agent itself** (avatar, Pikachu → Sparky): settings, not user facts; filtered.
 - **Emoji in the closing slide**; text that was too bold.

@@ -84,6 +84,8 @@ export function mergeCards(existing, incoming, rejected = [], now = new Date().t
       confidence: Number(raw.confidence ?? 0.6),
       sources: raw.sources ?? [],
       ...(raw.changed_from ? { changed_from: raw.changed_from } : {}),
+      ...(raw.sub ? { sub: String(raw.sub) } : {}),
+      ...(raw.season?.start && raw.season?.end ? { season: raw.season } : {}),
       created: now,
       last_seen: now,
       last_confirmed: null,
@@ -111,6 +113,21 @@ export function enforceBudget(cards) {
     trimmed.push(...group.filter((c, i) => i < maxCardsPerCategory || c.status === 'confirmed'));
   }
   return trimmed;
+}
+
+// Seasonal cards wake up inside their window (MM-DD to MM-DD, every year) and sleep
+// outside it: not sent to the model, not asked about.
+export function seasonState(card, nowMs = Date.now()) {
+  if (!card.season) return null;
+  const d = new Date(nowMs);
+  const md = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const { start, end } = card.season;
+  const active = start <= end ? md >= start && md <= end : md >= start || md <= end;
+  if (active) return { active: true };
+  const [m, day] = start.split('-').map(Number);
+  let next = new Date(d.getFullYear(), m - 1, day);
+  if (next < d) next = new Date(d.getFullYear() + 1, m - 1, day);
+  return { active: false, wakes: next.toISOString().slice(0, 10) };
 }
 
 export function groupByCategory(cards) {

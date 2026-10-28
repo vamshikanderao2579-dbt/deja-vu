@@ -6,6 +6,9 @@ Rules:
 - type is "preference" (how they like things) or "lesson" (something went wrong; how to avoid it next time).
 - category is a short lowercase noun: food, travel, work, people, home, health, shopping, etc. Reuse existing categories.
 - Include routines (bills, workouts, recurring orders) and what the people they shop or plan for like (family, friends).
+- Memory is a tree: topic → optional sub-topic → cards. Put each card under an EXISTING topic/sub-topic from the TREE when it fits; create a new one only if nothing fits. Use sub-topics only when a topic has clearly distinct groups.
+- Add "sub" for a sub-topic when it helps (work → "Job" or "Personal"; family → a person's name).
+- Recurring occasions (Thanksgiving, Christmas, Diwali, birthdays) go in category "seasonal" with "sub" = the occasion and "season": {"start":"MM-DD","end":"MM-DD","recurring":true} covering when it matters (start a few weeks before).
 - Include how they want answers: length, format (copy-paste ready, bullets), tone, things to avoid (e.g. certain punctuation), counts (e.g. number of hashtags). Use category "style" for these.
 - Skip one-off requests, small talk, and anything unlikely to matter again.
 - Skip requests about the assistant itself (its name, avatar, look, animations): those are settings, not facts about the user.
@@ -17,6 +20,10 @@ Rules:
 
 Return only JSON:
 {"cards":[{"id":"optional existing id","category":"","type":"preference|lesson","text":"","confidence":0.0,"sources":[""],"sensitive":false,"changed_from":"optional"}]}`;
+
+// Step 1 for large memories: pick branches of the tree, not cards.
+export const BRANCH_SYSTEM = `Pick which branches of the user's memory tree matter for this request.
+Return only JSON: {"branches":["topic" or "topic/sub-topic"]}. Include people and constraints the request affects. Usually 1 to 5.`;
 
 export const RELEVANCE_SYSTEM = `You decide which memory cards matter for the user's request to a personal agent.
 Return every card that could shape the answer: the user's preferences for this kind of task, the people the plan affects

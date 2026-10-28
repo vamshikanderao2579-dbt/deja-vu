@@ -20,3 +20,4 @@ data/test-state*.json
 data/active-profile.txt
 data/profiles/
 data/*.seed.json
+public/charmander*.png

@@ -26,6 +26,14 @@ const fmtDay = (iso) => new Date(iso).toLocaleDateString('en-US', { month: 'shor
 const fmtWhen = (date, time) =>
   new Date(`${date}T${time ?? '12:00'}:00`).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
 
+// Seasonal cards: awake inside their window, sleeping outside it.
+function seasonBadge(c) {
+  if (!c.seasonState) return '';
+  return c.seasonState.active
+    ? `<span class="season on">🍂 Active now · ${esc(c.season?.name ?? c.sub ?? 'Seasonal')}</span>`
+    : `<span class="season off">💤 Sleeping until ${esc(fmtDay(c.seasonState.wakes + 'T12:00:00'))}</span>`;
+}
+
 // "Learned Jun 2023 · last mentioned Sep 2026 · ✓ confirmed Oct 27, 2026"
 function dateLine(c) {
   const parts = [];
@@ -63,6 +71,7 @@ const ICON = {
   health: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
   people: '<circle cx="9" cy="8.5" r="3.2"/><path d="M3 19.5c.8-3.2 3.2-5 6-5s5.2 1.8 6 5M16 5.6a3.2 3.2 0 0 1 0 6M18 14.8c1.5.7 2.6 2.3 3 4.7"/>',
   home: '<path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>',
+  seasonal: '<path d="M12 3c2.5 3 2.5 6 0 9-2.5-3-2.5-6 0-9zM12 12v9M7 15c2-.2 3.6.6 5 2M17 15c-2-.2-3.6.6-5 2M5 9c2.4.3 4.3 1.3 5.5 3M19 9c-2.4.3-4.3 1.3-5.5 3"/>',
   family: '<circle cx="8" cy="7" r="2.6"/><circle cx="16" cy="7" r="2.6"/><circle cx="12" cy="13.2" r="2"/><path d="M3.5 20c.4-3.6 2.2-6 4.5-6 1 0 1.9.4 2.6 1.2M20.5 20c-.4-3.6-2.2-6-4.5-6-1 0-1.9.4-2.6 1.2M9 21c.3-2 1.5-3.4 3-3.4s2.7 1.4 3 3.4"/>',
   entertainment: '<rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="M8.5 21h7M10.5 8.8v4.4l3.8-2.2z"/>',
   shopping: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
@@ -221,7 +230,7 @@ async function sendInner(message, { skipCue = false } = {}) {
   if (!skipCue) addMsg('user', esc(message));
   const t = typing();
   try {
-    const res = await api('/api/chat', { message, mode, conversationId, skipCue });
+    const res = await api('/api/chat', { message, mode, conversationId, skipCue, demo: demoRunning });
     t.remove();
     if (res.type === 'cue') return renderCue(res.cue, message);
     renderAnswer(res, message);
@@ -305,7 +314,8 @@ function cardHtml(card, { why = '', sources = false } = {}) {
   return `<div class="swipe-card">
     <span class="stamp yes">STILL TRUE</span><span class="stamp no">NOT ANYMORE</span><span class="stamp edit"></span>
     ${why ? `<div class="why">${esc(why)}</div>` : ''}
-    <div class="cat">${esc(card.category)} · ${card.type === 'lesson' ? 'lesson' : 'preference'}</div>
+    <div class="cat">${esc(card.category)}${card.sub ? ` · ${esc(card.sub)}` : ''} · ${card.type === 'lesson' ? 'lesson' : 'preference'}</div>
+    ${seasonBadge(card)}
     <div class="text">${esc(card.text)}</div>
     ${card.changed_from ? `<div class="was">${esc(card.changed_from)}</div>` : ''}
     ${card.note ? `<div class="note">💬 ${esc(card.note)}</div>` : ''}
@@ -321,7 +331,16 @@ function renderCue(cue, question) {
   scrollDown();
   const card = wrap.querySelector('.swipe-card');
   let done = false;
-  const settle = () => { if (done) return false; done = true; wrap.querySelector('.cue-actions')?.remove(); return true; };
+  const settle = () => { if (done) return false; done = true; clearTimeout(timer); openCueSkip = null; wrap.querySelector('.cue-actions')?.remove(); return true; };
+  // Not answering is fine: after a pause (or a new message) it goes with what it knows.
+  const skip = async () => {
+    if (!settle()) return;
+    card.style.display = 'none';
+    wrap.append(el(`<p class="q" style="margin-top:8px">No worries, going with what I know.</p>`));
+    await send(question, { skipCue: true });
+  };
+  const timer = setTimeout(skip, 8000);
+  openCueSkip = skip;
 
   const yes = async () => {
     if (!settle()) return;
@@ -368,6 +387,7 @@ function offerChatInline(lead, onChat) {
 
 // Land in chat with the sentence started for them; they only finish it.
 let pendingUpdate = null;
+let openCueSkip = null; // set while a quick check is waiting
 function startUpdateChat(info) {
   closeAll();
   pendingUpdate = info;
@@ -535,6 +555,7 @@ $('#composer').addEventListener('submit', (e) => {
   if (!v) return;
   $('#input').value = '';
   growInput();
+  if (openCueSkip) openCueSkip(); // typing on counts as skipping the open quick check
   if (pendingUpdate?.items) {
     const items = pendingUpdate.items;
     pendingUpdate = null;
@@ -585,6 +606,8 @@ $('#distillBtn').addEventListener('click', async (e) => {
 });
 $('#redistillBtn').addEventListener('click', async () => { await buildContext(); renderMemory(); });
 
+const subsOf = (cards) => [...new Set(cards.map((c) => c.sub).filter(Boolean))];
+
 function groups() {
   const g = {};
   for (const c of data.cards) (g[c.category] ??= []).push(c);
@@ -606,7 +629,8 @@ function renderMemory() {
     const check = cards.filter((c) => c.checkReason).length;
     const tile = el(`<button class="cat-tile"><span class="cat-icon">${catIcon(cat)}</span>
       <span class="cat-name">${esc(catLabel(cat))}</span>
-      <span class="fine">${cards.length} card${cards.length === 1 ? '' : 's'}${check ? ` · <b class="to-check">${check} to check</b>` : ''}</span></button>`);
+      <span class="fine">${cards.length} card${cards.length === 1 ? '' : 's'}${check ? ` · <b class="to-check">${check} to check</b>` : ''}</span>
+      ${subsOf(cards).length ? `<span class="fine subs">${subsOf(cards).map(esc).join(' · ')}</span>` : ''}</button>`);
     tile.addEventListener('click', () => openCategory(cat));
     grid.append(tile);
   }
@@ -615,11 +639,22 @@ function renderMemory() {
 // ---------------- memory: one category ----------------
 let deck = { cat: null, ids: [], i: 0 };
 
-function openCategory(cat) {
-  const cards = data.cards.filter((c) => c.category === cat);
+function openCategory(cat, sub = null) {
+  const all = data.cards.filter((c) => c.category === cat);
+  const cards = sub ? all.filter((c) => c.sub === sub) : all;
+  const subs = subsOf(all);
+  const chips = $('#catSubs');
+  chips.innerHTML = '';
+  if (subs.length) {
+    for (const s of [null, ...subs]) {
+      const b = el(`<button class="${s === sub ? 'on' : ''}">${esc(s ?? 'All')}</button>`);
+      b.addEventListener('click', () => openCategory(cat, s));
+      chips.append(b);
+    }
+  }
   // Cards that need a check come first, then everything else it knows.
   cards.sort((a, b) => (b.checkReason ? 1 : 0) - (a.checkReason ? 1 : 0));
-  deck = { cat, ids: cards.map((c) => c.id), i: 0, removed: [] };
+  deck = { cat, sub, ids: cards.map((c) => c.id), i: 0, removed: [] };
   $('#catIcon').innerHTML = catIcon(cat);
   $('#catName').textContent = catLabel(cat);
   setSeg('deck');
@@ -710,11 +745,18 @@ $('#deckButtons').addEventListener('click', (e) => {
 function renderCatList() {
   const root = $('#catList');
   root.innerHTML = '';
-  const cards = data.cards.filter((c) => c.category === deck.cat);
+  const cards = data.cards.filter((c) => c.category === deck.cat && (!deck.sub || c.sub === deck.sub));
   const max = data.budget.limits.maxCardsPerCategory;
   const tokens = data.budget.categories[deck.cat]?.tokens ?? 0;
   const sec = el(`<section class="category"><header><h2>${esc(catLabel(deck.cat))}</h2><span class="budget">${cards.length}/${max} cards · ~${tokens} tokens</span></header><div class="meter"><i style="width:${Math.min(100, (cards.length / max) * 100)}%"></i></div></section>`);
-  for (const c of cards) sec.append(listCard(c));
+  let lastSub;
+  // Awake seasons first, then the rest by sub-topic.
+  const asleep = (c) => (c.seasonState?.active === false ? 1 : 0);
+  for (const c of [...cards].sort((a, b) => asleep(a) - asleep(b) || (a.sub ?? '').localeCompare(b.sub ?? ''))) {
+    if (c.sub && c.sub !== lastSub) sec.append(el(`<div class="sub-head">${esc(c.sub)}</div>`));
+    lastSub = c.sub;
+    sec.append(listCard(c));
+  }
   root.append(sec);
 }
 
@@ -722,7 +764,7 @@ function listCard(c) {
   const row = el(`<div class="ccard" data-card="${esc(c.id)}"><div class="top"><div><div class="txt">${esc(c.text)}</div>
     <div class="kind">${c.type === 'lesson' ? 'Lesson' : 'Preference'} · from ${c.sources.length} message${c.sources.length === 1 ? '' : 's'}${c.changed_from ? ` · was “${esc(c.changed_from)}”` : ''}</div>
     ${c.note ? `<div class="kind">💬 ${esc(c.note)}</div>` : ''}
-    <div class="kind">${esc(dateLine(c))}</div></div>
+    <div class="kind">${esc(dateLine(c))}</div>${seasonBadge(c)}</div>
     <span class="badge ${c.status}">${STATUS_LABEL[c.status]}</span></div>
     <div class="actions"><button data-a="why">Why?</button>${c.status !== 'confirmed' ? '<button data-a="confirm">✓ Confirm</button>' : ''}<button data-a="edit">Edit</button><button data-a="reject">Remove</button></div></div>`);
   const srcBox = el('<div class="sources srcs"></div>');
@@ -861,18 +903,30 @@ async function playDemo() {
   conversationId = newId();
   thread.innerHTML = '';
   const input = $('#input');
-  for (const line of data.profile?.script?.length ? data.profile.script : DEMO_SCRIPT) {
+  const typeIn = async (text) => { for (const ch of text) { input.value += ch; growInput(); await sleep(28); } await sleep(350); $('#composer').requestSubmit(); };
+  const settled = async () => { await sleep(400); while (demoRunning && (inFlight > 0 || waitingOnUser())) await sleep(300); };
+  for (const raw of data.profile?.script?.length ? data.profile.script : DEMO_SCRIPT) {
     if (!demoRunning) break;
+    const step = typeof raw === 'string' ? { text: raw } : raw;
+    if (step.newChat) { await sleep(1200); conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); continue; }
     await sleep(900);
-    for (const ch of line) { input.value += ch; growInput(); await sleep(28); }
-    await sleep(350);
-    $('#composer').requestSubmit();
+    await typeIn(step.text);
+    // React to a quick check the way the script says: confirm, reject (+ chat), or ignore.
     await sleep(400);
-    let nudged = false;
-    while (demoRunning && (inFlight > 0 || waitingOnUser())) {
-      if (waitingOnUser() && !nudged) { toast('Your turn: answer the card to continue'); nudged = true; }
-      await sleep(300);
+    while (demoRunning && inFlight > 0 && !document.querySelector('#thread .cue .cue-actions')) await sleep(300);
+    const cueYes = document.querySelector('#thread .cue .cue-actions .yes');
+    if (cueYes && step.onCue !== 'ignore') {
+      await sleep(1500);
+      document.querySelector(`#thread .cue .cue-actions .${step.onCue === 'reject' ? 'no' : 'yes'}`).click();
+      if (step.onCue === 'reject' && step.chat) {
+        await settled();
+        await sleep(1200);
+        document.querySelector('#thread .inline-actions .chat')?.click();
+        await sleep(600);
+        await typeIn(step.chat);
+      }
     }
+    await settled();
     await sleep(1800);
   }
   demoRunning = false;

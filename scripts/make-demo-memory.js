@@ -26,6 +26,8 @@ const reviewed = {
   'Direct flights and a window seat, even if pricier': { confirmed: '2026-07-11T21:00:00' },
   'Bills due on the 1st; remind 3 days before': { confirmed: '2026-10-01T10:05:00', note: 'Rent is the big one' },
   'Likes sci-fi and true crime; no horror': { confirmed: '2026-10-05T22:10:00', note: 'Sam picks rom-coms on Fridays' },
+  // Confirmed last November: this year it wakes up as a natural "still true this year?".
+  'Hosts Thanksgiving for 8; Mom brings the pumpkin pie': { confirmed: '2025-11-24T19:00:00' },
 };
 
 for (const c of cards) {

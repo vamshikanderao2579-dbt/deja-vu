@@ -13,11 +13,27 @@
       "Find a place for dinner tonight with the family"
     ],
     "script": [
-      "thinking san diego for a long weekend with the family, find us flights",
-      "and a hotel near sunset cliffs",
+      {
+        "text": "thinking san diego for a long weekend with the family, find us flights",
+        "onCue": "ignore"
+      },
+      {
+        "newChat": "A week later · landing in San Diego"
+      },
+      {
+        "text": "landing tomorrow! find us a hotel near sunset cliffs",
+        "onCue": "reject",
+        "chat": "we're fine with an Airbnb with a kitchen this time, Maya is picky"
+      },
       "just landed! find lunch near the hotel",
       "btw my sister is watching Biscuit from now on, no more dog sitters",
-      "what time should we head to sunset cliffs tonight?"
+      {
+        "newChat": "That evening"
+      },
+      {
+        "text": "plan dinner near sunset cliffs for the family tonight",
+        "onCue": "ignore"
+      }
     ]
   },
   {

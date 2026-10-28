@@ -2,8 +2,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { config, ROOT, todayString } from './config.js';
 import { complete, parseJson } from './llm.js';
-import { DISTILL_SYSTEM, RELEVANCE_SYSTEM, HISTORY_HEADER, SUMMARY_SYSTEM, SUMMARY_HEADER, UPDATE_SYSTEM, answerSystem } from './prompts.js';
-import { mergeCards, renderContext, estimateTokens, usable } from './cards.js';
+import { DISTILL_SYSTEM, BRANCH_SYSTEM, RELEVANCE_SYSTEM, HISTORY_HEADER, SUMMARY_SYSTEM, SUMMARY_HEADER, UPDATE_SYSTEM, answerSystem } from './prompts.js';
+import { mergeCards, renderContext, estimateTokens, usable, seasonState } from './cards.js';
+import { todayMs } from './config.js';
 import { history, historyAsText, messageTime } from './store.js';
 
 // Conversations are batched up to this many characters per extraction call, so
@@ -42,7 +43,7 @@ export async function distill(existing, rejected = []) {
   let calls = 0;
   const usage = { prompt_tokens: 0, completion_tokens: 0 };
   for (const batch of batches(history.conversations)) {
-    const existingText = cards.map((c) => `${c.id} [${c.category}] ${c.text}`).join('\n') || '(none yet)';
+    const existingText = (cards.length ? `TREE: ${treeLine(cards)}\n` : '') + (cards.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)');
     const convText = batch.join('\n\n');
     const res = await complete(
       'bg',
@@ -76,9 +77,22 @@ function stampDates(cards) {
 // Which cards matter for this request, and how costly a wrong guess would be.
 export async function selectRelevant(message, cards) {
   // Cards about the agent itself (its name, avatar) aren't about the user.
-  const candidates = cards.filter((c) => c.category !== 'assistant' && !/\b(avatar|pikachu|charmander)\b/i.test(c.text));
+  const candidates = cards.filter((c) => c.category !== 'assistant' && !/\b(avatar|pikachu|charmander)\b/i.test(c.text) && seasonState(c, todayMs())?.active !== false);
   if (config.mock) return mockRelevance(message, candidates);
-  const index = candidates.map((c) => `${c.id}: ${c.text}`).join('\n');
+  // Large memories: pick branches of the tree first (names only), then only their cards.
+  let pool = candidates;
+  if (candidates.length > TREE_FIRST_OVER) {
+    const res = await complete('bg', [
+      { role: 'system', content: BRANCH_SYSTEM },
+      { role: 'user', content: `Today: ${todayString()}\nRequest: ${message}\n\nTree: ${treeLine(candidates)}` },
+    ], { json: true, maxTokens: 1500, reasoning: 'minimal' });
+    try {
+      const picked = new Set((parseJson(res.text).branches ?? []).map((b) => String(b).toLowerCase()));
+      const narrowed = candidates.filter((c) => c.category === 'style' || picked.has(c.category) || (c.sub && picked.has(`${c.category}/${c.sub}`.toLowerCase())));
+      if (narrowed.length) pool = narrowed;
+    } catch {}
+  }
+  const index = pool.map((c) => `${c.id}: ${c.text}`).join('\n');
   const res = await complete(
     'bg',
     [
@@ -97,10 +111,10 @@ export async function selectRelevant(message, cards) {
   }
   const ids = new Set(out.relevant_card_ids ?? []);
   // Style cards (how the user wants answers) are tiny and apply to everything.
-  for (const c of candidates) if (c.category === 'style') ids.add(c.id);
+  for (const c of pool) if (c.category === 'style') ids.add(c.id);
   // Only the cards that would most change this answer may trigger a quick check.
   const key = new Set((out.key_card_ids ?? []).filter((id) => ids.has(id)));
-  return { relevant: candidates.filter((c) => ids.has(c.id)), key: candidates.filter((c) => key.has(c.id)), stakes: out.stakes === 'high' ? 'high' : 'low' };
+  return { relevant: pool.filter((c) => ids.has(c.id)), key: pool.filter((c) => key.has(c.id)), stakes: out.stakes === 'high' ? 'high' : 'low' };
 }
 
 // "My Travel preference X has changed. Now I'd like Y" → a new card text.
@@ -117,11 +131,22 @@ export async function rewriteCard(category, oldText, message) {
   return out.text ? { text: out.text, type: out.type === 'lesson' ? 'lesson' : 'preference' } : null;
 }
 
+// The memory tree as one line: "food (6) · seasonal: Thanksgiving (2), Christmas (2) · …"
+const TREE_FIRST_OVER = 40;
+function treeLine(cards) {
+  const t = {};
+  for (const c of cards) { (t[c.category] ??= {})[c.sub ?? ''] = ((t[c.category] ??= {})[c.sub ?? ''] ?? 0) + 1; }
+  return Object.entries(t).map(([cat, subs]) => {
+    const named = Object.entries(subs).filter(([s]) => s);
+    return named.length ? `${cat}: ${named.map(([s, n]) => `${s} (${n})`).join(', ')}` : `${cat} (${subs['']})`;
+  }).join(' · ');
+}
+
 // Learns from one live conversation as it happens: same extraction prompt,
 // just the new exchange. Returns the merged cards and the ones that are new.
 export async function learnFrom(conv, existing, rejected = []) {
   if (config.mock) return { cards: existing, added: [] };
-  const existingText = existing.map((c) => `${c.id} [${c.category}] ${c.text}`).join('\n') || '(none yet)';
+  const existingText = (existing.length ? `TREE: ${treeLine(existing)}\n` : '') + (existing.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)');
   const res = await complete('bg', [
     { role: 'system', content: DISTILL_SYSTEM + '\n\nOnly return cards that are new or changed by these NEW messages. Return {"cards":[]} if nothing lasting was said.' },
     // Neutral labels (n1, n2…) instead of ids and clock times, so the same chat always

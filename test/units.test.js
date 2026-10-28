@@ -125,3 +125,13 @@ test('voice: yes, no and corrections', () => {
   assert.equal(interpret('Actually only on weekends').action, 'edit');
   assert.deepEqual(interpret(''), { action: null });
 });
+
+test('seasonal cards: awake inside their window, sleeping outside, windows wrap the year', async () => {
+  const { seasonState } = await import('../src/cards.js');
+  const thanksgiving = { season: { start: '10-25', end: '11-30' } };
+  const winter = { season: { start: '12-15', end: '01-10' } };
+  assert.deepEqual(seasonState(thanksgiving, Date.parse('2026-10-27T12:00:00')), { active: true });
+  assert.deepEqual(seasonState(thanksgiving, Date.parse('2026-07-01T12:00:00')), { active: false, wakes: '2026-10-25' });
+  assert.equal(seasonState(winter, Date.parse('2027-01-05T12:00:00')).active, true);
+  assert.equal(seasonState({}, NOW), null);
+});
