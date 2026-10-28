@@ -7,7 +7,10 @@ Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Cla
 - [ ] Claude: diagnose misses (see skills/run-eval.md), update `docs/eval.md` and deck slide 10, honest caveats kept.
 - [ ] You (10 min): skim the new numbers.
 - [ ] Claude: **re-record all 4 demos** (`node scripts/record-demo.js <profile>`, ~$0.40 total; wait a minute between profiles). The agent was renamed **Sparky**, so the old recordings (made as "Charmander") no longer replay.
-- [ ] Claude: **original mascot with Muse Image** (`muse-image-1.0` on the Meta Model API): a cute, friendly face for Sparky, e.g. a small smiling star or spark. Must be clearly original, not resembling any existing character. Generate 3–4 options, you pick one, save as `public/sparky.png`, set `AGENT_AVATAR=sparky.png`. Keep the prompt and image in the repo (it's ours). Use it in the deck and video: "Muse Image designed our agent", one more Meta model for the tooling score.
+- [ ] You (2 min): **generate Sparky with Muse Image**. Run:
+  `python3 scripts/generate_mascot.py` → 4 options in `public/sparky-option-1..4.png`, each resized to 1024×765 like the placeholder. Pick one: `cp public/sparky-option-N.png public/sparky.png`, set `AGENT_AVATAR=sparky.png` in `.env`, restart the app. (`--n 2` for fewer; each option is a paid call.) Then delete the Gemini placeholder `public/sparky.jpeg` and use the line "Muse Image designed our agent" in the deck/video.
+  Prompt (also in the script; edit with `--prompt "…"`):
+  > Cute friendly cartoon mascot named Sparky: a glossy golden-yellow five-pointed star with a soft amber outline, big shiny blue eyes, small happy open smile, tiny eyebrows, short rounded arms open wide in a welcoming pose, two short legs, standing. Soft warm glow, a little trail of tiny golden stars curving behind it. Centered inside a pale sky-blue circular badge with a thin gold ring and a few small sparkles. Clean modern cartoon style, smooth shading, original character, not resembling any existing brand or franchise mascot. Off-white background, no text, no logos.
 
 ## Thu Oct 30: answer first, check after (next.md item 0)
 - [ ] Claude: one-call flow; the slim "Going with: …" line above the answer; continuing = implicit yes; ✕ → chat → optional "Redo with that?"; deferred check after the task. 🔒 cards still never used before a yes.
