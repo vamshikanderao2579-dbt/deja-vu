@@ -1,44 +1,61 @@
-# Eval: does confirmed memory beat inferred memory?
+# Eval: confirmed memory vs inferred memory vs full history
 
-All numbers below come from `npm run eval` on **synthetic** test data (`data/test-history.json`, 27 conversations from 2023 to 2026, persona "Alex"). Answers and the judge are Muse Spark 1.3.
-
-## Setup
-
-1. **Build cards** from the full history (Muse Spark, incremental batches).
-2. **Simulated review pass.** Each card is matched to the planted fact it came from (shared source messages) and a simulated user answers with the *current truth* from `data/answer-key.json`: confirm, reject outdated facts, or edit the three preferences that changed **outside chat** (never mentioned in the history, so only a confirmation can catch them).
-3. **Answer 15 everyday questions** ("Find a place for dinner tonight with the family", "Book flights for our spring break trip", …) in five setups:
+Three ways a personal agent can remember you, compared on **4 people** (2 synthetic personas with very different lives, plus 2 team members' own real Muse histories), **42 everyday questions** and **76 checklist items**. Answers and judge: Muse Spark 1.3.
 
 | Setup | Memory sent with each message |
 |---|---|
-| Full history | every past message |
-| Memory summary | a ~460-token summary Muse Spark wrote from the whole history (how compact-memory agents work today) |
-| Guessed cards | only the relevant cards, none confirmed |
-| Confirmed cards | only the relevant cards, after the review pass |
-| No memory | nothing |
+| **Full history** | every past message |
+| **Inferred memory** | a summary Muse Spark wrote from all chats (~350 to 600 tokens), sent every message: how compact-memory agents work today |
+| **Confirmed memory** | only the cards relevant to this request, after the person reviewed them |
 
-4. **Judge** each answer against a checklist (29 checks total), e.g. *"Suggests an Airbnb"* (should not) or *"Picks Wednesday as the work-from-home day"* (should). A checklist is far more reliable than asking a model "is this a good answer?".
+```bash
+npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi | vamshi (private)
+```
 
-## Results (average of 2 runs, Oct 28 2026)
+## How it works
 
-| | Confirmed cards | Memory summary | Full history | Guessed cards | No memory |
-|---|---|---|---|---|---|
-| **Overall accuracy** | **88%** | 81% | 76% | 74% | 30% |
-| Changed outside chat | **100%** | 25% | 25% | 0% | 50% |
-| Changed in chat | **100%** | 92% | 83% | 92% | 50% |
-| Stable facts | 82% | **89%** | 84% | 84% | 19% |
-| Stale answers | **0** | 1 | 1 | 1 | 0 |
-| Memory tokens per message | **~59** | ~467 | ~1,712 | ~57 | 0 |
+1. **Build cards** from the person's history (Muse Spark, incremental batches).
+2. **Review pass.** For the synthetic personas, each card is traced to the planted fact it came from and a simulated user answers with the *current truth*, including preferences that changed **outside chat** (never mentioned, so only a confirmation can catch them). For the real histories, Muse Spark plays the person, given true facts we wrote from their own messages, and confirms, rejects or corrects each card.
+3. **Answer** each question in each setup.
+4. **Judge** against a checklist, e.g. *"Suggests an Airbnb"* (should not) or *"Includes exactly 5 hashtags"* (should). Checklists are far more reliable than asking a model whether an answer is good.
+
+## Results (Oct 28 2026, one run per person, final code)
+
+| | Confirmed memory | Inferred memory (summary) | Full history |
+|---|---|---|---|
+| Alex · synthetic · 15 questions | **93%** | 83% | 83% |
+| Maria · synthetic · 11 questions | **90%** | 85% | 75% |
+| Real history A · 25 days, 457 msgs · 8 questions | 86% | **93%** | 71% |
+| Real history B · 5 weeks, 727 msgs · 8 questions | **69%** | **69%** | 62% |
+| **Average** | **84.5%** | 82.5% | 73% |
+| Changed outside chat (synthetic) | **94%** | 44% | 38% |
+| Stale answers (all 4 people) | **1** | 2 | 5 |
+| Memory tokens per message (avg) | **~147** | ~488 | ~38,900 (up to 113,619) |
+
+Earlier runs on Alex (before the final prompt changes) ranged 76 to 90% for confirmed memory, so treat single-run differences of a few points as noise.
 
 ## What it shows
 
-- **Confirmation is the only way to catch life changes that never come up in chat.** Every inferred setup, including a good summary, stays wrong about them.
-- **Scoped cards read ~8× fewer tokens per message than a summary** and ~30× fewer than full history, and the gap widens as history grows: full history passes 45K tokens a year at two chats a day, while cards stay capped (10 topics × 8 cards × 14 words).
-- **Honest caveat:** on long-stable facts the summary still edges out scoped cards (89% vs 82%). Most misses were a relevant card that was sent but not used in the answer, or a card the relevance step left out. That's the next thing to tune.
+- **Confirmation catches what inference can't.** When a preference changed and never came up in chat, every inferred setup kept getting it wrong (44% and 38%); confirmed memory got 94%.
+- **Reading only what's needed is cheaper without costing accuracy.** Confirmed memory reads ~3× fewer tokens per message than a summary and up to ~700× fewer than full history, while matching or beating both on average.
+- **Full history is the worst of both.** It's the most expensive *and* the least accurate: years of noise drown the signal.
+- **Honest caveat.** On one real history where nothing had changed, the summary scored higher (93% vs 86%). A good summary is strong when life is static; confirmed memory wins on cost everywhere and on accuracy as soon as things change.
 
-## Real data (private, not in this repo)
+## What we fixed because of this eval
 
-On one team member's own 5 weeks of Muse chats (727 messages, ~113,600 tokens), Déjà Vu built 42 cards totalling ~398 tokens, about 285× smaller. 14 of them (income, loan, visa status, tax filing, religious food habits) were locked as sensitive automatically. The raw history and cards stay in the git-ignored `data/private/`.
+- **Style cards.** Real users have strong rules about *how* they want answers ("no em dashes", "exactly 5 hashtags", "just give the hook"). These weren't becoming cards. They are now (topic `style`) and are always included, since they're tiny and apply everywhere. On the creator-heavy real history this lifted confirmed memory from 71% to 86%.
+- **Answers apply the cards.** Most early misses were a card that was sent but ignored; the prompt now says the cards were picked for this request and asks the answer to name what it applied.
+- **Relevance includes the people a plan affects** (who lives with you, who you're buying for) and leans toward inclusion.
+- **Known gap:** one-off purchases (concert tickets) sometimes don't become cards, so the agent can't recall them later.
+
+## Real data stays private
+
+The two real histories, their answer keys, cards and per-answer results live in the git-ignored `data/private/`. Only the aggregate numbers above are published. On those histories, 5 weeks of chat (~113,600 tokens) became 44 cards (~400 tokens), and sensitive cards (income, loans, visa status, tax filings, religious food rules) were locked automatically.
+
+## Speed
+
+Confirmed memory adds one small relevance call before answering: about 6 s per answer vs about 3 s for the others with Muse Spark 1.3 (relevance on minimal reasoning; "low" took about 9.5 s for the same accuracy).
 
 ## Cost
 
-One full eval run costs about $0.45 on Muse Spark 1.3.
+About $0.35 per synthetic persona and $0.70 to $1.60 per real history (full history is the expensive part).

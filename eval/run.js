@@ -1,7 +1,11 @@
-// Eval: does bounded, user-confirmed context beat full history and inferred-only memory?
+// Eval: does bounded, user-confirmed context beat full history and inferred memory?
 //
-//   node eval/run.js                 # all modes, writes eval/results/latest.json
-//   node eval/run.js --concurrency 2
+//   node eval/run.js                          # persona alex, the three main setups
+//   node eval/run.js --persona maria          # alex | maria (synthetic) · nidhi | vamshi (private)
+//   node eval/run.js --modes full,summary,inferred,confirmed,none
+//
+// The three main setups: full history · inferred memory (a summary of all chats,
+// sent every message) · confirmed memory (only the relevant confirmed cards).
 //
 // Modes
 //   full       the whole chat history in every prompt (how "remember everything" scales)
@@ -19,8 +23,27 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const key = JSON.parse(readFileSync(join(ROOT, 'data', 'answer-key.json'), 'utf8'));
-process.env.DEMO_TODAY ??= key.today; // answers must agree on what "today" is
+const arg = (name, d) => {
+  const i = process.argv.indexOf(`--${name}`);
+  return i > -1 ? process.argv[i + 1] : d;
+};
+
+// Personas: synthetic ones live in the repo; real ones stay in data/private.
+const PERSONAS = {
+  alex: { history: 'data/test-history.json', key: 'data/answer-key.json' },
+  maria: { history: 'data/personas/maria-history.json', key: 'data/personas/maria-answer-key.json' },
+  nidhi: { history: 'data/private/nidhi-history.json', key: 'data/private/nidhi-answer-key.json', private: true },
+  vamshi: { history: 'data/private/vamshi-history.json', key: 'data/private/vamshi-answer-key.json', private: true },
+};
+const PERSONA = arg('persona', 'alex');
+const P = PERSONAS[PERSONA];
+if (!P) throw new Error(`Unknown persona "${PERSONA}". Try: ${Object.keys(PERSONAS).join(', ')}`);
+const key = JSON.parse(readFileSync(join(ROOT, P.key), 'utf8'));
+const historyJson = JSON.parse(readFileSync(join(ROOT, P.history), 'utf8'));
+// These must be set before the app modules load.
+process.env.HISTORY_FILE = P.history;
+process.env.USER_NAME = key.userName ?? historyJson.user?.name ?? 'the user';
+process.env.DEMO_TODAY = key.today; // answers must agree on what "today" is
 
 const { config } = await import('../src/config.js');
 const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/agent.js');
@@ -29,16 +52,12 @@ const { complete, parseJson } = await import('../src/llm.js');
 const { JUDGE_SYSTEM } = await import('../src/prompts.js');
 const { history, historyAsText } = await import('../src/store.js');
 
-const arg = (name, d) => {
-  const i = process.argv.indexOf(`--${name}`);
-  return i > -1 ? process.argv[i + 1] : d;
-};
 const CONCURRENCY = Number(arg('concurrency', 3));
-const MODES = ['full', 'summary', 'inferred', 'confirmed', 'none'];
+const MODES = arg('modes', 'full,summary,confirmed').split(',');
 const factsById = Object.fromEntries(key.facts.map((f) => [f.id, f]));
 
 const log = (...a) => console.log(...a);
-log(`\nEval · ${config.mock ? 'MOCK (keyword judge, plumbing check only)' : `live · answers ${config.providers.main.model} · memory ${config.providers.bg.model}`}`);
+log(`\nEval · persona ${PERSONA} · ${config.mock ? 'MOCK (keyword judge, plumbing check only)' : `live · answers ${config.providers.main.model} · memory ${config.providers.bg.model}`}`);
 
 // ---------- 1. Build cards from history ----------
 let t0 = Date.now();
@@ -60,9 +79,29 @@ function factFor(card) {
   return best;
 }
 
+// Real personas have no planted message ids: the simulated user (Muse Spark,
+// given the person's true facts) decides on each card instead.
+async function modelReview(cards) {
+  if (config.mock || !cards.length) return {};
+  const res = await complete('main', [
+    { role: 'system', content: `You are ${process.env.USER_NAME}, reviewing what your personal agent remembers about you. These facts about you are true:\n${key.facts.map((f) => `- ${f.text}`).join('\n')}\n\nFor each memory card: "confirm" if it is true or a fair summary, "reject" if it is wrong or outdated, "edit" with corrected text if partly right. Cards on topics the facts don't cover: "confirm" unless they contradict a fact.\nReturn only JSON: {"decisions":[{"id":"","action":"confirm|reject|edit","text":"only for edit"}]}` },
+    { role: 'user', content: cards.map((c) => `${c.id}: ${c.text}`).join('\n') },
+  ], { json: true, maxTokens: 6000, reasoning: 'low' });
+  return Object.fromEntries((parseJson(res.text).decisions ?? []).map((d) => [d.id, d]));
+}
+const usesSources = key.facts.every((f) => Array.isArray(f.sources));
+const decisions = usesSources ? {} : await modelReview(inferredCards);
+
 const reviewState = { cards: structuredClone(inferredCards), rejected: [] };
 const swipes = { confirm: 0, edit: 0, reject: 0, unmatched: 0 };
 for (const card of structuredClone(inferredCards)) {
+  if (!usesSources) {
+    const d = decisions[card.id] ?? { action: 'confirm' };
+    if (d.action === 'edit' && d.text) applyCardAction(reviewState, card.id, 'edit', d.text);
+    else applyCardAction(reviewState, card.id, d.action === 'reject' ? 'reject' : 'confirm');
+    swipes[d.action === 'edit' && d.text ? 'edit' : d.action === 'reject' ? 'reject' : 'confirm']++;
+    continue;
+  }
   const fact = factFor(card);
   if (!fact) { swipes.unmatched++; continue; }
   const truth = key.current_truth[fact.id];
@@ -101,6 +140,7 @@ async function runOne(q, mode) {
 
 // ---------- 4. Judge ----------
 function keywordJudge(text, checks) {
+  if (!checks.every((c) => c.kw)) return null;
   const t = text.toLowerCase();
   return checks.map((c) => c.kw.some((k) => t.includes(k.toLowerCase())));
 }
@@ -141,7 +181,7 @@ async function worker() {
   while (jobs.length) {
     const { q, mode } = jobs.shift();
     const row = await runOne(q, mode);
-    const said = config.mock ? keywordJudge(row.text, q.checks) : await judgeSafely(q, row.text);
+    const said = config.mock && q.checks.every((c) => c.kw) ? keywordJudge(row.text, q.checks) : await judgeSafely(q, row.text);
     row.judged = !!said;
     row.checks = said ? q.checks.map((c, i) => ({ text: c.text, fact: c.fact, want: c.want, said: said[i], pass: said[i] === c.want })) : [];
     rows.push(row);
@@ -195,6 +235,7 @@ const projection = [1, 3, 6, 12, 24].map((months) => ({
 
 // ---------- 7. Save + print ----------
 const result = {
+  persona: PERSONA,
   generated: new Date().toISOString(),
   mock: config.mock,
   models: { answers: config.providers.main.model, memory: config.providers.bg.model, judge: config.mock ? 'keyword' : config.providers.main.model },
@@ -207,10 +248,15 @@ const result = {
   projection: { assumptions: { conversationsPerDay: CONV_PER_DAY, tokensPerConversation: Math.round(tokensPerConversation) }, points: projection },
   rows: rows.sort((a, b) => a.question.localeCompare(b.question) || MODES.indexOf(a.mode) - MODES.indexOf(b.mode)),
 };
-const dir = join(ROOT, 'eval', 'results');
+// Real personas' results (with their answers) stay private. The app's charts read
+// eval/results/latest.json, which only the synthetic default persona writes.
+result.persona = PERSONA;
+const dir = join(ROOT, P.private ? 'data/private/eval' : 'eval/results');
 mkdirSync(dir, { recursive: true });
-writeFileSync(join(dir, 'latest.json'), JSON.stringify(result, null, 2));
-writeFileSync(join(dir, `${result.generated.replace(/[:.]/g, '-')}${config.mock ? '-mock' : ''}.json`), JSON.stringify(result, null, 2));
+const stamp = result.generated.replace(/[:.]/g, '-');
+writeFileSync(join(dir, `${PERSONA}-latest.json`), JSON.stringify(result, null, 2));
+writeFileSync(join(dir, `${PERSONA}-${stamp}${config.mock ? '-mock' : ''}.json`), JSON.stringify(result, null, 2));
+if (PERSONA === 'alex') writeFileSync(join(ROOT, 'eval/results/latest.json'), JSON.stringify(result, null, 2));
 
 log('');
 console.table(
@@ -230,4 +276,4 @@ console.table(
   )
 );
 log(`Projection at ${CONV_PER_DAY} chats/day: 12 months of full history ≈ ${projection[3].fullHistory.toLocaleString()} tokens per prompt; confirmed cards ≈ ${confirmedAvg} per question (ceiling ${cardCeiling}).`);
-log(`Saved eval/results/latest.json${config.mock ? '  (MOCK: not real results)' : ''}\n`);
+log(`Saved ${P.private ? 'data/private/eval' : 'eval/results'}/${PERSONA}-latest.json${config.mock ? '  (MOCK: not real results)' : ''}\n`);

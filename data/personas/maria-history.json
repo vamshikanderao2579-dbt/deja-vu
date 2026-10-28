@@ -1,0 +1,109 @@
+{
+  "_label": "TEST DATA ONLY. Synthetic chat history for persona Maria (Feb 2024 to Oct 2026). Not real user data.",
+  "user": { "name": "Maria", "pronouns": "she/her", "timezone": "America/Phoenix" },
+  "conversations": [
+    { "id": "q01", "date": "2024-02-11", "time": "10:20", "title": "Meal prep", "messages": [
+      { "id": "q001", "role": "user", "text": "sunday meal prep again. high protein low carb, i need stuff that reheats ok at 3am on shift" },
+      { "id": "q002", "role": "assistant", "text": "Here are 5 reheatable options: chicken fajita bowls (no rice), turkey chili, egg bites, salmon with roasted veg, and beef and broccoli over cauliflower rice." },
+      { "id": "q003", "role": "user", "text": "chili and egg bites. make the list" }
+    ]},
+    { "id": "q02", "date": "2024-03-05", "time": "15:40", "title": "Night shifts", "messages": [
+      { "id": "q004", "role": "user", "text": "fyi i work nights wed thu fri 7pm to 7am. dont schedule anything or call before 3pm those days, im asleep" },
+      { "id": "q005", "role": "assistant", "text": "Got it. Nothing before 3 PM on your sleep days, and I'll keep Wednesday to Friday evenings clear." }
+    ]},
+    { "id": "q03", "date": "2024-04-18", "time": "16:05", "title": "Dentist mistake", "messages": [
+      { "id": "q006", "role": "user", "text": "never again booking a dentist at 8am right after a night shift. i was a zombie. appointments only after 3pm please" },
+      { "id": "q007", "role": "assistant", "text": "Understood. I'll only book appointments after 3 PM, never the morning after a shift." }
+    ]},
+    { "id": "q04", "date": "2024-05-20", "time": "18:30", "title": "Leo's birthday", "messages": [
+      { "id": "q008", "role": "user", "text": "leo turns 13 next month. hes all about basketball. gift ideas under 80?" },
+      { "id": "q009", "role": "assistant", "text": "A Wilson Evolution ball ($70), Suns tickets in the upper deck, or a rebounder net for the driveway." }
+    ]},
+    { "id": "q05", "date": "2024-06-14", "time": "05:10", "title": "Summer hike", "messages": [
+      { "id": "q010", "role": "user", "text": "hiking camelback saturday. what time" },
+      { "id": "q011", "role": "assistant", "text": "In June, start by 6 AM. Trails close in extreme heat warnings." },
+      { "id": "q012", "role": "user", "text": "ok" }
+    ]},
+    { "id": "q06", "date": "2024-06-16", "time": "11:00", "title": "After the hike", "messages": [
+      { "id": "q013", "role": "user", "text": "we started at 7:30 and ran out of water halfway, scary. next time remind me start before 6:30 and bring 3 liters each" },
+      { "id": "q014", "role": "assistant", "text": "Glad you're okay. For summer hikes I'll remind you: start before 6:30 and carry 3 liters per person." }
+    ]},
+    { "id": "q07", "date": "2024-07-22", "time": "17:45", "title": "Oil change", "messages": [
+      { "id": "q015", "role": "user", "text": "civic needs an oil change. not the dealership they overcharge. the independent guys are fine" },
+      { "id": "q016", "role": "assistant", "text": "Valley Auto Care (independent, 4.7★) does synthetic oil changes for $49. They have a 4 PM slot Thursday." },
+      { "id": "q017", "role": "user", "text": "book it" }
+    ]},
+    { "id": "q08", "date": "2024-09-08", "time": "09:30", "title": "Costco run", "messages": [
+      { "id": "q018", "role": "user", "text": "costco list for the month. bulk everything, and check the coupon book first" },
+      { "id": "q019", "role": "assistant", "text": "This month's coupons cover Kirkland eggs, chicken breasts and paper towels. List: eggs, chicken, ground turkey, frozen veg, coffee, paper towels." }
+    ]},
+    { "id": "q09", "date": "2024-10-03", "time": "20:15", "title": "Show for mom", "messages": [
+      { "id": "q020", "role": "user", "text": "something to watch with my mom saturday. has to be in spanish, her english isnt great. she loves telenovelas" },
+      { "id": "q021", "role": "assistant", "text": "Try 'La Reina del Flow' or 'Café con aroma de mujer' on Netflix, both in Spanish." }
+    ]},
+    { "id": "q10", "date": "2024-11-12", "time": "21:00", "title": "Flights to Guadalajara", "messages": [
+      { "id": "q022", "role": "user", "text": "december flights to guadalajara to see my sister ana. cheapest possible, i dont care about layovers" },
+      { "id": "q023", "role": "assistant", "text": "Cheapest: PHX→DFW→GDL on American, $312 round trip with a 3h layover each way." },
+      { "id": "q024", "role": "user", "text": "book it" }
+    ]},
+    { "id": "q11", "date": "2024-12-28", "time": "13:00", "title": "Missed connection", "messages": [
+      { "id": "q025", "role": "user", "text": "missed the connection in dallas coming back, stuck overnight, lost a shift. from now on one short layover max even if it costs more" },
+      { "id": "q026", "role": "assistant", "text": "That's rough. Going forward I'll look for nonstop or one short layover, even if it costs a bit more." }
+    ]},
+    { "id": "q12", "date": "2025-02-09", "time": "10:10", "title": "Meal prep again", "messages": [
+      { "id": "q027", "role": "user", "text": "meal prep. same rules, high protein low carb" },
+      { "id": "q028", "role": "assistant", "text": "This week: turkey meatballs with zucchini noodles, chicken shawarma bowls, and cottage cheese egg bites." }
+    ]},
+    { "id": "q13", "date": "2025-03-15", "time": "19:20", "title": "Concert", "messages": [
+      { "id": "q029", "role": "user", "text": "bad bunny tour coming to phoenix?? i need tickets mija" },
+      { "id": "q030", "role": "assistant", "text": "He's playing Footprint Center on May 3. Lower bowl starts at $180, upper at $95." },
+      { "id": "q031", "role": "user", "text": "upper. 2 tickets" }
+    ]},
+    { "id": "q14", "date": "2025-04-27", "time": "14:00", "title": "Yarn", "messages": [
+      { "id": "q032", "role": "user", "text": "running low on yarn for my crochet blankets. the soft acrylic kind, whatevers on sale" },
+      { "id": "q033", "role": "assistant", "text": "Joann has Big Twist Soft acrylic 40% off this week. 6 skeins would be about $24." }
+    ]},
+    { "id": "q15", "date": "2025-06-30", "time": "16:30", "title": "Wifi", "messages": [
+      { "id": "q034", "role": "user", "text": "internet bill went up again. can you find a cheaper plan" },
+      { "id": "q035", "role": "assistant", "text": "Cox has a $50/month 500 Mbps plan for 12 months. You're paying $79 now." },
+      { "id": "q036", "role": "user", "text": "switch it" }
+    ]},
+    { "id": "q16", "date": "2025-08-19", "time": "17:10", "title": "Doctor", "messages": [
+      { "id": "q037", "role": "user", "text": "doctor says im pre-diabetic. need to cut sugar. dont make a big deal just factor it in when you plan food" },
+      { "id": "q038", "role": "assistant", "text": "Understood. I'll keep sugar low when I plan meals, quietly." }
+    ]},
+    { "id": "q17", "date": "2025-09-05", "time": "20:40", "title": "Leo's new thing", "messages": [
+      { "id": "q039", "role": "user", "text": "leo quit basketball, hes obsessed with the robotics club now. they build battle bots lol" },
+      { "id": "q040", "role": "assistant", "text": "Fun! If you ever want gift ideas, Arduino kits and VEX parts are popular with robotics teams." }
+    ]},
+    { "id": "q18", "date": "2025-10-11", "time": "15:30", "title": "Coworker gift", "messages": [
+      { "id": "q041", "role": "user", "text": "secret santa at work, $25 limit. coworker likes coffee" },
+      { "id": "q042", "role": "assistant", "text": "A local roaster's sampler box ($22) or an insulated travel mug ($24) for night shifts." }
+    ]},
+    { "id": "q19", "date": "2025-12-01", "time": "21:30", "title": "December trip", "messages": [
+      { "id": "q043", "role": "user", "text": "guadalajara again for ana's christmas. remember, one layover max" },
+      { "id": "q044", "role": "assistant", "text": "Aeromexico PHX→MEX→GDL has a 1h50 layover, $389. Volaris has a nonstop from PHX for $421." },
+      { "id": "q045", "role": "user", "text": "volaris nonstop" }
+    ]},
+    { "id": "q20", "date": "2026-02-14", "time": "11:00", "title": "Mom's show", "messages": [
+      { "id": "q046", "role": "user", "text": "new telenovela for mom? she finished the last one" },
+      { "id": "q047", "role": "assistant", "text": "'El Gallo de Oro' on Netflix is a hit with telenovela fans. Spanish audio, optional subtitles." }
+    ]},
+    { "id": "q21", "date": "2026-04-03", "time": "16:00", "title": "Car again", "messages": [
+      { "id": "q048", "role": "user", "text": "oil change time. same independent shop as last time if theyre still good" },
+      { "id": "q049", "role": "assistant", "text": "Valley Auto Care is still 4.7★. Booked Friday at 4 PM." }
+    ]},
+    { "id": "q22", "date": "2026-06-21", "time": "05:00", "title": "Summer hike", "messages": [
+      { "id": "q050", "role": "user", "text": "piestewa peak tomorrow, leaving 6. packing 3 liters each like you said" },
+      { "id": "q051", "role": "assistant", "text": "Perfect timing. Sunrise is 5:20, so you'll beat the heat." }
+    ]},
+    { "id": "q23", "date": "2026-09-12", "time": "10:30", "title": "Costco", "messages": [
+      { "id": "q052", "role": "user", "text": "costco list. bulk, coupons, and nothing sugary" },
+      { "id": "q053", "role": "assistant", "text": "Coupons this month: chicken thighs, Greek yogurt, almonds. List: chicken, yogurt (plain), almonds, eggs, frozen berries, coffee." }
+    ]},
+    { "id": "q24", "date": "2026-10-10", "time": "13:15", "title": "Package", "messages": [
+      { "id": "q054", "role": "user", "text": "where is my amazon package" },
+      { "id": "q055", "role": "assistant", "text": "Arriving tomorrow by 9 PM." }
+    ]}
+  ]
+}

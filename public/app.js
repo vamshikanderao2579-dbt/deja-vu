@@ -256,58 +256,94 @@ function renderAnswer(res, question) {
 
 function cardHtml(card, { why = '', sources = false } = {}) {
   return `<div class="swipe-card">
-    <span class="stamp yes">THAT'S RIGHT</span><span class="stamp no">NOT RIGHT</span><span class="stamp edit">EDIT</span>
+    <span class="stamp yes">STILL TRUE</span><span class="stamp no">NOT ANYMORE</span><span class="stamp edit"></span>
     ${why ? `<div class="why">${esc(why)}</div>` : ''}
     <div class="cat">${esc(card.category)} · ${card.type === 'lesson' ? 'lesson' : 'preference'}</div>
     <div class="text">${esc(card.text)}</div>
     ${card.changed_from ? `<div class="was">${esc(card.changed_from)}</div>` : ''}
     ${card.note ? `<div class="note">💬 ${esc(card.note)}</div>` : ''}
     ${sources ? `<div class="dates">${esc(dateLine(card))}</div>` : ''}
-    ${sources ? `<button class="why-btn" type="button">Why do you think this?</button><div class="srcs"></div>` : '<div class="hint">Swipe → that’s right · ← not right · ↑ edit</div>'}
+    ${sources ? `<button class="why-btn" type="button">Why do you think this?</button><div class="srcs"></div>` : '<div class="hint">Swipe → still true · ← not anymore</div>'}
   </div>`;
 }
 
 function renderCue(cue, question) {
   const wrap = el(`<div class="cue"><p class="q">${esc(cue.question)}</p>${cardHtml(cue.card)}
-    <div class="cue-actions"><button class="no">✕ Not anymore</button><button class="ed">✎ Edit</button><button class="mic">🎙 Say it</button><button class="yes">✓ Still true</button></div></div>`);
+    <div class="cue-actions"><button class="no">✕ Not anymore</button><button class="mic" aria-label="Answer by voice">🎙</button><button class="yes">✓ Still true</button></div></div>`);
   thread.append(wrap);
   scrollDown();
   const card = wrap.querySelector('.swipe-card');
   let done = false;
+  const settle = () => { if (done) return false; done = true; wrap.querySelector('.cue-actions')?.remove(); return true; };
 
-  const resolve = async (action, text) => {
-    if (done) return;
-    done = true;
-    wrap.querySelector('.cue-actions').remove();
-    wrap.querySelector('.edit-box')?.remove();
+  const yes = async () => {
+    if (!settle()) return;
     try {
-      await refresh(await api(`/api/cards/${cue.card.id}`, { action, text }));
-      const note = { confirm: 'Thanks. Saved as confirmed.', reject: 'Got it. I’ve forgotten that one.', edit: 'Updated. Using your version from now on.' }[action];
-      wrap.append(el(`<p class="q" style="margin-top:8px">${note}</p>`));
+      await refresh(await api(`/api/cards/${cue.card.id}`, { action: 'confirm' }));
+      wrap.append(el(`<p class="q" style="margin-top:8px">Thanks. Saved as confirmed.</p>`));
       await send(question, { skipCue: true });
-    } catch (err) {
-      toast(err.message);
-    }
+    } catch (err) { toast(err.message); }
   };
-  const openEdit = () => {
-    if (wrap.querySelector('.edit-box')) return;
-    card.style.transform = '';
-    const box = el(`<form class="edit-box"><input value="${esc(cue.card.text)}" maxlength="90" /><button>Save</button></form>`);
-    box.addEventListener('submit', (e) => { e.preventDefault(); resolve('edit', box.querySelector('input').value); });
-    wrap.querySelector('.cue-actions').before(box);
-    box.querySelector('input').focus();
+  const no = async () => {
+    if (!settle()) return;
+    try {
+      await refresh(await api(`/api/cards/${cue.card.id}`, { action: 'reject' }));
+      offerChat(wrap, cue.card, () => send(question, { skipCue: true }), question);
+    } catch (err) { toast(err.message); }
   };
 
-  makeSwipeable(card, (act) => (act === 'edit' ? openEdit() : resolve(act)));
-  wrap.querySelector('.cue-actions .yes').addEventListener('click', () => fling(card, 'confirm', () => resolve('confirm')));
-  wrap.querySelector('.cue-actions .no').addEventListener('click', () => fling(card, 'reject', () => resolve('reject')));
-  wrap.querySelector('.cue-actions .ed').addEventListener('click', openEdit);
-  voiceButton(wrap.querySelector('.cue-actions .mic'), (v) => {
+  makeSwipeable(card, (act) => (act === 'confirm' ? yes() : act === 'reject' ? no() : null));
+  wrap.querySelector('.cue-actions .yes').addEventListener('click', () => fling(card, 'confirm', yes));
+  wrap.querySelector('.cue-actions .no').addEventListener('click', () => fling(card, 'reject', no));
+  voiceButton(wrap.querySelector('.cue-actions .mic'), async (v) => {
     if (!v.action) return toast('Didn’t catch that. Try again?');
     wrap.querySelector('.q').insertAdjacentHTML('afterend', `<p class="heard">You said: “${esc(v.transcript)}”</p>`);
-    if (v.action === 'edit') return resolve('edit', v.text);
-    fling(card, v.action, () => resolve(v.action));
-  }, '🎙 Say it');
+    if (v.action === 'confirm') return fling(card, 'confirm', yes);
+    if (v.action === 'reject') return fling(card, 'reject', no);
+    // A spoken correction ("No, it's Wednesdays now") updates the card directly.
+    if (!settle()) return;
+    card.style.display = 'none';
+    await applyUpdate({ category: cue.card.category, oldText: cue.card.text, cardId: cue.card.id }, v.text);
+    await send(question, { skipCue: true });
+  }, '🎙');
+}
+
+// After a "not anymore": forget it, then offer to talk about what changed. Skipping
+// is one tap, so nobody is forced into a conversation they didn't want.
+function offerChat(container, card, onSkip, question = null) {
+  const box = el(`<div class="after-no"><p>Got it, I’ve forgotten that. Want to tell ${esc(data.agent.name)} what changed?</p>
+    <div class="after-actions"><button class="skip">Skip</button><button class="chat">💬 Chat about it</button></div></div>`);
+  container.append(box);
+  scrollDown();
+  box.querySelector('.skip').addEventListener('click', () => { box.remove(); onSkip?.(); });
+  box.querySelector('.chat').addEventListener('click', () => { box.remove(); startUpdateChat({ category: card.category, oldText: card.text, question }); });
+}
+
+// Land in chat with the sentence started for them; they only finish it.
+let pendingUpdate = null;
+function startUpdateChat(info) {
+  closeAll();
+  pendingUpdate = info;
+  const input = $('#input');
+  input.value = `Hey ${data.agent.name}, my ${catLabel(info.category)} preference “${info.oldText}” has changed. Now I’d like `;
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+  input.scrollLeft = input.scrollWidth;
+}
+
+async function applyUpdate(info, message) {
+  const t = typing();
+  try {
+    const res = await api('/api/memory/update', { ...info, message });
+    t.remove();
+    await refresh(res);
+    addMsg('assistant', res.card
+      ? `<p>Got it. Saved to <b>${esc(catLabel(info.category))}</b>: “${esc(res.card.text)}” ✓</p>`
+      : `<p>Okay. I won’t keep anything about that for now.</p>`);
+  } catch (err) {
+    t.remove();
+    addMsg('assistant', `<p>${esc(err.message)}</p>`);
+  }
 }
 
 // ---------------- voice (Muse Voice Transcribe) ----------------
@@ -413,6 +449,13 @@ $('#composer').addEventListener('submit', (e) => {
   const v = $('#input').value.trim();
   if (!v) return;
   $('#input').value = '';
+  if (pendingUpdate) {
+    const info = pendingUpdate;
+    pendingUpdate = null;
+    addMsg('user', esc(v));
+    applyUpdate({ category: info.category, oldText: info.oldText }, v).then(() => info.question && send(info.question, { skipCue: true }));
+    return;
+  }
   send(v);
 });
 $('#plusBtn').addEventListener('click', () => { if (!thread.querySelector('.suggestions')) renderWelcome(); });
@@ -512,7 +555,6 @@ const currentCard = () => {
 function renderDeck() {
   const root = $('#deck');
   root.innerHTML = '';
-  $('#deckEdit').classList.add('hidden');
   const total = deck.ids.length;
   const card = currentCard();
   $('#catProgress').textContent = card ? `${Math.min(deck.i + 1, total)} of ${total}` : `${total} reviewed`;
@@ -533,40 +575,24 @@ function renderDeck() {
 
 async function deckAct(act) {
   const card = currentCard();
-  if (!card) return;
-  if (act === 'edit' || act === 'note') return openDeckInput(act, card);
+  if (!card || (act !== 'confirm' && act !== 'reject')) return;
   await refresh(await api(`/api/cards/${card.id}`, { action: act }));
-  if (act === 'reject') toast('Removed. I won’t bring it back.');
   deck.i++;
+  if (act === 'reject') {
+    renderDeck();
+    offerChat($('#deck'), card, null);
+    return;
+  }
   renderDeck();
 }
-
-function openDeckInput(act, card) {
-  const form = $('#deckEdit');
-  const input = form.querySelector('input');
-  form.classList.remove('hidden');
-  form.dataset.act = act;
-  input.value = act === 'edit' ? card.text : card.note ?? '';
-  input.placeholder = act === 'note' ? 'Add a note, e.g. “only in winter”' : '';
-  input.focus();
-  const top = $('#deck').lastElementChild;
-  if (top) top.style.transform = '';
-}
-$('#deckEdit').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const card = currentCard();
-  const text = $('#deckEdit input').value.trim();
-  if (!card || !text) return;
-  await refresh(await api(`/api/cards/${card.id}`, { action: e.currentTarget.dataset.act, text }));
-  toast(e.currentTarget.dataset.act === 'note' ? 'Note added.' : 'Updated.');
-  deck.i++;
-  renderDeck();
-});
 voiceButton($('#deckMic'), async (v) => {
   const card = currentCard();
   if (!card || !v.action) return toast('Didn’t catch that. Try again?');
   toast(`You said: “${v.transcript}”`);
-  await refresh(await api(`/api/cards/${card.id}`, v.action === 'edit' ? { action: 'edit', text: v.text } : { action: v.action }));
+  if (v.action === 'confirm' || v.action === 'reject') return deckAct(v.action);
+  const res = await api('/api/memory/update', { category: card.category, oldText: card.text, cardId: card.id, message: v.text });
+  await refresh(res);
+  if (res.card) toast(`Saved: “${res.card.text}” ✓`);
   deck.i++;
   renderDeck();
 }, '🎙');

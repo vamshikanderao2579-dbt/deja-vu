@@ -4,7 +4,8 @@ import { ROOT } from './config.js';
 
 // me.json is the source of truth for the user's context. Text for the model
 // and the human-readable me.md export are both generated from it.
-const STATE_PATH = join(ROOT, 'data', 'me.json');
+// STATE_FILE lets tests use their own memory file.
+const STATE_PATH = join(ROOT, process.env.STATE_FILE || join('data', 'me.json'));
 // HISTORY_FILE in .env points at another history, e.g. a private import.
 const HISTORY_PATH = join(ROOT, process.env.HISTORY_FILE || join('data', 'test-history.json'));
 

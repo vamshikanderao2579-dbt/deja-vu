@@ -16,3 +16,4 @@ data/spend.json
 .claude/
 .DS_Store
 eval/results/*.json
+data/test-state*.json

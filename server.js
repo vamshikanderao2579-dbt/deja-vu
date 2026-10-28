@@ -3,10 +3,10 @@ import { readFile } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 import { config, ROOT } from './src/config.js';
 import { getState, save, reset, messagesById, conversationsById, historyAsText } from './src/store.js';
-import { distill, selectRelevant, answer } from './src/agent.js';
+import { distill, selectRelevant, answer, rewriteCard } from './src/agent.js';
 import { decideCue, checkReason, applyFeedback } from './src/cue.js';
 import { transcribe, interpret } from './src/voice.js';
-import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction } from './src/cards.js';
+import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards } from './src/cards.js';
 
 const PUBLIC = join(ROOT, 'public');
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
@@ -69,6 +69,22 @@ route('POST', '/api/cards/:id', (body, { id }) => {
   if (open) open.outcome = action;
   save();
   return statePayload();
+});
+
+// The user told us in chat what changed: save it as a new confirmed card.
+route('POST', '/api/memory/update', async (body) => {
+  const { category, oldText, message, cardId } = body;
+  if (!category || !message?.trim()) throw httpError(400, 'category and message are required');
+  const s = getState();
+  if (cardId && s.cards.some((c) => c.id === cardId)) applyCardAction(s, cardId, 'reject');
+  const next = await rewriteCard(category, oldText ?? '', message);
+  if (!next) { save(); return { card: null, ...statePayload() }; }
+  // Merge without the rejected list: the new wording can be close to the old one.
+  s.cards = mergeCards(s.cards, [{ category, type: next.type, text: next.text, confidence: 1 }], []);
+  const card = s.cards.find((c) => c.category === category && c.text === next.text) ?? s.cards.at(-1);
+  applyCardAction(s, card.id, 'confirm');
+  save();
+  return { card: publicCard(card), ...statePayload() };
 });
 
 route('POST', '/api/feedback', (body) => {

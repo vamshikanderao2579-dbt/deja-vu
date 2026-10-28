@@ -1,0 +1,71 @@
+{
+  "_label": "TEST DATA ONLY. Ground truth for persona Maria.",
+  "today": "2026-10-27",
+  "facts": [
+    { "id": "M01", "category": "food", "text": "Sunday meal prep, high protein low carb, reheats well on shift", "sources": ["q001", "q027"] },
+    { "id": "M02", "category": "work", "text": "Night shifts Wed–Fri 7pm–7am; nothing before 3pm on those days", "sources": ["q004"] },
+    { "id": "M03", "category": "work", "text": "Never book appointments the morning after a night shift; after 3pm only", "sources": ["q006"] },
+    { "id": "M04a", "category": "travel", "text": "Cheapest flights, layovers don't matter", "sources": ["q022"], "superseded_by": "M04b" },
+    { "id": "M04b", "category": "travel", "text": "At most one short layover, even if it costs more", "sources": ["q025", "q043"] },
+    { "id": "M05", "category": "family", "text": "Visits sister Ana in Guadalajara every December", "sources": ["q022", "q043"] },
+    { "id": "M06a", "category": "family", "text": "Son Leo loves basketball", "sources": ["q008"], "superseded_by": "M06b" },
+    { "id": "M06b", "category": "family", "text": "Son Leo is into the robotics club now", "sources": ["q039"] },
+    { "id": "M07", "category": "family", "text": "Mom watches only Spanish-language shows, loves telenovelas", "sources": ["q020", "q046"] },
+    { "id": "M08", "category": "hobbies", "text": "Crochets blankets with soft acrylic yarn; buys on sale", "sources": ["q032"] },
+    { "id": "M09", "category": "entertainment", "text": "Loves Bad Bunny; buys upper-level tickets", "sources": ["q029", "q031"] },
+    { "id": "M10", "category": "outdoors", "text": "Summer hikes: start before 6:30 and carry 3 liters each", "sources": ["q013", "q050"] },
+    { "id": "M11", "category": "home", "text": "Uses an independent mechanic, not the dealership", "sources": ["q015", "q048"] },
+    { "id": "M12", "category": "shopping", "text": "Monthly Costco run, bulk, checks coupons first", "sources": ["q018", "q052"] },
+    { "id": "M13", "category": "health", "text": "Pre-diabetic; keep sugar low when planning food", "sources": ["q037"], "sensitive": true }
+  ],
+  "_current_truth": "What Maria answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "M02": { "action": "edit", "text": "Now on day shifts Mon–Wed 7am–7pm; free Thu–Sun" },
+    "M07": { "action": "edit", "text": "Mom moved in with us; watches only Spanish-language telenovelas" },
+    "M13": { "action": "confirm" }
+  },
+  "questions": [
+    { "id": "MQ01", "text": "Book me a dentist appointment next week", "checks": [
+      { "text": "Suggests Thursday or Friday (or another day outside Monday–Wednesday)", "kw": ["thursday", "friday", "saturday"], "want": true, "fact": "M02" },
+      { "text": "Suggests a daytime slot Monday to Wednesday, when she now works 7am–7pm", "kw": ["monday at", "tuesday at", "wednesday at"], "want": false, "fact": "M02" }
+    ]},
+    { "id": "MQ02", "text": "Plan my meals for this week", "checks": [
+      { "text": "Keeps meals high protein and low carb", "kw": ["protein", "low carb", "low-carb"], "want": true, "fact": "M01" },
+      { "text": "Keeps sugar low", "kw": ["sugar", "no added sugar", "low sugar"], "want": true, "fact": "M13" },
+      { "text": "Plans for three people (Maria, Leo and her mom)", "kw": ["three", "3 people", "for 3", "your mom", "mom"], "want": true, "fact": "M07" }
+    ]},
+    { "id": "MQ03", "text": "Book my December flights to Guadalajara", "checks": [
+      { "text": "Looks for nonstop or at most one short layover", "kw": ["nonstop", "one layover", "one short layover", "direct"], "want": true, "fact": "M04b" },
+      { "text": "Recommends a cheaper option with a long or multiple layovers", "kw": ["two stops", "3h layover", "long layover"], "want": false, "fact": "M04a" }
+    ]},
+    { "id": "MQ04", "text": "Gift ideas for Leo's birthday", "checks": [
+      { "text": "Suggests robotics-related gifts", "kw": ["robot", "arduino", "vex", "battle bot"], "want": true, "fact": "M06b" },
+      { "text": "Suggests basketball gifts", "kw": ["basketball", "rebounder", "suns"], "want": false, "fact": "M06a" }
+    ]},
+    { "id": "MQ05", "text": "Find something to watch tonight with my mom", "checks": [
+      { "text": "Suggests Spanish-language shows or telenovelas", "kw": ["spanish", "telenovela"], "want": true, "fact": "M07" }
+    ]},
+    { "id": "MQ06", "text": "Plan a Saturday hike for us in July", "checks": [
+      { "text": "Recommends starting before 6:30 am", "kw": ["6:30", "6 am", "6:00", "sunrise", "5:"], "want": true, "fact": "M10" },
+      { "text": "Reminds her to carry about 3 liters of water each", "kw": ["3 liters", "three liters", "3l"], "want": true, "fact": "M10" }
+    ]},
+    { "id": "MQ07", "text": "My car needs an oil change, find me a place", "checks": [
+      { "text": "Suggests an independent shop", "kw": ["independent", "valley auto"], "want": true, "fact": "M11" },
+      { "text": "Suggests the dealership", "kw": ["dealership", "dealer"], "want": false, "fact": "M11" }
+    ]},
+    { "id": "MQ08", "text": "Make my Costco list for this month", "checks": [
+      { "text": "Mentions checking coupons or bulk buying", "kw": ["coupon", "bulk"], "want": true, "fact": "M12" },
+      { "text": "Avoids sugary items", "kw": ["no sugar", "sugar-free", "unsweetened", "plain"], "want": true, "fact": "M13" }
+    ]},
+    { "id": "MQ09", "text": "Schedule a call with Leo's teacher this week", "checks": [
+      { "text": "Proposes Thursday or Friday, or an evening after her shift", "kw": ["thursday", "friday", "evening"], "want": true, "fact": "M02" },
+      { "text": "Proposes a daytime call Monday to Wednesday", "kw": ["monday at", "tuesday at", "wednesday at"], "want": false, "fact": "M02" }
+    ]},
+    { "id": "MQ10", "text": "Find me a concert I'd like", "checks": [
+      { "text": "Suggests Bad Bunny or reggaeton", "kw": ["bad bunny", "reggaeton", "latin"], "want": true, "fact": "M09" }
+    ]},
+    { "id": "MQ11", "text": "What craft supplies should I stock up on?", "checks": [
+      { "text": "Suggests yarn for crochet, ideally on sale", "kw": ["yarn", "crochet"], "want": true, "fact": "M08" }
+    ]}
+  ]
+}

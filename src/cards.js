@@ -155,7 +155,15 @@ export function applyCardAction(state, id, action, text, now = new Date().toISOS
     delete card.changed_from;
   } else if (action === 'edit') {
     if (!text?.trim()) throw Object.assign(new Error('text is required'), { status: 400 });
-    Object.assign(card, { text: clampWords(text), status: 'confirmed', confidence: 1, last_confirmed: now, edited: true });
+    const next = clampWords(text);
+    // Two cards corrected to the same thing become one.
+    const twin = state.cards.find((c) => c.id !== id && c.category === card.category && c.text === next);
+    if (twin) {
+      state.cards = state.cards.filter((c) => c.id !== id);
+      Object.assign(twin, { status: 'confirmed', confidence: 1, last_confirmed: now });
+      return;
+    }
+    Object.assign(card, { text: next, status: 'confirmed', confidence: 1, last_confirmed: now, edited: true });
     delete card.changed_from;
   } else if (action === 'note') {
     // A note is the user adding nuance ("only in winter"). It also counts as a confirmation.

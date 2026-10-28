@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { config, ROOT, todayString } from './config.js';
 import { complete, parseJson } from './llm.js';
-import { DISTILL_SYSTEM, RELEVANCE_SYSTEM, HISTORY_HEADER, SUMMARY_SYSTEM, SUMMARY_HEADER, answerSystem } from './prompts.js';
+import { DISTILL_SYSTEM, RELEVANCE_SYSTEM, HISTORY_HEADER, SUMMARY_SYSTEM, SUMMARY_HEADER, UPDATE_SYSTEM, answerSystem } from './prompts.js';
 import { mergeCards, renderContext, estimateTokens, usable } from './cards.js';
 import { history, historyAsText, messageTime } from './store.js';
 
@@ -95,7 +95,23 @@ export async function selectRelevant(message, cards) {
     return { relevant: [], stakes: 'low' };
   }
   const ids = new Set(out.relevant_card_ids ?? []);
+  // Style cards (how the user wants answers) are tiny and apply to everything.
+  for (const c of candidates) if (c.category === 'style') ids.add(c.id);
   return { relevant: candidates.filter((c) => ids.has(c.id)), stakes: out.stakes === 'high' ? 'high' : 'low' };
+}
+
+// "My Travel preference X has changed. Now I'd like Y" → a new card text.
+export async function rewriteCard(category, oldText, message) {
+  if (config.mock) {
+    const words = message.replace(/^.*?(now i'?d like|now i prefer|now)\s*/i, '').trim().split(/\s+/).slice(0, 12).join(' ');
+    return words ? { text: words.charAt(0).toUpperCase() + words.slice(1), type: 'preference' } : null;
+  }
+  const res = await complete('bg', [
+    { role: 'system', content: UPDATE_SYSTEM },
+    { role: 'user', content: `Category: ${category}\nOld card: ${oldText}\nUser's message: ${message}` },
+  ], { json: true, maxTokens: 1500, reasoning: 'minimal' });
+  const out = parseJson(res.text);
+  return out.text ? { text: out.text, type: out.type === 'lesson' ? 'lesson' : 'preference' } : null;
 }
 
 // The baseline memory summary: written once from the whole history.

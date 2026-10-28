@@ -6,6 +6,7 @@ Rules:
 - type is "preference" (how they like things) or "lesson" (something went wrong; how to avoid it next time).
 - category is a short lowercase noun: food, travel, work, people, home, health, shopping, etc. Reuse existing categories.
 - Include routines (bills, workouts, recurring orders) and what the people they shop or plan for like (family, friends).
+- Include how they want answers: length, format (copy-paste ready, bullets), tone, things to avoid (e.g. certain punctuation), counts (e.g. number of hashtags). Use category "style" for these.
 - Skip one-off requests, small talk, and anything unlikely to matter again.
 - If the user changed their mind, output only the new version and put the old version in "changed_from".
 - Set "sensitive": true for health, money (income, debts, accounts, cards, taxes), immigration or visa status, home address or where they live, relationships, religion, or similar.
@@ -17,7 +18,9 @@ Return only JSON:
 {"cards":[{"id":"optional existing id","category":"","type":"preference|lesson","text":"","confidence":0.0,"sources":[""],"sensitive":false,"changed_from":"optional"}]}`;
 
 export const RELEVANCE_SYSTEM = `You decide which memory cards matter for the user's request to a personal agent.
-Return only the cards that would change the answer. Usually 0 to 5 cards.
+Return every card that could shape the answer: the user's preferences for this kind of task, the people the plan affects
+(family members, who lives with them), routines and schedules, constraints, and lessons from past mistakes.
+When unsure, include it. Usually 2 to 8 cards; 0 only for small talk.
 Also rate the stakes:
 - "high" when the answer leads to an action or a plan (booking, ordering, scheduling, choosing a place) where a wrong preference would cost the user.
 - "low" for casual questions.
@@ -39,7 +42,13 @@ Write it as compact notes, at most 350 words, newest information winning when th
 
 export const SUMMARY_HEADER = `What you remember about the user (your memory summary):`;
 
-export const CONTEXT_HEADER = `What you know about the user (✓ = confirmed by the user, ~ = inferred; treat inferred facts as likely, not certain):`;
+export const UPDATE_SYSTEM = `The user is telling their personal agent that a remembered preference changed.
+Rewrite it as one memory card about the user: at most 12 words, plain language ("Prefers...", "Now...").
+If the message gives no lasting preference, return null.
+
+Return only JSON: {"text":"..." | null,"type":"preference|lesson"}`;
+
+export const CONTEXT_HEADER = `What you know about the user, picked for this request (✓ = confirmed by the user, ~ = inferred, likely but not certain).\nApply every one that fits, and say in a few words which you applied (e.g. "kept it mild for Maya", "based on recent reviews"):`;
 export const HISTORY_HEADER = `The user's full chat history with you:`;
 
 export const JUDGE_SYSTEM = `You check an AI assistant's answer against a numbered list of statements.

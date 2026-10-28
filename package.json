@@ -8,7 +8,8 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "eval": "node eval/run.js",
-    "check-api": "node scripts/check-api.js"
+    "check-api": "node scripts/check-api.js",
+    "test": "node --test test/*.test.js"
   },
   "engines": { "node": ">=18" }
 }
