@@ -88,7 +88,8 @@ test('check reasons: changed, sensitive, old, guessed, stale, fine', () => {
   assert.equal(checkReason({ status: 'pending' }, NOW), 'sensitive');
   assert.equal(checkReason({ status: 'inferred', confidence: 0.9, last_seen: new Date(NOW - 400 * day).toISOString() }, NOW), 'old');
   assert.equal(checkReason({ status: 'inferred', confidence: 0.6, last_seen: new Date(NOW - 10 * day).toISOString() }, NOW), 'guessed');
-  assert.equal(checkReason({ status: 'confirmed', last_confirmed: new Date(NOW - 90 * day).toISOString() }, NOW), 'stale');
+  assert.equal(checkReason({ status: 'confirmed', last_confirmed: new Date(NOW - 200 * day).toISOString() }, NOW), 'stale');
+  assert.equal(checkReason({ status: 'confirmed', last_confirmed: new Date(NOW - 90 * day).toISOString() }, NOW), null, 'confirmed cards are left alone for 6 months');
   assert.equal(checkReason({ status: 'confirmed', last_confirmed: new Date(NOW - 5 * day).toISOString() }, NOW), null);
 });
 

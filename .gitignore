@@ -17,3 +17,6 @@ data/spend.json
 .DS_Store
 eval/results/*.json
 data/test-state*.json
+data/active-profile.txt
+data/profiles/
+data/*.seed.json

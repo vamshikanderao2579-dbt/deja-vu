@@ -1,5 +1,6 @@
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { join, dirname } from 'node:path';
 import { config, ROOT } from './config.js';
 
 // ---------- spend guard ----------
@@ -41,18 +42,55 @@ export function recordAudioSpend(seconds) {
   writeFileSync(SPEND_PATH, JSON.stringify(all, null, 2));
 }
 
+// ---------- replay cache ----------
+// Every live response is saved, keyed by the exact request. With MUSE_ENABLED=false
+// the same request is answered from the cache in well under a second, with no API
+// call: record a demo once live, then replay it as many times as you like.
+// Saved under data/private/ because answers can contain personal history.
+const CACHE_PATH = join(ROOT, 'data', 'private', 'replay-cache.json');
+let cache = null;
+function loadCache() {
+  if (!cache) cache = existsSync(CACHE_PATH) ? JSON.parse(readFileSync(CACHE_PATH, 'utf8')) : {};
+  return cache;
+}
+function saveCache() {
+  mkdirSync(dirname(CACHE_PATH), { recursive: true });
+  writeFileSync(CACHE_PATH, JSON.stringify(cache));
+}
+const cacheKey = (role, body) =>
+  createHash('sha1').update(JSON.stringify({ role, model: body.model, messages: body.messages, json: !!body.response_format, reasoning: body.reasoning_effort })).digest('hex');
+export const replayStats = { hits: 0, misses: 0 };
+
 // Both Meta Model API and Baseten speak the OpenAI chat-completions format.
 // `reasoning` sets how long the model thinks first (minimal | low | medium). Thinking
 // tokens count toward maxTokens and are billed as output, so keep it low for small jobs.
 export async function complete(role, messages, { json = false, maxTokens = 1500, temperature = 0.2, reasoning = 'low' } = {}) {
-  const spent = spentToday();
-  if (spent.usd >= CAP) {
-    throw new Error(`Daily spend cap reached ($${spent.usd.toFixed(2)} of $${CAP}). Raise SPEND_CAP_USD in .env to continue.`);
-  }
   const p = config.providers[role];
   const body = { model: p.model, messages, max_tokens: maxTokens, temperature };
   if (json) body.response_format = { type: 'json_object' };
   if (reasoning) body.reasoning_effort = reasoning;
+  const key = cacheKey(role, body);
+
+  if (!config.museEnabled || config.replayFirst) {
+    const hit = loadCache()[key];
+    if (!hit && config.museEnabled) return liveCall();
+    if (!hit) {
+      replayStats.misses++;
+      throw Object.assign(new Error('Not recorded yet. Run this once with MUSE_ENABLED=true, then replay.'), { status: 409 });
+    }
+    replayStats.hits++;
+    await new Promise((r) => setTimeout(r, 250 + Math.random() * 350)); // feels natural, still instant
+    return { text: hit.text, usage: hit.usage, model: p.model, replayed: true };
+  }
+
+  return liveCall();
+
+  async function liveCall() {
+  // Only live calls count against the daily cap; replays are free.
+  const spent = spentToday();
+  if (spent.usd >= CAP) {
+    throw new Error(`Daily spend cap reached ($${spent.usd.toFixed(2)} of $${CAP}). Raise SPEND_CAP_USD in .env to continue.`);
+  }
 
   let res = await post(p, body);
   // Some providers reject response_format or reasoning_effort; retry once without them.
@@ -72,7 +110,10 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
   const inTok = data.usage?.prompt_tokens ?? Math.ceil(JSON.stringify(messages).length / 4);
   const outTok = data.usage?.completion_tokens ?? Math.ceil(text.length / 4);
   recordSpend(inTok, outTok);
+  loadCache()[key] = { text, usage: data.usage ?? null, at: new Date().toISOString() };
+  saveCache();
   return { text, usage: data.usage ?? null, model: p.model };
+  }
 }
 
 function post(p, body) {

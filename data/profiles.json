@@ -1,0 +1,43 @@
+[
+  {
+    "id": "alex",
+    "name": "Alex",
+    "about": "Synthetic · parent in Chicago, partner Sam, kid Maya, dog Biscuit",
+    "history": "data/test-history.json",
+    "state": "data/me.json",
+    "demoMemory": "data/demo-memory.json",
+    "suggestions": [
+      "Find us flights to San Diego for a long weekend",
+      "Find a hotel near Sunset Cliffs",
+      "Just landed! Find lunch near the hotel",
+      "Find a place for dinner tonight with the family"
+    ],
+    "script": [
+      "thinking san diego for a long weekend with the family, find us flights",
+      "and a hotel near sunset cliffs",
+      "just landed! find lunch near the hotel",
+      "btw my sister is watching Biscuit from now on, no more dog sitters",
+      "what time should we head to sunset cliffs tonight?"
+    ]
+  },
+  {
+    "id": "maria",
+    "name": "Maria",
+    "about": "Synthetic · night-shift nurse in Phoenix, teen son Leo",
+    "history": "data/personas/maria-history.json",
+    "state": "data/profiles/maria.json",
+    "suggestions": [
+      "Book me a dentist appointment next week",
+      "Plan my meals for this week",
+      "Gift ideas for Leo's birthday",
+      "My car needs an oil change, find me a place"
+    ],
+    "script": [
+      "what should i watch with my mom tonight?",
+      "book me a dentist appointment next week",
+      "btw my mom moved in with us last month",
+      "plan my meals for this week",
+      "my car needs an oil change, find me a place"
+    ]
+  }
+]

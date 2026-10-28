@@ -2,15 +2,21 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 import { config, ROOT } from './src/config.js';
-import { getState, save, reset, messagesById, conversationsById, historyAsText } from './src/store.js';
-import { distill, selectRelevant, answer, rewriteCard } from './src/agent.js';
+import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed } from './src/store.js';
+import * as store from './src/store.js';
+import { distill, selectRelevant, answer, rewriteCard, learnFrom } from './src/agent.js';
 import { decideCue, checkReason, applyFeedback } from './src/cue.js';
 import { transcribe, interpret } from './src/voice.js';
 import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards } from './src/cards.js';
 
 const PUBLIC = join(ROOT, 'public');
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
-const fullHistoryTokens = estimateTokens(historyAsText());
+// Full-history size per profile, for the "x% less than full history" comparison.
+const historyTokens = new Map();
+const fullHistoryTokens = () => {
+  if (!historyTokens.has(store.profile.id)) historyTokens.set(store.profile.id, estimateTokens(historyAsText()));
+  return historyTokens.get(store.profile.id);
+};
 
 // ---------- tiny router ----------
 const routes = [];
@@ -23,20 +29,27 @@ route('POST', '/api/distill', async () => {
   const { cards, calls, usage } = await distill(s.cards, s.rejected);
   s.cards = cards;
   save();
+  saveSeed();
   return { ...statePayload(), distill: { calls, usage } };
 });
 
 route('POST', '/api/chat', async (body) => {
   const { message, mode = 'cards', conversationId = 'default', skipCue = false } = body;
   if (!message?.trim()) throw httpError(400, 'message is required');
+  // Finish learning from the previous message first, so memory is up to date
+  // (and a replayed demo sees exactly what the live run saw).
+  await learning;
   const s = getState();
 
   let relevant = [];
+  let key = [];
   let stakes = 'low';
   if (mode === 'cards') {
-    ({ relevant, stakes } = await selectRelevant(message, s.cards));
+    ({ relevant, key = [], stakes } = await selectRelevant(message, s.cards));
     if (!skipCue) {
-      const cue = decideCue({ relevant, stakes, conversationId, cueLog: s.cueLog });
+      // Ask only about a card central to this answer; never style or agent-identity cards.
+      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant');
+      const cue = decideCue({ relevant: askable, stakes, conversationId, cueLog: s.cueLog });
       if (cue) {
         s.cueLog.push({ cardId: cue.cardId, conversationId, at: new Date().toISOString(), outcome: null });
         save();
@@ -45,19 +58,43 @@ route('POST', '/api/chat', async (body) => {
     }
   }
 
-  const res = await answer(message, mode, relevant);
+  const prior = s.live.find((c) => c.id === `live-${conversationId}`)?.messages ?? [];
+  const res = await answer(message, mode, relevant, { recent: prior });
   const used = relevant.filter(usable);
   for (const c of used) c.last_used = new Date().toISOString();
+  // Keep the exchange, then learn from it in the background (never blocks the answer).
+  const { conv } = addLiveMessage(conversationId, 'user', message);
+  addLiveMessage(conversationId, 'assistant', res.text);
   save();
+  learnInBackground(conv);
   return {
     type: 'answer',
     text: res.text,
     mode,
     stakes,
     usedCards: used.map(publicCard),
-    tokens: { context: res.contextTokens, fullHistory: fullHistoryTokens, usage: res.usage },
+    tokens: { context: res.contextTokens, fullHistory: fullHistoryTokens(), usage: res.usage },
   };
 });
+
+let learning = Promise.resolve();
+function learnInBackground(conv) {
+  // One at a time, so two quick messages don't overwrite each other's cards.
+  learning = learning.then(async () => {
+    try {
+      const s = getState();
+      const recent = { ...conv, messages: conv.messages.slice(-6) };
+      const { cards, added } = await learnFrom(recent, s.cards, s.rejected);
+      if (!added.length) return;
+      s.cards = cards;
+      const at = new Date().toISOString();
+      s.learned = [...(s.learned ?? []), ...added.map((c) => ({ id: c.id, text: c.text, category: c.category, at }))].slice(-20);
+      save();
+    } catch (err) {
+      console.warn('[learn]', err.message);
+    }
+  });
+}
 
 // Swipe or tap on a card: confirm (right), reject (left), edit (up)
 route('POST', '/api/cards/:id', (body, { id }) => {
@@ -98,12 +135,12 @@ route('POST', '/api/feedback', (body) => {
 route('GET', '/api/sources/:id', (_, { id }) => {
   const card = getState().cards.find((c) => c.id === id);
   if (!card) throw httpError(404, 'card not found');
-  const sources = (card.sources ?? []).map((m) => messagesById.get(m)).filter(Boolean);
+  const sources = (card.sources ?? []).map((m) => findMessage(m)).filter(Boolean);
   const convIds = [...new Set(sources.map((s) => s.conversationId))];
   return {
     sources,
     conversations: convIds.map((cid) => {
-      const c = conversationsById.get(cid);
+      const c = findConversation(cid);
       return { id: c.id, title: c.title, date: c.date, time: c.time, messages: c.messages };
     }),
   };
@@ -122,11 +159,19 @@ route('POST', '/api/reset', () => {
 });
 
 // Loads the ready-made synthetic memory (mixed statuses) for demos.
+// Resets the active profile to its starting memory (Alex: the demo memory; others:
+// the memory as first built from their chats).
 route('POST', '/api/demo/load', async () => {
-  const demo = JSON.parse(await readFile(join(ROOT, 'data', 'demo-memory.json'), 'utf8'));
-  const s = getState();
-  Object.assign(s, { cards: demo.cards, rejected: [], cueLog: [] });
-  save();
+  if (!loadSeed()) throw httpError(409, 'Build this profile’s memory first (Memory → Build from my chats).');
+  return statePayload();
+});
+
+route('GET', '/api/profiles', () => ({ active: store.profile.id, profiles: listProfiles().map(({ id, name, about }) => ({ id, name, about })) }));
+
+route('POST', '/api/profile', async ({ id }) => {
+  await learning;
+  if (!listProfiles().some((p) => p.id === id)) throw httpError(404, 'unknown profile');
+  useProfile(id);
   return statePayload();
 });
 
@@ -142,11 +187,14 @@ function statePayload() {
     mock: config.mock,
     models: { main: config.providers.main.model, bg: config.providers.bg.model },
     userName: config.userName,
+    profile: { id: store.profile.id, name: store.profile.name, about: store.profile.about, suggestions: store.profile.suggestions ?? [], script: store.profile.script ?? [] },
+    museEnabled: config.museEnabled,
     agent: config.agent,
     cards: s.cards.map((c) => ({ ...publicCard(c), checkReason: checkReason(c) })),
     budget: budgetStats(s.cards),
-    fullHistoryTokens,
+    fullHistoryTokens: fullHistoryTokens(),
     cuesShown: s.cueLog.length,
+    learned: s.learned ?? [],
   };
 }
 

@@ -1,7 +1,7 @@
 import { config, todayMs } from './config.js';
 
 const DAY = 24 * 60 * 60 * 1000;
-const STALE_DAYS = 60;
+const STALE_DAYS = 180; // confirmed cards are left alone for six months
 const RECHECK_DAYS = 7;
 const OLD_DAYS = 365;
 
@@ -15,7 +15,9 @@ export function checkReason(card, now = todayMs()) {
   return null;
 }
 
-const PRIORITY = { changed: 0, sensitive: 1, old: 2, guessed: 3, stale: 4 };
+// Ask about what most likely changes this answer first. Locked (sensitive) cards
+// come last: they're often only loosely related, and asking about them is personal.
+const PRIORITY = { changed: 0, old: 1, guessed: 2, stale: 3, sensitive: 4 };
 
 // The "don't nag" rule. A cue is shown only when all of these hold:
 //  1. a relevant card is about to shape the answer and needs a check,
@@ -58,10 +60,14 @@ function questionFor(card, reason) {
 
 // Implicit signals: a thumbs-up on an answer nudges the cards it used up,
 // a "not quite" nudges them down. Good answers make future cues rarer.
+// A thumbs-up confirms the guessed cards the answer used, quietly: they won't be
+// asked about again. "Not quite" lowers confidence so they get checked next time.
 export function applyFeedback(cards, cardIds, positive) {
+  const now = new Date().toISOString();
   for (const c of cards) {
     if (!cardIds.includes(c.id) || c.status === 'pending') continue;
-    c.confidence = Math.max(0.1, Math.min(0.95, c.confidence + (positive ? 0.1 : -0.2)));
-    c.last_used = new Date().toISOString();
+    if (positive) Object.assign(c, { status: 'confirmed', confidence: 1, last_confirmed: now });
+    else c.confidence = Math.max(0.1, c.confidence - 0.3);
+    c.last_used = now;
   }
 }

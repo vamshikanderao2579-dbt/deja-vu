@@ -20,7 +20,7 @@ const get = (path) => fetch(BASE + path).then((r) => r.json());
 before(async () => {
   server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, MAIN_API_KEY: '', BG_API_KEY: '', PORT: String(PORT), STATE_FILE: STATE, HISTORY_FILE: '', CUE_COOLDOWN_HOURS: '0', RATE_LIMIT_PER_MINUTE: '1000', DEMO_TODAY: '2026-10-27' },
+    env: { ...process.env, MAIN_API_KEY: '', BG_API_KEY: '', PORT: String(PORT), STATE_FILE: STATE, HISTORY_FILE: '', PROFILE: 'alex', MUSE_ENABLED: 'true', CUE_COOLDOWN_HOURS: '0', RATE_LIMIT_PER_MINUTE: '1000', DEMO_TODAY: '2026-10-27' },
     stdio: 'ignore',
   });
   for (let i = 0; i < 50; i++) {
@@ -85,11 +85,19 @@ test('provenance: Why? returns the exact conversation and time', async () => {
   assert.ok(r.conversations[0].date && r.conversations[0].time && r.conversations[0].messages.length);
 });
 
-test('thumbs-up nudges confidence of the cards used', async () => {
+test('thumbs-up quietly confirms the cards used; not quite lowers confidence', async () => {
   const s = await get('/api/state');
-  const c = s.cards.find((x) => x.status === 'inferred' && x.confidence < 0.9);
-  const r = await post('/api/feedback', { cardIds: [c.id], positive: true });
-  assert.ok(r.cards.find((x) => x.id === c.id).confidence > c.confidence);
+  const [a, b] = s.cards.filter((x) => x.status === 'inferred');
+  const up = await post('/api/feedback', { cardIds: [a.id], positive: true });
+  assert.equal(up.cards.find((x) => x.id === a.id).status, 'confirmed');
+  const down = await post('/api/feedback', { cardIds: [b.id], positive: false });
+  assert.ok(down.cards.find((x) => x.id === b.id).confidence < b.confidence);
+});
+
+test('chat is recorded as live history (learning is off in mock mode)', async () => {
+  await post('/api/chat', { message: 'what should we watch tonight', conversationId: 't9' });
+  const s = await get('/api/state');
+  assert.ok(Array.isArray(s.learned));
 });
 
 test('demo memory loads a mix of statuses', async () => {
@@ -116,4 +124,17 @@ test('bad requests are rejected cleanly', async () => {
   assert.equal((await post('/api/chat', { message: '' })).status, 400);
   assert.equal((await post('/api/cards/nope', { action: 'confirm' })).status, 404);
   assert.equal((await post('/api/memory/update', {})).status, 400);
+});
+
+test('profiles: list and switch, each with its own name', async () => {
+  const { profiles, active } = await get('/api/profiles');
+  assert.equal(active, 'alex');
+  assert.ok(profiles.some((p) => p.id === 'maria'));
+  const maria = await post('/api/profile', { id: 'maria' });
+  assert.equal(maria.profile.name, 'Maria');
+  assert.equal(maria.userName, 'Maria');
+  assert.ok(maria.profile.script.length);
+  const back = await post('/api/profile', { id: 'alex' });
+  assert.equal(back.userName, 'Alex');
+  assert.equal((await post('/api/profile', { id: 'nobody' })).status, 404);
 });

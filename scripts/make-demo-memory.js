@@ -17,10 +17,10 @@ const { messageTime } = await import('../src/store.js');
 const fixture = JSON.parse(readFileSync(join(ROOT, 'data', 'fixture-cards.json'), 'utf8')).cards;
 const cards = mergeCards([], fixture, [], '2026-10-20T09:00:00');
 
-// What the user has already reviewed, and when. Older than 60 days = "stale".
+// What the user has already reviewed, and when. Older than 6 months = "stale".
 const reviewed = {
   'Loves Thai and Mexican food': { confirmed: '2026-09-26T19:40:00' },
-  'Partner Sam is vegetarian': { confirmed: '2026-05-02T18:10:00' },
+  'Partner Sam is vegetarian': { confirmed: '2026-03-20T18:10:00' },
   'No meetings before 10 AM (school drop-off)': { confirmed: '2026-10-02T08:30:00' },
   'Wants summaries as short bullets': { confirmed: '2026-10-12T09:15:00' },
   'Direct flights and a window seat, even if pricier': { confirmed: '2026-07-11T21:00:00' },

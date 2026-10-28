@@ -75,7 +75,8 @@ function stampDates(cards) {
 
 // Which cards matter for this request, and how costly a wrong guess would be.
 export async function selectRelevant(message, cards) {
-  const candidates = cards;
+  // Cards about the agent itself (its name, avatar) aren't about the user.
+  const candidates = cards.filter((c) => c.category !== 'assistant' && !/\b(avatar|pikachu|charmander)\b/i.test(c.text));
   if (config.mock) return mockRelevance(message, candidates);
   const index = candidates.map((c) => `${c.id}: ${c.text}`).join('\n');
   const res = await complete(
@@ -97,7 +98,9 @@ export async function selectRelevant(message, cards) {
   const ids = new Set(out.relevant_card_ids ?? []);
   // Style cards (how the user wants answers) are tiny and apply to everything.
   for (const c of candidates) if (c.category === 'style') ids.add(c.id);
-  return { relevant: candidates.filter((c) => ids.has(c.id)), stakes: out.stakes === 'high' ? 'high' : 'low' };
+  // Only the cards that would most change this answer may trigger a quick check.
+  const key = new Set((out.key_card_ids ?? []).filter((id) => ids.has(id)));
+  return { relevant: candidates.filter((c) => ids.has(c.id)), key: candidates.filter((c) => key.has(c.id)), stakes: out.stakes === 'high' ? 'high' : 'low' };
 }
 
 // "My Travel preference X has changed. Now I'd like Y" → a new card text.
@@ -114,6 +117,35 @@ export async function rewriteCard(category, oldText, message) {
   return out.text ? { text: out.text, type: out.type === 'lesson' ? 'lesson' : 'preference' } : null;
 }
 
+// Learns from one live conversation as it happens: same extraction prompt,
+// just the new exchange. Returns the merged cards and the ones that are new.
+export async function learnFrom(conv, existing, rejected = []) {
+  if (config.mock) return { cards: existing, added: [] };
+  const existingText = existing.map((c) => `${c.id} [${c.category}] ${c.text}`).join('\n') || '(none yet)';
+  const res = await complete('bg', [
+    { role: 'system', content: DISTILL_SYSTEM + '\n\nOnly return cards that are new or changed by these NEW messages. Return {"cards":[]} if nothing lasting was said.' },
+    // Neutral labels (n1, n2…) instead of ids and clock times, so the same chat always
+    // produces the same request (and a recorded demo replays exactly).
+    { role: 'user', content: `EXISTING cards:\n${existingText}\n\nNEW conversation:\n${conv.messages.map((m, i) => `[n${i + 1}] ${m.role}: ${m.text}`).join('\n')}` },
+  ], { json: true, maxTokens: 3000, reasoning: 'minimal' });
+  let incoming = [];
+  try { incoming = parseJson(res.text).cards ?? []; } catch { return { cards: existing, added: [] }; }
+  const realId = (ref) => conv.messages[Number(String(ref).replace(/\D/g, '')) - 1]?.id ?? ref;
+  incoming = incoming.map((c) => ({ ...c, sources: (c.sources ?? []).map(realId) }));
+  const before = new Map(existing.map((c) => [c.id, c.text]));
+  const cards = stampDates(mergeCards(existing, incoming, rejected));
+  const added = cards.filter((c) => !before.has(c.id) || before.get(c.id) !== c.text);
+  // They just said it themselves, so a change stated in chat counts as confirmed.
+  const now = new Date().toISOString();
+  for (const c of added) {
+    if (c.changed_from && c.status !== 'pending') {
+      Object.assign(c, { status: 'confirmed', confidence: 1, last_confirmed: now });
+      delete c.changed_from;
+    }
+  }
+  return { cards, added };
+}
+
 // The baseline memory summary: written once from the whole history.
 export async function summarizeHistory() {
   const res = await complete('main', [
@@ -125,7 +157,7 @@ export async function summarizeHistory() {
 
 // mode: "cards" (bounded, relevant cards only), "summary" (a memory summary, every message),
 // "full" (entire history), "none" (no memory)
-export async function answer(message, mode, relevantCards, { summary } = {}) {
+export async function answer(message, mode, relevantCards, { summary, recent = [] } = {}) {
   const today = todayString();
   let context = '';
   if (mode === 'cards') context = renderContext(relevantCards.filter(usable));
@@ -137,7 +169,9 @@ export async function answer(message, mode, relevantCards, { summary } = {}) {
     return { text: mockAnswer(message, mode, relevantCards.filter(usable)), contextTokens, usage: null };
   }
   const messages = [
-    { role: 'system', content: answerSystem(config.userName, today) + (context ? `\n\n${context}` : '') },
+    { role: 'system', content: answerSystem(config.userName, today, config.agent.name) + (context ? `\n\n${context}` : '') },
+    // Earlier turns of this conversation, so "near the hotel" knows which hotel.
+    ...recent.slice(-6).map((m) => ({ role: m.role, content: m.text })),
     { role: 'user', content: message },
   ];
   const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: 'low' });
@@ -151,7 +185,7 @@ const HIGH_STAKES = /\b(book|order|plan|schedule|reserve|set up|grab|find|buy|gi
 function mockRelevance(message, cards) {
   const m = message.toLowerCase();
   const relevant = cards.filter((c) => (c.mock_keywords ?? []).some((k) => m.includes(k)));
-  return { relevant, stakes: HIGH_STAKES.test(message) ? 'high' : 'low' };
+  return { relevant, key: relevant, stakes: HIGH_STAKES.test(message) ? 'high' : 'low' };
 }
 
 function mockAnswer(message, mode, cards) {

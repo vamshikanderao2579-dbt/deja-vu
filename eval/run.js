@@ -44,6 +44,7 @@ const historyJson = JSON.parse(readFileSync(join(ROOT, P.history), 'utf8'));
 process.env.HISTORY_FILE = P.history;
 process.env.USER_NAME = key.userName ?? historyJson.user?.name ?? 'the user';
 process.env.DEMO_TODAY = key.today; // answers must agree on what "today" is
+process.env.REPLAY = 'off'; // every eval run asks Muse fresh
 
 const { config } = await import('../src/config.js');
 const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/agent.js');

@@ -30,6 +30,11 @@ const bg = bgKey
 export const config = {
   port: Number(env('PORT', '3000')),
   mock: !main.apiKey,
+  // false = replay saved Muse responses instantly (no API calls); true = live.
+  museEnabled: env('MUSE_ENABLED', 'true').toLowerCase() !== 'false',
+  // When live, reuse a saved answer for an identical request (recorded demos are
+  // instant); anything new goes to Muse. The eval sets REPLAY=off to stay fresh.
+  replayFirst: env('REPLAY', 'auto') !== 'off',
   providers: { main, bg },
   userName: env('USER_NAME', 'Alex'),
   // The agent's name and avatar. AGENT_AVATAR is a file inside public/.

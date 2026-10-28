@@ -15,6 +15,14 @@ function similarity(a, b) {
   return shared / Math.min(A.size, B.size);
 }
 
+// Word overlap over the union: low means the wording really changed.
+function jaccard(a, b) {
+  const A = words(a), B = words(b);
+  let shared = 0;
+  for (const w of A) if (B.has(w)) shared++;
+  return shared / (A.size + B.size - shared || 1);
+}
+
 function clampWords(text) {
   const parts = text.trim().split(/\s+/);
   return parts.length <= maxWordsPerCard ? text.trim() : parts.slice(0, maxWordsPerCard).join(' ');
@@ -49,7 +57,9 @@ export function mergeCards(existing, incoming, rejected = [], now = new Date().t
     if (match) {
       match.sources = [...new Set([...(match.sources ?? []), ...(raw.sources ?? [])])];
       match.last_seen = now;
-      const changed = raw.changed_from && similarity(match.text, text) < 0.6;
+      // A different meaning for the same card (it named the card, or said what it
+      // used to be) is a change of mind, not a rewording.
+      const changed = (raw.changed_from || raw.id === match.id) && jaccard(match.text, text) < 0.5;
       if (changed) {
         // The user changed their mind in chat. Even a confirmed card goes back
         // to inferred so the agent checks before relying on it.

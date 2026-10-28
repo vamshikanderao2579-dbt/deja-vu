@@ -122,7 +122,7 @@ function el(html) {
 }
 
 // ---------------- navigation: drawer, sheet, pages ----------------
-const OVERLAYS = ['drawer', 'settings', 'memory', 'category', 'insights'];
+const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insights'];
 
 function open(id) {
   if (id === 'chat') return closeAll();
@@ -136,6 +136,7 @@ function open(id) {
   if (id === 'memory') renderMemory();
   if (id === 'insights') renderInsights();
   if (id === 'settings') renderSettings();
+  if (id === 'profiles') renderProfiles();
 }
 function close(id) {
   $(`#${id}`).classList.remove('open');
@@ -150,6 +151,7 @@ function closeAll() {
 $('#menuBtn').addEventListener('click', () => open('drawer'));
 $('#scrim').addEventListener('click', () => close('drawer'));
 $('#openSettings').addEventListener('click', () => open('settings'));
+$('#openProfiles').addEventListener('click', () => open('profiles'));
 $$('[data-go]').forEach((b) => b.addEventListener('click', () => open(b.dataset.go)));
 $$('[data-close]').forEach((b) => b.addEventListener('click', () => close(b.dataset.close)));
 $$('[data-soon]').forEach((b) => b.addEventListener('click', () => toast('Not part of this prototype.')));
@@ -185,9 +187,12 @@ function renderWelcome() {
     thread.append(box);
     return;
   }
-  thread.append(el(`<p class="welcome">Try one of these</p>`));
+  thread.append(el(`<p class="welcome">Try one of these, or just chat</p>`));
   const s = el(`<div class="suggestions"></div>`);
-  for (const q of SUGGESTIONS) {
+  const demo = el(`<button class="play-demo">▶ Play a demo conversation</button>`);
+  demo.addEventListener('click', playDemo);
+  s.append(demo);
+  for (const q of data.profile?.suggestions?.length ? data.profile.suggestions : SUGGESTIONS) {
     const b = el(`<button>${esc(q)}</button>`);
     b.addEventListener('click', () => send(q));
     s.append(b);
@@ -207,7 +212,12 @@ function typing() {
   return addMsg('assistant typing', '<span class="typing-dots"><span></span><span></span><span></span></span>');
 }
 
+let inFlight = 0;
 async function send(message, { skipCue = false } = {}) {
+  inFlight++;
+  try { return await sendInner(message, { skipCue }); } finally { inFlight--; }
+}
+async function sendInner(message, { skipCue = false } = {}) {
   if (!skipCue) addMsg('user', esc(message));
   const t = typing();
   try {
@@ -221,37 +231,74 @@ async function send(message, { skipCue = false } = {}) {
   }
 }
 
+// After an answer: one quiet row. Details (cards used, tokens) only on ⓘ.
 function renderAnswer(res, question) {
   addMsg('assistant', md(res.text));
   const ctx = res.tokens.context;
   const full = res.tokens.fullHistory;
-  let line;
-  if (res.mode === 'cards') {
-    const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
-    line = res.usedCards.length
-      ? `Used ${res.usedCards.length} card${res.usedCards.length > 1 ? 's' : ''} · ~${ctx} tokens of context <span class="savings">(${pct}% less than full history)</span>`
-      : `No cards needed for this one · 0 tokens of context`;
-  } else if (res.mode === 'full') line = `Read the full chat history · ~${ctx.toLocaleString()} tokens of context`;
-  else line = 'Memory off · answered without knowing you';
+  sessionLog.push({ question, mode: res.mode, tokens: ctx, full, cards: res.usedCards.length });
+  scheduleLearnedCheck();
 
-  const meta = el(`<div class="meta"><div>${line}</div></div>`);
-  if (res.usedCards.length) {
-    const chips = el('<div class="chips"></div>');
-    for (const c of res.usedCards) chips.append(el(`<span class="chip ${c.status}">${esc(c.text)}</span>`));
-    meta.append(chips);
-    const fb = el(`<div class="fb"><button data-p="1">👍 Spot on</button><button data-p="0">Not quite</button></div>`);
-    fb.querySelectorAll('button').forEach((b) =>
-      b.addEventListener('click', async () => {
-        fb.querySelectorAll('button').forEach((x) => x.classList.add('done'));
-        await refresh(await api('/api/feedback', { cardIds: res.usedCards.map((c) => c.id), positive: b.dataset.p === '1' }));
-        toast(b.dataset.p === '1' ? 'Noted. I’ll check in less often about these.' : 'Got it. I’ll double-check these next time.');
-      })
-    );
-    meta.append(fb);
-  }
+  const used = res.usedCards;
+  const meta = el(`<div class="meta quiet">
+    <div class="meta-row">
+      <button class="mini info" aria-label="What I used" title="What I used">ⓘ</button>
+    </div>
+    <div class="meta-detail hidden"></div>
+  </div>`);
+  const detail = meta.querySelector('.meta-detail');
+  meta.querySelector('.info').addEventListener('click', () => {
+    if (!detail.classList.contains('hidden')) return detail.classList.add('hidden');
+    let line;
+    if (res.mode === 'cards') {
+      const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
+      line = used.length ? `Used ${used.length} card${used.length > 1 ? 's' : ''} · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
+    } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory off';
+    detail.innerHTML = `<div>${line}</div>`;
+    if (used.length) {
+      const chips = el('<div class="chips"></div>');
+      for (const c of used) {
+        const chip = el(`<button class="chip ${c.status}" title="Open in Memory">${esc(c.text)}</button>`);
+        chip.addEventListener('click', () => openCard(c.id));
+        chips.append(chip);
+      }
+      detail.append(chips);
+    }
+    detail.classList.remove('hidden');
+    scrollDown();
+  });
   thread.append(meta);
   scrollDown();
-  sessionLog.push({ question, mode: res.mode, tokens: ctx, full, cards: res.usedCards.length });
+}
+
+// Jump from a chip to that exact card in Memory (list view, highlighted).
+function openCard(id) {
+  const card = data.cards.find((c) => c.id === id);
+  if (!card) return toast('That card has changed since.');
+  open('memory');
+  openCategory(card.category);
+  setSeg('list');
+  requestAnimationFrame(() => {
+    const row = document.querySelector(`#catList [data-card="${CSS.escape(id)}"]`);
+    if (!row) return;
+    row.scrollIntoView({ block: 'center' });
+    row.classList.add('flash');
+    setTimeout(() => row.classList.remove('flash'), 1600);
+  });
+}
+
+// Learning happens in the background after each answer; mention new cards once.
+let learnedSeen = null;
+function scheduleLearnedCheck() {
+  for (const ms of [4000, 12000]) setTimeout(async () => {
+    const prev = learnedSeen;
+    await refresh();
+    const fresh = (data.learned ?? []).filter((l) => !prev || l.at > prev);
+    if (fresh.length) {
+      learnedSeen = fresh.at(-1).at;
+      toast(`${data.agent.name} noticed: “${fresh.at(-1).text}”${fresh.length > 1 ? ` (+${fresh.length - 1} more)` : ''}`);
+    }
+  }, ms);
 }
 
 function cardHtml(card, { why = '', sources = false } = {}) {
@@ -288,7 +335,8 @@ function renderCue(cue, question) {
     if (!settle()) return;
     try {
       await refresh(await api(`/api/cards/${cue.card.id}`, { action: 'reject' }));
-      offerChat(wrap, cue.card, () => send(question, { skipCue: true }), question);
+      offerChatInline(`Got it, I’ve forgotten “${cue.card.text}”.`, () => startUpdateChat({ category: cue.card.category, oldText: cue.card.text }));
+      await send(question, { skipCue: true });
     } catch (err) { toast(err.message); }
   };
 
@@ -308,15 +356,14 @@ function renderCue(cue, question) {
   }, '🎙');
 }
 
-// After a "not anymore": forget it, then offer to talk about what changed. Skipping
-// is one tap, so nobody is forced into a conversation they didn't want.
-function offerChat(container, card, onSkip, question = null) {
-  const box = el(`<div class="after-no"><p>Got it, I’ve forgotten that. Want to tell ${esc(data.agent.name)} what changed?</p>
-    <div class="after-actions"><button class="skip">Skip</button><button class="chat">💬 Chat about it</button></div></div>`);
-  container.append(box);
-  scrollDown();
-  box.querySelector('.skip').addEventListener('click', () => { box.remove(); onSkip?.(); });
-  box.querySelector('.chat').addEventListener('click', () => { box.remove(); startUpdateChat({ category: card.category, oldText: card.text, question }); });
+// A normal agent message with two quiet links. Nothing waits on it: the person can
+// tap Chat about it, tap Skip, or just send their next message.
+function offerChatInline(lead, onChat) {
+  const m = addMsg('assistant', `<p>${esc(lead)} Want to tell me what changed?</p>
+    <div class="inline-actions"><button class="ilink chat">💬 Chat about it</button><button class="ilink skip">Skip for now</button></div>`);
+  const actions = m.querySelector('.inline-actions');
+  actions.querySelector('.chat').addEventListener('click', () => { actions.remove(); onChat(); });
+  actions.querySelector('.skip').addEventListener('click', () => actions.remove());
 }
 
 // Land in chat with the sentence started for them; they only finish it.
@@ -326,9 +373,41 @@ function startUpdateChat(info) {
   pendingUpdate = info;
   const input = $('#input');
   input.value = `Hey ${data.agent.name}, my ${catLabel(info.category)} preference “${info.oldText}” has changed. Now I’d like `;
+  growInput();
   input.focus();
   input.setSelectionRange(input.value.length, input.value.length);
-  input.scrollLeft = input.scrollWidth;
+}
+
+// Several removed cards at once: one bullet each, the user just fills in "now …".
+function startMultiUpdate(category, cards) {
+  closeAll();
+  pendingUpdate = { items: cards.map((c) => ({ category: c.category, oldText: c.text })) };
+  const input = $('#input');
+  input.value = `Hey ${data.agent.name}, a few ${catLabel(category)} things changed:\n` + cards.map((c) => `• “${c.text}” → now `).join('\n');
+  growInput();
+  input.focus();
+  // Cursor at the end of the first bullet.
+  const first = input.value.indexOf('→ now ') + '→ now '.length;
+  input.setSelectionRange(first, first);
+}
+
+async function applyUpdates(items, message) {
+  const lines = message.split('\n').filter((l) => l.trim().startsWith('•'));
+  const t = typing();
+  const saved = [];
+  for (const [i, item] of items.entries()) {
+    const after = (lines[i] ?? '').split('→ now')[1]?.trim();
+    if (!after) continue; // left blank: nothing to save
+    try {
+      const res = await api('/api/memory/update', { ...item, message: `My ${item.category} preference “${item.oldText}” changed. Now ${after}` });
+      await refresh(res);
+      if (res.card) saved.push(res.card);
+    } catch (err) { toast(err.message); }
+  }
+  t.remove();
+  addMsg('assistant', saved.length
+    ? `<p>Got it. Saved:</p><ul>${saved.map((c) => `<li><b>${esc(catLabel(c.category))}</b>: “${esc(c.text)}” ✓</li>`).join('')}</ul>`
+    : `<p>Okay, nothing new to save for now.</p>`);
 }
 
 async function applyUpdate(info, message) {
@@ -444,11 +523,25 @@ function fling(card, action, after) {
 }
 
 // ---------------- composer ----------------
+const inputEl = $('#input');
+const growInput = () => { inputEl.style.height = 'auto'; inputEl.style.height = Math.min(inputEl.scrollHeight, 168) + 'px'; };
+inputEl.addEventListener('input', growInput);
+inputEl.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#composer').requestSubmit(); }
+});
 $('#composer').addEventListener('submit', (e) => {
   e.preventDefault();
   const v = $('#input').value.trim();
   if (!v) return;
   $('#input').value = '';
+  growInput();
+  if (pendingUpdate?.items) {
+    const items = pendingUpdate.items;
+    pendingUpdate = null;
+    addMsg('user', esc(v).replace(/\n/g, '<br>'));
+    applyUpdates(items, v);
+    return;
+  }
   if (pendingUpdate) {
     const info = pendingUpdate;
     pendingUpdate = null;
@@ -460,7 +553,7 @@ $('#composer').addEventListener('submit', (e) => {
 });
 $('#plusBtn').addEventListener('click', () => { if (!thread.querySelector('.suggestions')) renderWelcome(); });
 voiceButton($('#micBtn'), (v) => { if (v.transcript) { $('#input').value = v.transcript; $('#input').focus(); } else toast('Didn’t catch that.'); }, $('#micBtn').innerHTML);
-const newChat = () => { conversationId = newId(); renderWelcome(); closeAll(); };
+const newChat = () => { demoRunning = false; conversationId = newId(); renderWelcome(); closeAll(); };
 $('#newChatBtn').addEventListener('click', newChat);
 $('#drawerNewChat').addEventListener('click', newChat);
 
@@ -526,7 +619,7 @@ function openCategory(cat) {
   const cards = data.cards.filter((c) => c.category === cat);
   // Cards that need a check come first, then everything else it knows.
   cards.sort((a, b) => (b.checkReason ? 1 : 0) - (a.checkReason ? 1 : 0));
-  deck = { cat, ids: cards.map((c) => c.id), i: 0 };
+  deck = { cat, ids: cards.map((c) => c.id), i: 0, removed: [] };
   $('#catIcon').innerHTML = catIcon(cat);
   $('#catName').textContent = catLabel(cat);
   setSeg('deck');
@@ -560,8 +653,22 @@ function renderDeck() {
   $('#catProgress').textContent = card ? `${Math.min(deck.i + 1, total)} of ${total}` : `${total} reviewed`;
   $('#deckButtons').classList.toggle('hidden', !card);
   if (!card) {
-    root.append(el(`<div class="deck-done"><p>That’s everything I know about your ${esc(deck.cat)}.</p><button class="ghost" type="button">See as list</button></div>`));
-    root.querySelector('button').addEventListener('click', () => setSeg('list'));
+    const done = el(`<div class="deck-done"><p>That’s everything I know about your ${esc(deck.cat)}.</p><button class="ghost" type="button">See as list</button></div>`);
+    done.querySelector('button').addEventListener('click', () => setSeg('list'));
+    // One question at the end, not one per swipe.
+    if (deck.removed.length) {
+      const n = deck.removed.length;
+      const box = el(`<div class="after-no"><p>You removed ${n} ${esc(deck.cat)} card${n > 1 ? 's' : ''}. Want to tell ${esc(data.agent.name)} what changed?</p>
+        <div class="after-actions"><button class="skip">Skip for now</button><button class="chat">💬 Chat about ${n > 1 ? 'them' : 'it'}</button></div></div>`);
+      box.querySelector('.skip').addEventListener('click', () => { deck.removed = []; box.remove(); });
+      box.querySelector('.chat').addEventListener('click', () => {
+        const removed = deck.removed;
+        deck.removed = [];
+        removed.length > 1 ? startMultiUpdate(deck.cat, removed) : startUpdateChat({ category: removed[0].category, oldText: removed[0].text });
+      });
+      done.append(box);
+    }
+    root.append(done);
     return;
   }
   // Show up to two cards behind the current one for the stacked look.
@@ -577,12 +684,8 @@ async function deckAct(act) {
   const card = currentCard();
   if (!card || (act !== 'confirm' && act !== 'reject')) return;
   await refresh(await api(`/api/cards/${card.id}`, { action: act }));
+  if (act === 'reject') deck.removed.push(card);
   deck.i++;
-  if (act === 'reject') {
-    renderDeck();
-    offerChat($('#deck'), card, null);
-    return;
-  }
   renderDeck();
 }
 voiceButton($('#deckMic'), async (v) => {
@@ -616,7 +719,7 @@ function renderCatList() {
 }
 
 function listCard(c) {
-  const row = el(`<div class="ccard"><div class="top"><div><div class="txt">${esc(c.text)}</div>
+  const row = el(`<div class="ccard" data-card="${esc(c.id)}"><div class="top"><div><div class="txt">${esc(c.text)}</div>
     <div class="kind">${c.type === 'lesson' ? 'Lesson' : 'Preference'} · from ${c.sources.length} message${c.sources.length === 1 ? '' : 's'}${c.changed_from ? ` · was “${esc(c.changed_from)}”` : ''}</div>
     ${c.note ? `<div class="kind">💬 ${esc(c.note)}</div>` : ''}
     <div class="kind">${esc(dateLine(c))}</div></div>
@@ -731,6 +834,79 @@ function wireTips(root) {
   });
 }
 
+// ---------------- demo conversation ----------------
+// A natural chat, typed for you: when a card pops up, and when it doesn't.
+const DEMO_SCRIPT = [
+  'hey! anything fun to watch tonight?',                 // casual: no quick check
+  'find a place for dinner tonight with the family',      // a plan: may ask once
+  'oh btw Sam started eating chicken and fish again',     // learned quietly, no popup
+  'grab my usual drink on the way in',                    // already asked this chat: no popup
+  'book us a hotel in Miami for spring break',            // remembered, not asked
+];
+let demoRunning = false;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const waitingOnUser = () => !!document.querySelector('#thread .cue .cue-actions');
+
+async function playDemo() {
+  if (demoRunning) return;
+  demoRunning = true;
+  closeAll();
+  try {
+    await refresh(await api('/api/demo/load', {}));
+  } catch (err) {
+    demoRunning = false;
+    return toast(err.message);
+  }
+  learnedSeen = data.learned?.at(-1)?.at ?? '';
+  conversationId = newId();
+  thread.innerHTML = '';
+  const input = $('#input');
+  for (const line of data.profile?.script?.length ? data.profile.script : DEMO_SCRIPT) {
+    if (!demoRunning) break;
+    await sleep(900);
+    for (const ch of line) { input.value += ch; growInput(); await sleep(28); }
+    await sleep(350);
+    $('#composer').requestSubmit();
+    await sleep(400);
+    let nudged = false;
+    while (demoRunning && (inFlight > 0 || waitingOnUser())) {
+      if (waitingOnUser() && !nudged) { toast('Your turn: answer the card to continue'); nudged = true; }
+      await sleep(300);
+    }
+    await sleep(1800);
+  }
+  demoRunning = false;
+}
+$('#playDemoBtn').addEventListener('click', playDemo);
+
+// ---------------- profiles ----------------
+const PROFILE_COLORS = ['#0082FB', '#E5484D', '#1FA36A', '#B5541C', '#6250D6', '#0F7B8A'];
+async function renderProfiles() {
+  const { profiles, active } = await api('/api/profiles');
+  const list = $('#profileList');
+  list.innerHTML = '';
+  profiles.forEach((p, i) => {
+    const row = el(`<button class="prow"><span class="pav" style="background:${PROFILE_COLORS[i % PROFILE_COLORS.length]}">${esc(p.name[0])}</span>
+      <span><span class="pname">${esc(p.name)}</span><br><span class="pabout">${esc(p.about)}</span></span>${p.id === active ? '<span class="pcheck">✓</span>' : ''}</button>`);
+    row.addEventListener('click', () => switchProfile(p.id));
+    list.append(row);
+  });
+}
+async function switchProfile(id) {
+  demoRunning = false;
+  await refresh(await api('/api/profile', { id }));
+  applyProfileChrome();
+  learnedSeen = data.learned?.at(-1)?.at ?? '';
+  sessionLog.length = 0;
+  conversationId = newId();
+  renderWelcome();
+  closeAll();
+  toast(`Switched to ${data.profile.name}`);
+}
+function applyProfileChrome() {
+  $('#profileInitial').textContent = (data.profile?.name ?? '?')[0];
+}
+
 // ---------------- settings ----------------
 function renderSettings() {
   const b = data.budget.limits;
@@ -739,17 +915,17 @@ function renderSettings() {
   $('#budgetPct').textContent = `${pct}% used`;
   $('#budgetBar').style.width = `${Math.min(100, pct)}%`;
   $('#engineInfo').innerHTML = `
-    <div class="srow static">Mode<span class="fine right">${data.mock ? 'Mock (no API key yet)' : 'Live'}</span></div>
+    <div class="srow static">Mode<span class="fine right">${data.mock ? 'Mock (no API key yet)' : data.museEnabled ? 'Live (Muse)' : 'Replay (saved Muse answers)'}</span></div>
     <div class="srow static">Answers<span class="fine right">${esc(data.models.main)}</span></div>
     <div class="srow static">Memory upkeep<span class="fine right">${esc(data.models.bg)}</span></div>
     <div class="srow static">Limits<span class="fine right">${b.maxCategories} topics · ${b.maxCardsPerCategory} cards · ${b.maxWordsPerCard} words</span></div>`;
 }
 $('#demoBtn').addEventListener('click', async () => {
-  await refresh(await api('/api/demo/load', {}));
+  try { await refresh(await api('/api/demo/load', {})); } catch (err) { return toast(err.message); }
   conversationId = newId();
   renderWelcome();
   renderSettings();
-  toast('Demo memory loaded: confirmed, guessed, stale and locked cards.');
+  toast(`${data.profile.name}’s starting memory is loaded.`);
 });
 $('#cooldownBtn').addEventListener('click', async () => { await refresh(await api('/api/cue-cooldown/reset', {})); toast('The next relevant question can ask a quick check.'); });
 $('#resetBtn').addEventListener('click', async () => {
@@ -764,6 +940,8 @@ $('#resetBtn').addEventListener('click', async () => {
 // ---------------- boot ----------------
 (async () => {
   await refresh();
+  learnedSeen = data.learned?.at(-1)?.at ?? '';
+  applyProfileChrome();
   $('#agentName').textContent = data.agent.name;
   $('#drawerTitle').textContent = data.agent.name;
   if (data.agent.avatar) $('.avatar').innerHTML = `<img src="/${encodeURI(data.agent.avatar)}" alt="" />`;

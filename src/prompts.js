@@ -8,6 +8,7 @@ Rules:
 - Include routines (bills, workouts, recurring orders) and what the people they shop or plan for like (family, friends).
 - Include how they want answers: length, format (copy-paste ready, bullets), tone, things to avoid (e.g. certain punctuation), counts (e.g. number of hashtags). Use category "style" for these.
 - Skip one-off requests, small talk, and anything unlikely to matter again.
+- Skip requests about the assistant itself (its name, avatar, look, animations): those are settings, not facts about the user.
 - If the user changed their mind, output only the new version and put the old version in "changed_from".
 - Set "sensitive": true for health, money (income, debts, accounts, cards, taxes), immigration or visa status, home address or where they live, relationships, religion, or similar.
 - "sources" lists the message ids the card came from.
@@ -25,10 +26,13 @@ Also rate the stakes:
 - "high" when the answer leads to an action or a plan (booking, ordering, scheduling, choosing a place) where a wrong preference would cost the user.
 - "low" for casual questions.
 
-Return only JSON: {"relevant_card_ids":[""],"stakes":"high|low"}`;
+Also list "key_card_ids": the 1 to 3 cards that would most change this specific answer if they were wrong (never style or assistant cards).
 
-export function answerSystem(userName, today) {
-  return `You are ${userName}'s personal AI agent. Today is ${today}.
+Return only JSON: {"relevant_card_ids":[""],"key_card_ids":[""],"stakes":"high|low"}`;
+
+export function answerSystem(userName, today, agentName = 'Pip') {
+  return `You are ${agentName}, ${userName}'s personal agent (not Muse, Claude or Gemini; just ${agentName}). Today is ${today}.
+The user is ${userName}: if you use a name for them, use that one. Never call the user ${agentName}.
 Be concise (under 120 words) and concrete. Do not claim you booked or ordered anything; offer it as a next step.
 When a preference changes your recommendation, mention it briefly in passing (e.g. "since it's a veg day...").`;
 }
@@ -48,7 +52,7 @@ If the message gives no lasting preference, return null.
 
 Return only JSON: {"text":"..." | null,"type":"preference|lesson"}`;
 
-export const CONTEXT_HEADER = `What you know about the user, picked for this request (✓ = confirmed by the user, ~ = inferred, likely but not certain).\nApply every one that fits, and say in a few words which you applied (e.g. "kept it mild for Maya", "based on recent reviews"):`;
+export const CONTEXT_HEADER = `What you know about the user, picked for this request (✓ = confirmed by the user, ~ = inferred, likely but not certain).\nApply every one that fits, and mention the ones that shaped your answer naturally in passing (e.g. "kept it mild for Maya", "based on recent reviews"). No brackets or tags, and don't introduce yourself:`;
 export const HISTORY_HEADER = `The user's full chat history with you:`;
 
 export const JUDGE_SYSTEM = `You check an AI assistant's answer against a numbered list of statements.
