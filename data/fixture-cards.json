@@ -1,0 +1,25 @@
+{
+  "_label": "HAND-WRITTEN FIXTURE. Used only in mock mode (no API key) so the UI can be developed offline. In live mode, cards come from the model.",
+  "cards": [
+    { "category": "food", "type": "preference", "text": "Loves Thai and Mexican food", "confidence": 0.9, "sources": ["m010", "m056"], "mock_keywords": ["dinner", "lunch", "restaurant", "takeout", "eat", "food"] },
+    { "category": "food", "type": "preference", "text": "Trusts recent reviews over overall star ratings", "confidence": 0.85, "sources": ["m012", "m056"], "mock_keywords": ["dinner", "lunch", "restaurant", "place", "takeout"] },
+    { "category": "food", "type": "preference", "text": "Usual drink is an iced matcha; coffee makes them jittery", "confidence": 0.8, "sources": ["m054"], "changed_from": "Usual drink is an oat milk latte", "mock_keywords": ["drink", "coffee", "usual", "matcha", "latte"] },
+    { "category": "family", "type": "preference", "text": "Partner Sam is vegetarian", "confidence": 0.9, "sources": ["m012", "m031"], "mock_keywords": ["dinner", "family", "grocery", "groceries", "meal", "restaurant"] },
+    { "category": "family", "type": "preference", "text": "Maya won't eat spicy food; keep family dinners mild", "confidence": 0.8, "sources": ["m031"], "mock_keywords": ["dinner", "family", "grocery", "groceries", "meal"] },
+    { "category": "family", "type": "preference", "text": "Maya (birthday Mar 14) is into soccer now", "confidence": 0.75, "sources": ["m045"], "changed_from": "Maya loves dinosaurs and painting", "mock_keywords": ["maya", "birthday", "gift", "kid"] },
+    { "category": "family", "type": "preference", "text": "Mom loves gardening", "confidence": 0.8, "sources": ["m001"], "mock_keywords": ["mom", "mother", "gift"] },
+    { "category": "travel", "type": "preference", "text": "Direct flights and a window seat, even if pricier", "confidence": 0.85, "sources": ["m018"], "mock_keywords": ["flight", "fly", "trip", "vacation", "spring break"] },
+    { "category": "travel", "type": "lesson", "text": "Hotels with free cancellation, not Airbnbs", "confidence": 0.85, "sources": ["m049", "m051"], "changed_from": "Prefers Airbnbs with a kitchen", "mock_keywords": ["stay", "hotel", "airbnb", "place to stay", "book"] },
+    { "category": "travel", "type": "lesson", "text": "Book Biscuit's dog sitter 2+ weeks before trips", "confidence": 0.9, "sources": ["m033"], "mock_keywords": ["trip", "vacation", "flight", "spring break", "travel"] },
+    { "category": "travel", "type": "preference", "text": "Prefers warm beach trips; avoids the cold", "confidence": 0.7, "sources": ["m005"], "mock_keywords": ["vacation", "trip", "winter", "getaway"] },
+    { "category": "work", "type": "preference", "text": "No meetings before 10 AM (school drop-off)", "confidence": 0.9, "sources": ["m035"], "mock_keywords": ["meeting", "1:1", "schedule", "calendar", "sync", "manager"] },
+    { "category": "work", "type": "preference", "text": "Wants summaries as short bullets", "confidence": 0.9, "sources": ["m008", "m058"], "mock_keywords": ["summarize", "summary", "emails", "updates", "recap"] },
+    { "category": "work", "type": "preference", "text": "Works from home Fridays; keep Fridays light", "confidence": 0.8, "sources": ["m043"], "mock_keywords": ["meeting", "schedule", "work from home", "wfh", "office", "calendar"] },
+    { "category": "shopping", "type": "preference", "text": "Sunday grocery order, store brands to save", "confidence": 0.8, "sources": ["m029"], "mock_keywords": ["grocery", "groceries", "shopping list"] },
+    { "category": "shopping", "type": "preference", "text": "Buys refurbished electronics to save money", "confidence": 0.75, "sources": ["m022"], "mock_keywords": ["laptop", "phone", "tablet", "buy", "electronics"] },
+    { "category": "home", "type": "preference", "text": "Bills due on the 1st; remind 3 days before", "confidence": 0.85, "sources": ["m037"], "mock_keywords": ["bill", "bills", "reminder", "rent"] },
+    { "category": "entertainment", "type": "preference", "text": "Likes sci-fi and true crime; no horror", "confidence": 0.8, "sources": ["m025"], "mock_keywords": ["watch", "movie", "show", "tonight", "podcast"] },
+    { "category": "fitness", "type": "preference", "text": "Runs 3 mornings a week; half marathon training", "confidence": 0.75, "sources": ["m041"], "mock_keywords": ["run", "workout", "training", "morning", "schedule"] },
+    { "category": "health", "type": "preference", "text": "Lower back pain; avoids long drives", "confidence": 0.7, "sources": ["m052"], "sensitive": true, "mock_keywords": ["road trip", "drive", "trip", "desk", "flight"] }
+  ]
+}

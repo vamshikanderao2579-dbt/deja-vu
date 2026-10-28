@@ -1,0 +1,14 @@
+{
+  "name": "personal-context",
+  "version": "0.1.0",
+  "private": true,
+  "description": "User-owned, confirmed context for personal AI agents. Meta Global AI Developer Hackathon prototype.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "eval": "node eval/run.js",
+    "check-api": "node scripts/check-api.js"
+  },
+  "engines": { "node": ">=18" }
+}

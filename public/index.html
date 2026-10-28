@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Déjà Vu</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <button class="circle glass" id="menuBtn" aria-label="Menu">
+        <svg viewBox="0 0 24 24"><path d="M4 8h16M4 16h16"/></svg>
+        <span class="badge-dot hidden" id="menuDot"></span>
+      </button>
+      <div class="agent">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 64 64"><defs><radialGradient id="g" cx="35%" cy="30%"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#ff7a3d"/></radialGradient></defs><circle cx="32" cy="34" r="22" fill="url(#g)"/><circle cx="25" cy="31" r="3.2" fill="#2b1a10"/><circle cx="39" cy="31" r="3.2" fill="#2b1a10"/><circle cx="26" cy="30" r="1" fill="#fff"/><circle cx="40" cy="30" r="1" fill="#fff"/><path d="M26 40q6 5 12 0" stroke="#2b1a10" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M32 12q5 4 2 9-3-2-2-9z" fill="#ff9a4d"/></svg>
+        </div>
+        <span class="name-chip glass" id="agentName">Pip</span>
+      </div>
+      <button class="pill glass" id="newChatBtn">New chat</button>
+    </header>
+
+    <main>
+      <section class="view active" id="view-chat">
+        <div class="mode-row">
+          <button class="mode-chip" id="modeChip" title="Switch what the agent remembers">
+            <span class="dot"></span><span id="modeLabel">Memory: your cards</span>
+            <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></svg>
+          </button>
+        </div>
+        <div id="thread"></div>
+      </section>
+    </main>
+
+    <form class="composer glass" id="composer" autocomplete="off">
+      <button type="button" class="icon" id="plusBtn" aria-label="Suggestions"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <input id="input" placeholder="Message" />
+      <button type="button" class="icon" id="micBtn" aria-label="Voice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    </form>
+
+    <nav class="tabbar glass">
+      <button class="tab active" data-tab="chat" aria-label="Main chat"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></button>
+      <button class="tab" data-tab="feed" aria-label="Feed"><svg viewBox="0 0 24 24"><use href="#i-feed"/></svg></button>
+      <button class="tab" data-tab="ideas" aria-label="Ideas"><svg viewBox="0 0 24 24"><use href="#i-ideas"/></svg></button>
+      <button class="tab" data-tab="goals" aria-label="Goals"><svg viewBox="0 0 24 24"><use href="#i-goals"/></svg></button>
+      <button class="tab" data-tab="library" aria-label="Library"><svg viewBox="0 0 24 24"><use href="#i-library"/></svg></button>
+    </nav>
+
+    <div class="scrim" id="scrim"></div>
+
+    <!-- Sidebar -->
+    <aside class="drawer" id="drawer" aria-label="Menu">
+      <h1 id="drawerTitle">Pip</h1>
+      <p class="label">TABS</p>
+      <p class="hint-line">You can reorder with long press</p>
+      <nav class="drawer-list">
+        <button class="drow active" data-go="chat"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>Main chat</button>
+        <button class="drow" data-go="feed"><svg viewBox="0 0 24 24"><use href="#i-feed"/></svg>Feed</button>
+        <button class="drow" data-go="ideas"><svg viewBox="0 0 24 24"><use href="#i-ideas"/></svg>Ideas</button>
+        <button class="drow" data-go="goals"><svg viewBox="0 0 24 24"><use href="#i-goals"/></svg>Goals</button>
+        <button class="drow" data-go="library"><svg viewBox="0 0 24 24"><use href="#i-library"/></svg>Library</button>
+        <button class="drow featured" data-go="memory"><svg viewBox="0 0 24 24"><use href="#i-memory"/></svg>Memory<span class="count hidden" id="drawerCount"></span></button>
+      </nav>
+      <hr />
+      <p class="label">SIDE CHATS</p>
+      <p class="hint-line">Will appear here if you start one</p>
+      <div class="drawer-foot">
+        <button class="circle line" id="openSettings" aria-label="Settings"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></button>
+        <div class="search-pill">Search</div>
+        <button class="circle line" id="drawerNewChat" aria-label="New chat"><svg viewBox="0 0 24 24"><path d="M12 20h8M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+      </div>
+    </aside>
+
+    <!-- Settings sheet -->
+    <section class="sheet" id="settings" aria-label="Settings">
+      <button class="circle line close" data-close="settings" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <h1 class="big">Settings</h1>
+      <div class="group plan">
+        <div class="plan-top"><span>Memory budget</span><span class="fine" id="budgetPct"></span></div>
+        <p class="fine" id="budgetSub">Bounded on purpose, so a free agent stays affordable</p>
+        <div class="progress"><i id="budgetBar"></i></div>
+        <button class="link" data-go="memory">Manage memory</button>
+      </div>
+      <div class="group">
+        <button class="srow featured" data-go="memory"><svg viewBox="0 0 24 24"><use href="#i-memory"/></svg>Memory<span class="new">New</span><svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" data-soon><svg viewBox="0 0 24 24"><use href="#i-library"/></svg>Connectors<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" data-soon><svg viewBox="0 0 24 24"><rect x="5" y="3" width="10" height="17" rx="2"/><circle cx="15" cy="17" r="2.5"/><circle cx="21" cy="17" r="2.5"/></svg>Devices<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" data-soon><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 9l13-5v2"/><circle cx="16.5" cy="13" r="1"/></svg>Wallet<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" data-soon><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="12" r="2.5"/><path d="M11.5 12H18v2.5"/></svg>Secure credentials store<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" data-soon><svg viewBox="0 0 24 24"><path d="M8 13V5.5a1.5 1.5 0 0 1 3 0V12m0-7a1.5 1.5 0 0 1 3 0v7m0-5.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7c-2.5 0-4-1-5.5-3L3 14.5a1.5 1.5 0 0 1 2.5-1.6L8 15"/></svg>Permissions<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" data-soon><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>Messaging channels<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="group">
+        <a class="srow" href="/export/me.json"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export my memory (me.json)<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+        <a class="srow" href="/export/me.md"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Export readable version (me.md)<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a>
+        <button class="srow" data-go="insights"><svg viewBox="0 0 24 24"><use href="#i-ideas"/></svg>How lean is my memory?<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="group">
+        <button class="srow" id="cooldownBtn"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Allow the next quick check<span class="fine right">Demo</span></button>
+        <button class="srow danger" id="resetBtn"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>Reset demo<span class="fine right">Deletes all cards</span></button>
+      </div>
+      <div class="group" id="engineInfo"></div>
+      <p class="fine center">Déjà Vu · prototype for the Meta Global AI Developer Hackathon. All chat history is TEST DATA.</p>
+    </section>
+
+    <!-- Memory: categories -->
+    <section class="page" id="memory" aria-label="Memory">
+      <div class="page-head"><button class="circle line" data-close="memory" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+      <h1 class="big">Memory</h1>
+      <p class="sub">What I know about you, in short cards. You own them: tap a topic and swipe. Right if it's right, left if it's not.</p>
+      <div id="memorySummary"></div>
+      <div class="cat-grid" id="catGrid"></div>
+      <div id="memoryEmpty" class="empty hidden">
+        <p>I haven't organized what I know about you yet.</p>
+        <button class="primary" id="distillBtn">Build from my chats</button>
+        <p class="fine">Uses the TEST chat history in this prototype.</p>
+      </div>
+      <div class="group" id="memoryLinks">
+        <button class="srow" data-go="insights"><svg viewBox="0 0 24 24"><use href="#i-ideas"/></svg>How lean is my memory?<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" id="redistillBtn"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Update from recent chats<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </section>
+
+    <!-- Memory: one category, as a deck or a list -->
+    <section class="page" id="category" aria-label="Category">
+      <div class="page-head">
+        <button class="circle line" data-close="category" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="seg" id="catSeg"><button class="on" data-v="deck">Cards</button><button data-v="list">List</button></div>
+      </div>
+      <div class="cat-title"><span class="cat-icon big" id="catIcon"></span><div><h1 id="catName"></h1><p class="fine" id="catProgress"></p></div></div>
+      <div id="catDeckWrap">
+        <div class="deck" id="deck"></div>
+        <form class="edit-box hidden" id="deckEdit"><input maxlength="90" /><button>Save</button></form>
+        <div class="deck-buttons" id="deckButtons">
+          <button class="round no" data-act="reject" aria-label="Not right">✕</button>
+          <button class="round small" data-act="edit" aria-label="Edit">✎</button>
+          <button class="round small" data-act="note" aria-label="Add a note">💬</button>
+          <button class="round small" id="deckMic" aria-label="Answer by voice">🎙</button>
+          <button class="round yes" data-act="confirm" aria-label="That's right">✓</button>
+        </div>
+        <p class="fine center">→ that's right · ← not right · ↑ edit · 🎙 say it</p>
+      </div>
+      <div id="catList" class="hidden"></div>
+    </section>
+
+    <!-- Insights -->
+    <section class="page" id="insights" aria-label="How lean is my memory">
+      <div class="page-head"><button class="circle line" data-close="insights" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+      <h1 class="big">How lean is my memory?</h1>
+      <p class="sub">Each answer only sees a few relevant cards instead of your whole history.</p>
+      <div class="stats" id="stats"></div>
+      <div id="evalBox"></div>
+      <div class="card-box" id="sessionLog"><h3>This session</h3><p class="fine">Ask something in chat to see the comparison.</p></div>
+    </section>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Shared icons -->
+    <svg width="0" height="0" style="position:absolute">
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M12 4c4.97 0 9 3.36 9 7.5S16.97 19 12 19c-1.1 0-2.15-.16-3.12-.46L4 20l1.4-3.6C4.5 15.1 3 13.4 3 11.5 3 7.36 7.03 4 12 4z"/></symbol>
+      <symbol id="i-feed" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2.5"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5M5 7H3.5M5 12H3.5M5 17H3.5"/></symbol>
+      <symbol id="i-ideas" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2V16h5v-.2c.1-.8.5-1.5 1.1-2A6 6 0 0 0 12 3z"/></symbol>
+      <symbol id="i-goals" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></symbol>
+      <symbol id="i-library" viewBox="0 0 24 24"><circle cx="7.5" cy="7.5" r="3"/><path d="M16.5 4l3.2 5.5h-6.4z"/><rect x="4.5" y="13.5" width="6" height="6" rx="1.5"/><rect x="13.5" y="13.5" width="6" height="6" rx="3"/></symbol>
+      <symbol id="i-memory" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2.2"/><path d="M5.8 16.2c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10h4M14.5 13.5h3"/></symbol>
+      <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+    </svg>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

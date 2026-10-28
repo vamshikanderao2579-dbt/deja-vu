@@ -1,0 +1,176 @@
+import { config } from './config.js';
+import { CONTEXT_HEADER } from './prompts.js';
+
+const { maxCategories, maxCardsPerCategory, maxWordsPerCard } = config.budget;
+
+export const estimateTokens = (text) => Math.ceil(text.length / 4);
+
+const words = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2));
+
+function similarity(a, b) {
+  const A = words(a), B = words(b);
+  if (!A.size || !B.size) return 0;
+  let shared = 0;
+  for (const w of A) if (B.has(w)) shared++;
+  return shared / Math.min(A.size, B.size);
+}
+
+function clampWords(text) {
+  const parts = text.trim().split(/\s+/);
+  return parts.length <= maxWordsPerCard ? text.trim() : parts.slice(0, maxWordsPerCard).join(' ');
+}
+
+function nextId(cards, category) {
+  let n = 1;
+  while (cards.some((c) => c.id === `${category}-${n}`)) n++;
+  return `${category}-${n}`;
+}
+
+// A card the user is likely to care about most survives budget trimming.
+// Confirmed cards are never trimmed.
+function keepScore(card) {
+  return (card.status === 'confirmed' ? 100 : 0) + card.confidence * 10 + (card.sources?.length ?? 0);
+}
+
+// Merge freshly extracted cards into the store, then enforce the budget.
+// `rejected` holds texts the user swiped away, so re-extraction doesn't bring them back.
+export function mergeCards(existing, incoming, rejected = [], now = new Date().toISOString()) {
+  const cards = existing.map((c) => ({ ...c }));
+  for (const raw of incoming) {
+    if (!raw?.text || !raw?.category) continue;
+    const category = String(raw.category).toLowerCase().trim();
+    const text = clampWords(String(raw.text));
+    if (rejected.some((r) => similarity(r, text) >= 0.6)) continue;
+    const match =
+      (raw.id && cards.find((c) => c.id === raw.id)) ||
+      cards.find((c) => c.category === category && similarity(c.text, text) >= 0.6) ||
+      (raw.changed_from && cards.find((c) => similarity(c.text, raw.changed_from) >= 0.6));
+
+    if (match) {
+      match.sources = [...new Set([...(match.sources ?? []), ...(raw.sources ?? [])])];
+      match.last_seen = now;
+      const changed = raw.changed_from && similarity(match.text, text) < 0.6;
+      if (changed) {
+        // The user changed their mind in chat. Even a confirmed card goes back
+        // to inferred so the agent checks before relying on it.
+        match.changed_from = match.text;
+        match.text = text;
+        match.status = raw.sensitive ? 'pending' : 'inferred';
+        match.confidence = raw.confidence ?? match.confidence;
+      } else if (match.status !== 'confirmed') {
+        match.text = text;
+        match.confidence = Math.max(match.confidence, raw.confidence ?? 0);
+      }
+      continue;
+    }
+
+    cards.push({
+      id: nextId(cards, category),
+      category,
+      type: raw.type === 'lesson' ? 'lesson' : 'preference',
+      text,
+      status: raw.sensitive ? 'pending' : 'inferred',
+      sensitive: !!raw.sensitive,
+      confidence: Number(raw.confidence ?? 0.6),
+      sources: raw.sources ?? [],
+      ...(raw.changed_from ? { changed_from: raw.changed_from } : {}),
+      created: now,
+      last_seen: now,
+      last_confirmed: null,
+      ...(raw.mock_keywords ? { mock_keywords: raw.mock_keywords } : {}),
+    });
+  }
+  return enforceBudget(cards);
+}
+
+export function enforceBudget(cards) {
+  const byCat = groupByCategory(cards);
+  let cats = Object.keys(byCat);
+
+  // Too many categories: fold the smallest ones into "other".
+  if (cats.length > maxCategories) {
+    cats.sort((a, b) => byCat[b].length - byCat[a].length);
+    for (const cat of cats.slice(maxCategories - 1)) {
+      for (const c of byCat[cat]) c.category = 'other';
+    }
+  }
+
+  const trimmed = [];
+  for (const [, group] of Object.entries(groupByCategory(cards))) {
+    group.sort((a, b) => keepScore(b) - keepScore(a));
+    trimmed.push(...group.filter((c, i) => i < maxCardsPerCategory || c.status === 'confirmed'));
+  }
+  return trimmed;
+}
+
+export function groupByCategory(cards) {
+  const out = {};
+  for (const c of cards) (out[c.category] ??= []).push(c);
+  return out;
+}
+
+// Cards that may be sent to the model. Pending (sensitive, unconfirmed) cards
+// stay out of answers until the user says yes.
+export const usable = (c) => c.status === 'confirmed' || c.status === 'inferred';
+
+export function renderContext(cards) {
+  const list = cards.filter(usable);
+  if (!list.length) return '';
+  const groups = groupByCategory(list);
+  const body = Object.entries(groups)
+    .map(([cat, cs]) => `${cat}:\n` + cs.map((c) => `- ${c.status === 'confirmed' ? '✓' : '~'} ${c.text}${c.note ? ` (note: ${c.note})` : ''}`).join('\n'))
+    .join('\n');
+  return `${CONTEXT_HEADER}\n${body}`;
+}
+
+export function renderMarkdown(cards, userName) {
+  const groups = groupByCategory(cards);
+  const label = { confirmed: 'confirmed', inferred: 'inferred', pending: 'needs your OK' };
+  return (
+    `# What my agent knows about me (${userName})\n\n` +
+    Object.entries(groups)
+      .map(([cat, cs]) => `## ${cat[0].toUpperCase() + cat.slice(1)}\n` + cs.map((c) => `- ${c.text}${c.note ? ` (note: ${c.note})` : ''} _(${c.type}, ${label[c.status]})_`).join('\n'))
+      .join('\n\n') +
+    '\n'
+  );
+}
+
+export function budgetStats(cards) {
+  const groups = groupByCategory(cards);
+  return {
+    limits: config.budget,
+    categories: Object.fromEntries(
+      Object.entries(groups).map(([cat, cs]) => [cat, { cards: cs.length, tokens: estimateTokens(cs.map((c) => c.text).join('\n')) }])
+    ),
+    totalTokens: estimateTokens(renderContext(cards)),
+  };
+}
+
+// A swipe or tap: confirm (right), reject (left), edit (up). Mutates state.
+export function applyCardAction(state, id, action, text, now = new Date().toISOString()) {
+  const card = state.cards.find((c) => c.id === id);
+  if (!card) throw Object.assign(new Error('card not found'), { status: 404 });
+  if (action === 'confirm') {
+    Object.assign(card, { status: 'confirmed', confidence: 1, last_confirmed: now });
+    delete card.changed_from;
+  } else if (action === 'edit') {
+    if (!text?.trim()) throw Object.assign(new Error('text is required'), { status: 400 });
+    Object.assign(card, { text: clampWords(text), status: 'confirmed', confidence: 1, last_confirmed: now, edited: true });
+    delete card.changed_from;
+  } else if (action === 'note') {
+    // A note is the user adding nuance ("only in winter"). It also counts as a confirmation.
+    if (!text?.trim()) throw Object.assign(new Error('text is required'), { status: 400 });
+    Object.assign(card, { note: clampWords(text), status: 'confirmed', confidence: 1, last_confirmed: now });
+    delete card.changed_from;
+  } else if (action === 'reject') {
+    state.rejected.push(card.text);
+    state.cards = state.cards.filter((c) => c.id !== id);
+  } else {
+    throw Object.assign(new Error('action must be confirm, edit, note, or reject'), { status: 400 });
+  }
+}
+
+export function publicCard(c) {
+  const { mock_keywords, ...rest } = c;
+  return rest;
+}

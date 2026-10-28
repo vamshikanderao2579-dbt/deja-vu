@@ -1,0 +1,99 @@
+{
+  "_label": "TEST DATA ONLY. Ground truth for the eval: facts planted in test-history.json, how the user's life has drifted since, and checklist questions.",
+  "today": "2026-10-27",
+  "facts": [
+    { "id": "F01", "category": "food", "text": "Loves Thai and Mexican food", "sources": ["m010", "m056"] },
+    { "id": "F02", "category": "food", "text": "Trusts recent reviews over overall star ratings", "sources": ["m012", "m056"] },
+    { "id": "F03", "category": "shopping", "text": "Weekly grocery order Sunday mornings, store brands to save money", "sources": ["m029"] },
+    { "id": "F04a", "category": "food", "text": "Usual drink is an oat milk latte", "sources": ["m014"], "superseded_by": "F04b" },
+    { "id": "F04b", "category": "food", "text": "Usual drink is now an iced matcha; coffee makes them jittery", "sources": ["m054"] },
+    { "id": "F05", "category": "family", "text": "Maya won't eat spicy food; family dinners need a mild option", "sources": ["m031"] },
+    { "id": "F06", "category": "family", "text": "Partner Sam is vegetarian", "sources": ["m012", "m031"] },
+    { "id": "F07", "category": "travel", "text": "Wants direct flights and a window seat, even if pricier", "sources": ["m018"] },
+    { "id": "F08a", "category": "travel", "text": "Prefers Airbnbs with a kitchen", "sources": ["m020"], "superseded_by": "F08b" },
+    { "id": "F08b", "category": "travel", "text": "Books hotels with free cancellation, not Airbnbs", "sources": ["m049", "m051"] },
+    { "id": "F09", "category": "travel", "text": "Book the dog sitter for Biscuit at least 2 weeks before trips", "sources": ["m033"] },
+    { "id": "F10", "category": "travel", "text": "Prefers warm beach trips; avoids cold destinations", "sources": ["m005"] },
+    { "id": "F11", "category": "work", "text": "No meetings before 10 AM because of school drop-off", "sources": ["m035"] },
+    { "id": "F12", "category": "work", "text": "Wants summaries as short bullets", "sources": ["m008", "m058"] },
+    { "id": "F13", "category": "work", "text": "Works from home on Fridays; keep Fridays light", "sources": ["m043"] },
+    { "id": "F14a", "category": "family", "text": "Maya loves dinosaurs and painting", "sources": ["m016"], "superseded_by": "F14b" },
+    { "id": "F14b", "category": "family", "text": "Maya (birthday Mar 14) is into soccer now", "sources": ["m045"] },
+    { "id": "F15", "category": "family", "text": "Mom loves gardening", "sources": ["m001"] },
+    { "id": "F16", "category": "fitness", "text": "Runs 3 mornings a week; training for a half marathon", "sources": ["m041"] },
+    { "id": "F17", "category": "shopping", "text": "Buys refurbished electronics to save money", "sources": ["m022"] },
+    { "id": "F18", "category": "home", "text": "Bills due on the 1st; remind 3 days before", "sources": ["m037"] },
+    { "id": "F19", "category": "entertainment", "text": "Likes sci-fi and true crime; no horror", "sources": ["m025"] },
+    { "id": "F20", "category": "health", "text": "Lower back pain; avoids long drives, uses a standing desk", "sources": ["m052"], "sensitive": true }
+  ],
+
+  "_current_truth": "What the simulated user answers when shown each card. These changes never appear in the chat history, so only a confirmation can catch them. Facts not listed are confirmed as-is; superseded facts are rejected.",
+  "current_truth": {
+    "F13": { "action": "edit", "text": "Works from home on Wednesdays now; in the office Fridays" },
+    "F10": { "action": "edit", "text": "Open to a ski trip this winter; still loves beaches" },
+    "F20": { "action": "confirm" }
+  },
+
+  "_questions": "Each check is something the answer should (want: true) or should not (want: false) do. 'kw' are keywords for the offline heuristic judge; the live judge reads the 'text'.",
+  "questions": [
+    { "id": "Q01", "text": "Find a place for dinner tonight with the family", "checks": [
+      { "text": "Suggests Thai or Mexican food", "kw": ["thai", "mexican", "taco"], "want": true, "fact": "F01" },
+      { "text": "Mentions vegetarian options for Sam", "kw": ["vegetarian", "veg", "tofu"], "want": true, "fact": "F06" },
+      { "text": "Makes sure there's a mild, non-spicy option for Maya", "kw": ["mild", "not spicy", "non-spicy", "kid"], "want": true, "fact": "F05" },
+      { "text": "Says it relied on recent reviews rather than overall ratings", "kw": ["recent review", "latest review", "recent"], "want": true, "fact": "F02" }
+    ]},
+    { "id": "Q02", "text": "Book flights for our spring break trip", "checks": [
+      { "text": "Looks for direct flights", "kw": ["direct", "nonstop"], "want": true, "fact": "F07" },
+      { "text": "Asks for or picks a window seat", "kw": ["window"], "want": true, "fact": "F07" },
+      { "text": "Reminds the user to book a dog sitter for Biscuit early", "kw": ["sitter", "biscuit", "dog"], "want": true, "fact": "F09" }
+    ]},
+    { "id": "Q03", "text": "Find us a place to stay in Miami for spring break", "checks": [
+      { "text": "Suggests a hotel with free cancellation", "kw": ["free cancellation", "hotel"], "want": true, "fact": "F08b" },
+      { "text": "Suggests an Airbnb", "kw": ["airbnb"], "want": false, "fact": "F08a" }
+    ]},
+    { "id": "Q04", "text": "Grab my usual drink on the way in", "checks": [
+      { "text": "Orders an iced matcha", "kw": ["matcha"], "want": true, "fact": "F04b" },
+      { "text": "Orders an oat milk latte or other coffee", "kw": ["latte", "coffee"], "want": false, "fact": "F04a" }
+    ]},
+    { "id": "Q05", "text": "Schedule a 1:1 with my manager next week", "checks": [
+      { "text": "Proposes times at 10 AM or later", "kw": ["10", "11", "afternoon", "1 pm", "2 pm", "3 pm"], "want": true, "fact": "F11" },
+      { "text": "Proposes a time before 10 AM", "kw": ["8 am", "9 am", "8:30", "9:00", "9:30"], "want": false, "fact": "F11" }
+    ]},
+    { "id": "Q06", "text": "Summarize my unread work emails", "checks": [
+      { "text": "Uses or offers short bullet points", "kw": ["- ", "• ", "bullet"], "want": true, "fact": "F12" }
+    ]},
+    { "id": "Q07", "text": "Gift ideas for Maya's birthday", "checks": [
+      { "text": "Suggests soccer-related gifts", "kw": ["soccer", "ball", "goal", "cleats"], "want": true, "fact": "F14b" },
+      { "text": "Suggests dinosaur-themed gifts", "kw": ["dinosaur", "dino"], "want": false, "fact": "F14a" }
+    ]},
+    { "id": "Q08", "text": "Make this week's grocery list", "checks": [
+      { "text": "Favors store-brand or budget items", "kw": ["store brand", "store-brand", "budget", "generic"], "want": true, "fact": "F03" },
+      { "text": "Includes vegetarian-friendly meals", "kw": ["vegetarian", "veg", "tofu", "bean"], "want": true, "fact": "F06" },
+      { "text": "Keeps family meals mild for Maya", "kw": ["mild", "kid"], "want": true, "fact": "F05" }
+    ]},
+    { "id": "Q09", "text": "Which day next week should I keep free of meetings to work from home?", "checks": [
+      { "text": "Picks Wednesday as the work-from-home day", "kw": ["wednesday"], "want": true, "fact": "F13" },
+      { "text": "Picks Friday as the work-from-home day", "kw": ["friday"], "want": false, "fact": "F13" }
+    ]},
+    { "id": "Q10", "text": "Plan a winter vacation for our family", "checks": [
+      { "text": "Includes a ski or snow trip option", "kw": ["ski", "snow", "mountain"], "want": true, "fact": "F10" },
+      { "text": "Reminds the user to book a dog sitter early", "kw": ["sitter", "biscuit", "dog"], "want": true, "fact": "F09" }
+    ]},
+    { "id": "Q11", "text": "Recommend something to watch tonight", "checks": [
+      { "text": "Suggests sci-fi or true crime", "kw": ["sci-fi", "science fiction", "true crime"], "want": true, "fact": "F19" },
+      { "text": "Suggests a horror title", "kw": ["horror"], "want": false, "fact": "F19" }
+    ]},
+    { "id": "Q12", "text": "Set up my bill reminders for this month", "checks": [
+      { "text": "Sets the reminder about 3 days before the 1st", "kw": ["3 days", "three days", "28th", "29th"], "want": true, "fact": "F18" }
+    ]},
+    { "id": "Q13", "text": "Plan a weekend road trip for us", "checks": [
+      { "text": "Keeps drives short or plans regular breaks for back pain", "kw": ["short drive", "break", "stretch", "back", "under 3 hours", "2 hours"], "want": true, "fact": "F20" }
+    ]},
+    { "id": "Q14", "text": "Find me a new laptop under $1000", "checks": [
+      { "text": "Suggests a refurbished laptop", "kw": ["refurbished", "renewed"], "want": true, "fact": "F17" }
+    ]},
+    { "id": "Q15", "text": "Gift idea for my mom", "checks": [
+      { "text": "Suggests something gardening-related", "kw": ["garden", "plant", "herb", "seed"], "want": true, "fact": "F15" }
+    ]}
+  ]
+}

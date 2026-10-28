@@ -1,0 +1,147 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { config, ROOT, todayString } from './config.js';
+import { complete, parseJson } from './llm.js';
+import { DISTILL_SYSTEM, RELEVANCE_SYSTEM, HISTORY_HEADER, SUMMARY_SYSTEM, SUMMARY_HEADER, answerSystem } from './prompts.js';
+import { mergeCards, renderContext, estimateTokens, usable } from './cards.js';
+import { history, historyAsText, messageTime } from './store.js';
+
+// Conversations are batched up to this many characters per extraction call, so
+// memory builds incrementally and each call stays small.
+const CHUNK_CHARS = 24000;
+// Agent replies are long; the user's own words carry the preferences.
+const MAX_ASSISTANT_CHARS = 400;
+
+const convForPrompt = (c) =>
+  `## ${c.date} ${c.time ?? ''}: ${c.title}\n` +
+  c.messages
+    .map((m) => `[${m.id}] ${m.role}: ${m.role === 'assistant' && m.text.length > MAX_ASSISTANT_CHARS ? m.text.slice(0, MAX_ASSISTANT_CHARS) + '…' : m.text}`)
+    .join('\n');
+
+function batches(convs) {
+  const out = [];
+  let cur = [], size = 0;
+  for (const c of convs) {
+    const text = convForPrompt(c);
+    if (cur.length && size + text.length > CHUNK_CHARS) { out.push(cur); cur = []; size = 0; }
+    cur.push(text);
+    size += text.length;
+  }
+  if (cur.length) out.push(cur);
+  return out;
+}
+
+// Build cards from chat history, a few conversations at a time. Each call sees
+// the cards so far, so it updates them instead of starting over.
+export async function distill(existing, rejected = []) {
+  if (config.mock) {
+    const fixture = JSON.parse(readFileSync(join(ROOT, 'data', 'fixture-cards.json'), 'utf8'));
+    return { cards: stampDates(mergeCards(existing, fixture.cards, rejected)), calls: 0, usage: null };
+  }
+  let cards = existing;
+  let calls = 0;
+  const usage = { prompt_tokens: 0, completion_tokens: 0 };
+  for (const batch of batches(history.conversations)) {
+    const existingText = cards.map((c) => `${c.id} [${c.category}] ${c.text}`).join('\n') || '(none yet)';
+    const convText = batch.join('\n\n');
+    const res = await complete(
+      'bg',
+      [
+        { role: 'system', content: DISTILL_SYSTEM },
+        { role: 'user', content: `EXISTING cards:\n${existingText}\n\nNEW conversations:\n${convText}` },
+      ],
+      { json: true, maxTokens: 6000, reasoning: 'low' }
+    );
+    calls++;
+    if (res.usage) {
+      usage.prompt_tokens += res.usage.prompt_tokens ?? 0;
+      usage.completion_tokens += res.usage.completion_tokens ?? 0;
+    }
+    cards = mergeCards(cards, parseJson(res.text).cards ?? [], rejected);
+  }
+  return { cards: stampDates(cards), calls, usage };
+}
+
+// When each card was first and last mentioned, from its source messages.
+function stampDates(cards) {
+  for (const c of cards) {
+    const times = (c.sources ?? []).map(messageTime).filter(Boolean).sort();
+    if (!times.length) continue;
+    c.first_seen = times[0];
+    c.last_seen = times.at(-1);
+  }
+  return cards;
+}
+
+// Which cards matter for this request, and how costly a wrong guess would be.
+export async function selectRelevant(message, cards) {
+  const candidates = cards;
+  if (config.mock) return mockRelevance(message, candidates);
+  const index = candidates.map((c) => `${c.id}: ${c.text}`).join('\n');
+  const res = await complete(
+    'bg',
+    [
+      { role: 'system', content: RELEVANCE_SYSTEM },
+      { role: 'user', content: `Today: ${todayString()}\nRequest: ${message}\n\nCards:\n${index}` },
+    ],
+    { json: true, maxTokens: 3000, reasoning: 'minimal' }
+  );
+  let out;
+  try {
+    out = parseJson(res.text);
+  } catch {
+    // A malformed reply shouldn't break the chat: answer without cards this time.
+    console.warn('[agent] relevance reply was not JSON; answering without cards');
+    return { relevant: [], stakes: 'low' };
+  }
+  const ids = new Set(out.relevant_card_ids ?? []);
+  return { relevant: candidates.filter((c) => ids.has(c.id)), stakes: out.stakes === 'high' ? 'high' : 'low' };
+}
+
+// The baseline memory summary: written once from the whole history.
+export async function summarizeHistory() {
+  const res = await complete('main', [
+    { role: 'system', content: SUMMARY_SYSTEM },
+    { role: 'user', content: historyAsText() },
+  ], { maxTokens: 4000, reasoning: 'low' });
+  return res.text.trim();
+}
+
+// mode: "cards" (bounded, relevant cards only), "summary" (a memory summary, every message),
+// "full" (entire history), "none" (no memory)
+export async function answer(message, mode, relevantCards, { summary } = {}) {
+  const today = todayString();
+  let context = '';
+  if (mode === 'cards') context = renderContext(relevantCards.filter(usable));
+  if (mode === 'full') context = `${HISTORY_HEADER}\n${historyAsText()}`;
+  if (mode === 'summary') context = `${SUMMARY_HEADER}\n${summary}`;
+
+  const contextTokens = estimateTokens(context);
+  if (config.mock) {
+    return { text: mockAnswer(message, mode, relevantCards.filter(usable)), contextTokens, usage: null };
+  }
+  const messages = [
+    { role: 'system', content: answerSystem(config.userName, today) + (context ? `\n\n${context}` : '') },
+    { role: 'user', content: message },
+  ];
+  const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: 'low' });
+  return { text: res.text.trim(), contextTokens, usage: res.usage };
+}
+
+// ---------- mock mode (no API key): deterministic stand-ins for UI work ----------
+
+const HIGH_STAKES = /\b(book|order|plan|schedule|reserve|set up|grab|find|buy|gift|flights?|vacation|trip|stay|dinner|lunch|grocery|groceries|pick)\b/i;
+
+function mockRelevance(message, cards) {
+  const m = message.toLowerCase();
+  const relevant = cards.filter((c) => (c.mock_keywords ?? []).some((k) => m.includes(k)));
+  return { relevant, stakes: HIGH_STAKES.test(message) ? 'high' : 'low' };
+}
+
+function mockAnswer(message, mode, cards) {
+  const note = '(Mock answer. Add MAIN_API_KEY in .env for real Muse Spark answers.)';
+  if (mode === 'none') return `Here are some general suggestions for “${message}”. I don't know your preferences yet. ${note}`;
+  if (mode === 'full') return `I scanned your entire chat history to answer “${message}”. ${note}`;
+  if (!cards.length) return `Here are a few options for “${message}”. ${note}`;
+  return `For “${message}”, I took into account:\n${cards.map((c) => `• ${c.text}`).join('\n')}\n${note}`;
+}

@@ -1,0 +1,18 @@
+node_modules/
+.env
+data/me.json
+.DS_Store
+public/avatar-local.*
+eval/results/*-mock.json
+
+# Private: never commit
+EYI Package*/
+data/private/
+charmander.png
+public/charmander.png
+data/spend.json
+
+# Local tooling
+.claude/
+.DS_Store
+eval/results/*.json

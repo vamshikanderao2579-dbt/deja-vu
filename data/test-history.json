@@ -1,0 +1,121 @@
+{
+  "_label": "TEST DATA ONLY. Synthetic chat history (Jun 2023 to Oct 2026) written for the hackathon prototype. Not real user data.",
+  "user": { "name": "Alex", "pronouns": "they/them", "timezone": "America/Chicago" },
+  "conversations": [
+    { "id": "c01", "date": "2023-06-18", "time": "19:20", "title": "Mom's birthday", "messages": [
+      { "id": "m001", "role": "user", "text": "mom's birthday is next week. she's really into gardening, any gift ideas under $50?" },
+      { "id": "m002", "role": "assistant", "text": "A few ideas: a raised herb planter kit ($42), a personalized garden tool set ($38), or a seed-of-the-month subscription ($30 for 3 months)." },
+      { "id": "m003", "role": "user", "text": "the herb planter. ship it to her place" },
+      { "id": "m004", "role": "assistant", "text": "Ordered the raised herb planter kit to your mom's address. It arrives Thursday." }
+    ]},
+    { "id": "c02", "date": "2023-09-02", "time": "10:05", "title": "December vacation", "messages": [
+      { "id": "m005", "role": "user", "text": "thinking about a vacation in december. somewhere warm with a beach, i really can't do cold trips" },
+      { "id": "m006", "role": "assistant", "text": "Warm December options: Puerto Rico (no passport needed), Cancún, or the Florida Keys." },
+      { "id": "m007", "role": "user", "text": "puerto rico sounds great, let's look at that" }
+    ]},
+    { "id": "c03", "date": "2023-11-14", "time": "09:30", "title": "Meeting notes", "messages": [
+      { "id": "m008", "role": "user", "text": "summarize these meeting notes. bullets please, i only skim" },
+      { "id": "m009", "role": "assistant", "text": "- Launch moved to Jan 15\n- Design review Friday\n- Budget approved" }
+    ]},
+    { "id": "c04", "date": "2024-01-20", "time": "18:45", "title": "Dinner near home", "messages": [
+      { "id": "m010", "role": "user", "text": "dinner ideas near logan square tonight? we love thai or mexican" },
+      { "id": "m011", "role": "assistant", "text": "Nearby: Thai Lagoon (4.5★), Lula Cafe (4.6★), and Tacos El Tío (4.4★)." },
+      { "id": "m012", "role": "user", "text": "sam's vegetarian so it needs good veg options. and check recent reviews, a rating from three years ago means nothing" },
+      { "id": "m013", "role": "assistant", "text": "Recent reviews favor Thai Lagoon. Several mention the tofu dishes and fast service in the last month." }
+    ]},
+    { "id": "c05", "date": "2024-03-03", "time": "08:10", "title": "Morning coffee", "messages": [
+      { "id": "m014", "role": "user", "text": "order my usual oat milk latte from the cafe by the train" },
+      { "id": "m015", "role": "assistant", "text": "Ordered a large oat milk latte for pickup in 10 minutes." }
+    ]},
+    { "id": "c06", "date": "2024-03-10", "time": "15:00", "title": "Maya's 5th birthday", "messages": [
+      { "id": "m016", "role": "user", "text": "maya turns 5 on the 14th. she's obsessed with dinosaurs and painting. party ideas?" },
+      { "id": "m017", "role": "assistant", "text": "Dino dig party with a paint-your-own-fossil table, a dinosaur cake, and a museum trip as the big present." }
+    ]},
+    { "id": "c07", "date": "2024-05-22", "time": "21:10", "title": "Flights to Denver", "messages": [
+      { "id": "m018", "role": "user", "text": "book flights to denver for the conference. window seat, and direct only even if it costs more. layovers wreck me" },
+      { "id": "m019", "role": "assistant", "text": "Booked United nonstop ORD→DEN, window seat 22A, $289 round trip." }
+    ]},
+    { "id": "c08", "date": "2024-06-30", "time": "13:00", "title": "Lake weekend", "messages": [
+      { "id": "m020", "role": "user", "text": "find an airbnb near lake geneva for july 4th. we always do airbnbs, we need a kitchen and space for maya" },
+      { "id": "m021", "role": "assistant", "text": "Booked a 3-bedroom lakeside Airbnb with a full kitchen, Jul 3–6." }
+    ]},
+    { "id": "c09", "date": "2024-08-15", "time": "20:30", "title": "New laptop", "messages": [
+      { "id": "m022", "role": "user", "text": "my laptop died. i always buy refurbished, way cheaper and works fine. find me one" },
+      { "id": "m023", "role": "assistant", "text": "Certified refurbished MacBook Air M2 for $749 with a 1-year warranty. Want it?" },
+      { "id": "m024", "role": "user", "text": "yes" }
+    ]},
+    { "id": "c10", "date": "2024-10-05", "time": "22:00", "title": "Something to watch", "messages": [
+      { "id": "m025", "role": "user", "text": "something to watch tonight? i love sci-fi and true crime. absolutely no horror" },
+      { "id": "m026", "role": "assistant", "text": "Try 'Severance' (sci-fi), 'The Jinx' (true crime), or 'Arrival' if you want a movie." }
+    ]},
+    { "id": "c11", "date": "2025-01-12", "time": "09:00", "title": "Wifi keeps dropping", "messages": [
+      { "id": "m027", "role": "user", "text": "our wifi keeps dropping every evening, any idea why?" },
+      { "id": "m028", "role": "assistant", "text": "Evening drops are often channel congestion. Switch the router to 5 GHz channel 149 and check for a firmware update." }
+    ]},
+    { "id": "c12", "date": "2025-02-02", "time": "11:00", "title": "Weekly groceries", "messages": [
+      { "id": "m029", "role": "user", "text": "set up a grocery order every sunday morning. go store-brand whenever you can, we're watching the budget" },
+      { "id": "m030", "role": "assistant", "text": "Done. A recurring Sunday 9 AM grocery order, store brands by default." }
+    ]},
+    { "id": "c13", "date": "2025-03-01", "time": "17:30", "title": "Family dinners", "messages": [
+      { "id": "m031", "role": "user", "text": "maya won't touch anything spicy, so family dinners always need a mild option. and sam's still vegetarian" },
+      { "id": "m032", "role": "assistant", "text": "Got it. Mild, veg-friendly family dinners. This week: veggie pasta bake, black bean quesadillas, and a mild coconut curry." }
+    ]},
+    { "id": "c14", "date": "2025-04-18", "time": "19:00", "title": "After spring trip", "messages": [
+      { "id": "m033", "role": "user", "text": "we almost missed our flight because nobody could watch biscuit. remind me to book a dog sitter at least 2 weeks before any trip" },
+      { "id": "m034", "role": "assistant", "text": "Will do. For future trips I'll remind you to book Biscuit's sitter two weeks ahead." }
+    ]},
+    { "id": "c15", "date": "2025-06-09", "time": "08:20", "title": "Calendar rules", "messages": [
+      { "id": "m035", "role": "user", "text": "please stop putting meetings before 10. i do school drop-off every morning" },
+      { "id": "m036", "role": "assistant", "text": "Understood. I'll keep your calendar clear before 10 AM." }
+    ]},
+    { "id": "c16", "date": "2025-09-01", "time": "10:00", "title": "Bill reminders", "messages": [
+      { "id": "m037", "role": "user", "text": "can you remind me about bills? everything's due on the 1st. ping me 3 days before" },
+      { "id": "m038", "role": "assistant", "text": "Set. You'll get a bills reminder on the 28th or 29th of each month." }
+    ]},
+    { "id": "c17", "date": "2025-11-20", "time": "16:40", "title": "Pumpkin pie", "messages": [
+      { "id": "m039", "role": "user", "text": "need an easy pumpkin pie recipe for thanksgiving" },
+      { "id": "m040", "role": "assistant", "text": "Classic pumpkin pie: 1 can pumpkin, 3/4 cup sugar, 2 eggs, 1 can evaporated milk, spices, store-bought crust. 425°F for 15 min, then 350°F for 45." }
+    ]},
+    { "id": "c18", "date": "2026-01-08", "time": "07:00", "title": "Running plan", "messages": [
+      { "id": "m041", "role": "user", "text": "i'm training for a half marathon in may. i run 3 mornings a week, help me plan" },
+      { "id": "m042", "role": "assistant", "text": "Here's a 16-week plan: Tue/Thu easy runs, Sunday long run building from 5 to 12 miles." }
+    ]},
+    { "id": "c19", "date": "2026-02-05", "time": "12:30", "title": "Work from home day", "messages": [
+      { "id": "m043", "role": "user", "text": "new setup at work: i'm home on fridays now. keep fridays light on meetings" },
+      { "id": "m044", "role": "assistant", "text": "Noted. Fridays are your work-from-home day and I'll keep them light." }
+    ]},
+    { "id": "c20", "date": "2026-03-02", "time": "18:00", "title": "Maya's 7th birthday", "messages": [
+      { "id": "m045", "role": "user", "text": "maya turns 7 on the 14th. she's totally over dinosaurs, it's all soccer now. gift ideas?" },
+      { "id": "m046", "role": "assistant", "text": "Soccer ideas: a size-3 ball and a pop-up goal, shin guards in her favorite color, or tickets to a Chicago Red Stars game." }
+    ]},
+    { "id": "c21", "date": "2026-04-10", "time": "20:15", "title": "Tax documents", "messages": [
+      { "id": "m047", "role": "user", "text": "where do i find last year's 1099s?" },
+      { "id": "m048", "role": "assistant", "text": "Most brokerages post them under Documents > Tax Forms. I can pull links from your email if you like." }
+    ]},
+    { "id": "c22", "date": "2026-06-21", "time": "14:00", "title": "Airbnb cancelled", "messages": [
+      { "id": "m049", "role": "user", "text": "our airbnb in michigan cancelled the night before. we're scrambling for a place" },
+      { "id": "m050", "role": "assistant", "text": "Found a hotel in Traverse City with free cancellation, $179/night. Book it?" },
+      { "id": "m051", "role": "user", "text": "yes. never again with airbnb. hotels with free cancellation from now on" }
+    ]},
+    { "id": "c23", "date": "2026-08-14", "time": "16:00", "title": "Back pain", "messages": [
+      { "id": "m052", "role": "user", "text": "my lower back has been killing me. got a standing desk and i'm trying to avoid long drives" },
+      { "id": "m053", "role": "assistant", "text": "Sorry to hear that. I'll keep that in mind when planning anything with a lot of sitting." }
+    ]},
+    { "id": "c24", "date": "2026-09-03", "time": "08:05", "title": "New usual", "messages": [
+      { "id": "m054", "role": "user", "text": "switched to iced matcha, coffee was making me jittery. update my usual order" },
+      { "id": "m055", "role": "assistant", "text": "Updated. Your usual is now a large iced matcha." }
+    ]},
+    { "id": "c25", "date": "2026-09-25", "time": "19:30", "title": "Takeout night", "messages": [
+      { "id": "m056", "role": "user", "text": "thai or mexican tonight? recent reviews only please" },
+      { "id": "m057", "role": "assistant", "text": "Based on reviews from the last month: Tacos El Tío is on a streak; Thai Lagoon has had slower delivery lately." }
+    ]},
+    { "id": "c26", "date": "2026-10-12", "time": "09:10", "title": "Thread summary", "messages": [
+      { "id": "m058", "role": "user", "text": "summarize this email thread for me. bullets as always" },
+      { "id": "m059", "role": "assistant", "text": "- Vendor contract renews Nov 1\n- Price up 4%\n- Legal review needed by Friday" }
+    ]},
+    { "id": "c27", "date": "2026-10-20", "time": "13:25", "title": "Package tracking", "messages": [
+      { "id": "m060", "role": "user", "text": "where's my package from last week?" },
+      { "id": "m061", "role": "assistant", "text": "It's out for delivery today, expected by 7 PM." }
+    ]}
+  ]
+}
