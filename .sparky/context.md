@@ -35,7 +35,7 @@ Real data: 5 weeks of Vamshi's Muse chats (~113,600 tokens) → ~44 cards (~400 
 - Repo: `~/Desktop/personal-context-hackathon/deja-vu` (remote: github.com/vamshikanderao2579-dbt/deja-vu, pushed by the user; first commit squashed by them).
 - **Uncommitted local work** from Oct 28 night: profiles, replay cache, live learning, quiet ⓘ footer, two-choice cards, inline chat-about-it, deck end summary, multi-line composer, San Diego demo scripts, tests (26), eval personas. User reviews and commits.
 - Deck (claude.ai artifact, private until shared): https://claude.ai/artifact/DJKtjUyCdDRghS4rW61hJr. 12 slides, Meta blue palette, Geist font, speaker notes. Slide files live in a scratchpad folder of the old chat; to edit, `read` the artifact first.
-- App: `npm run dev` → http://localhost:3000. Avatar/name: `AGENT_NAME=Sparky`, Pip face (no avatar file).
+- App: `npm run dev` → http://localhost:3000. Avatar/name: `AGENT_NAME=Sparky`, `AGENT_AVATAR=sparky.jpeg` (placeholder star mascot made with Gemini; to be replaced by a Muse Image version).
 - Private (git-ignored): `data/private/` (real histories, answer keys, real eval results, replay cache, profiles), `.env`, `data/spend.json`, `EYI Package*` exports.
 
 ## Key files

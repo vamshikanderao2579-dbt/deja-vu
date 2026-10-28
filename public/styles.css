@@ -408,3 +408,6 @@ svg.line path.s3 { stroke: var(--series-3); }
 .season.on { background: var(--pending-bg); color: var(--pending-fg); }
 .season.off { background: var(--inferred-bg); color: var(--inferred-fg); }
 .day-sep { text-align: center; color: var(--muted); font-size: 13px; font-weight: 600; margin: 18px 0 6px; }
+/* Placeholder mascot: zoom into the star, past the busy ring */
+.avatar { overflow: hidden; }
+.avatar img { transform: scale(1.45) translateY(3%); }
