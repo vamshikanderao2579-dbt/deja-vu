@@ -113,7 +113,7 @@ async function llmJudge(q, text) {
       { role: 'system', content: JUDGE_SYSTEM },
       { role: 'user', content: `Question: ${q.text}\n\nAnswer:\n${text}\n\nStatements:\n${statements}` },
     ],
-    { json: true, maxTokens: 3000, temperature: 0, reasoning: 'minimal' }
+    { json: true, maxTokens: 4000, temperature: 0, reasoning: 'low' }
   );
   const results = parseJson(res.text).results;
   if (!Array.isArray(results) || results.length !== q.checks.length) throw new Error(`Judge returned ${JSON.stringify(results)} for ${q.id}`);

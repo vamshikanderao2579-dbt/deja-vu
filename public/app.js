@@ -718,6 +718,13 @@ function renderSettings() {
     <div class="srow static">Memory upkeep<span class="fine right">${esc(data.models.bg)}</span></div>
     <div class="srow static">Limits<span class="fine right">${b.maxCategories} topics · ${b.maxCardsPerCategory} cards · ${b.maxWordsPerCard} words</span></div>`;
 }
+$('#demoBtn').addEventListener('click', async () => {
+  await refresh(await api('/api/demo/load', {}));
+  conversationId = newId();
+  renderWelcome();
+  renderSettings();
+  toast('Demo memory loaded: confirmed, guessed, stale and locked cards.');
+});
 $('#cooldownBtn').addEventListener('click', async () => { await refresh(await api('/api/cue-cooldown/reset', {})); toast('The next relevant question can ask a quick check.'); });
 $('#resetBtn').addEventListener('click', async () => {
   if (!confirm('Delete all cards and start over?')) return;

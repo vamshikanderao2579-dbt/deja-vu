@@ -1,0 +1,335 @@
+{
+  "_label": "Synthetic demo memory. Load it from Settings → Load demo memory.",
+  "cards": [
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Loves Thai and Mexican food",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m010",
+        "m056"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-09-25T19:30:00",
+      "last_confirmed": "2026-09-26T19:40:00",
+      "first_seen": "2024-01-20T18:45:00"
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Trusts recent reviews over overall star ratings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "m012",
+        "m056"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-09-25T19:30:00",
+      "last_confirmed": null,
+      "first_seen": "2024-01-20T18:45:00"
+    },
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Usual drink is an iced matcha; coffee makes them jittery",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m054"
+      ],
+      "changed_from": "Usual drink is an oat milk latte",
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-09-03T08:05:00",
+      "last_confirmed": null,
+      "first_seen": "2026-09-03T08:05:00"
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Partner Sam is vegetarian",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m012",
+        "m031"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-03-01T17:30:00",
+      "last_confirmed": "2026-05-02T18:10:00",
+      "first_seen": "2024-01-20T18:45:00"
+    },
+    {
+      "id": "family-2",
+      "category": "family",
+      "type": "preference",
+      "text": "Maya won't eat spicy food; keep family dinners mild",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m031"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-03-01T17:30:00",
+      "last_confirmed": null,
+      "first_seen": "2025-03-01T17:30:00"
+    },
+    {
+      "id": "family-4",
+      "category": "family",
+      "type": "preference",
+      "text": "Mom loves gardening",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m001"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2023-06-18T19:20:00",
+      "last_confirmed": null,
+      "first_seen": "2023-06-18T19:20:00"
+    },
+    {
+      "id": "family-3",
+      "category": "family",
+      "type": "preference",
+      "text": "Maya (birthday Mar 14) is into soccer now",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "m045"
+      ],
+      "changed_from": "Maya loves dinosaurs and painting",
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-03-02T18:00:00",
+      "last_confirmed": null,
+      "first_seen": "2026-03-02T18:00:00"
+    },
+    {
+      "id": "travel-2",
+      "category": "travel",
+      "type": "lesson",
+      "text": "Hotels with free cancellation, not Airbnbs",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "m049",
+        "m051"
+      ],
+      "changed_from": "Prefers Airbnbs with a kitchen",
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-06-21T14:00:00",
+      "last_confirmed": null,
+      "first_seen": "2026-06-21T14:00:00"
+    },
+    {
+      "id": "travel-3",
+      "category": "travel",
+      "type": "lesson",
+      "text": "Book Biscuit's dog sitter 2+ weeks before trips",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "m033"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-04-18T19:00:00",
+      "last_confirmed": null,
+      "first_seen": "2025-04-18T19:00:00"
+    },
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "preference",
+      "text": "Direct flights and a window seat, even if pricier",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m018"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2024-05-22T21:10:00",
+      "last_confirmed": "2026-07-11T21:00:00",
+      "first_seen": "2024-05-22T21:10:00"
+    },
+    {
+      "id": "travel-4",
+      "category": "travel",
+      "type": "preference",
+      "text": "Prefers warm beach trips; avoids the cold",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "m005"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2023-09-02T10:05:00",
+      "last_confirmed": null,
+      "first_seen": "2023-09-02T10:05:00"
+    },
+    {
+      "id": "work-2",
+      "category": "work",
+      "type": "preference",
+      "text": "Wants summaries as short bullets",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m008",
+        "m058"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-10-12T09:10:00",
+      "last_confirmed": "2026-10-12T09:15:00",
+      "first_seen": "2023-11-14T09:30:00"
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "No meetings before 10 AM (school drop-off)",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m035"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-06-09T08:20:00",
+      "last_confirmed": "2026-10-02T08:30:00",
+      "first_seen": "2025-06-09T08:20:00"
+    },
+    {
+      "id": "work-3",
+      "category": "work",
+      "type": "preference",
+      "text": "Works from home Fridays; keep Fridays light",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m043"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-02-05T12:30:00",
+      "last_confirmed": null,
+      "first_seen": "2026-02-05T12:30:00"
+    },
+    {
+      "id": "shopping-1",
+      "category": "shopping",
+      "type": "preference",
+      "text": "Sunday grocery order, store brands to save",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "m029"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-02-02T11:00:00",
+      "last_confirmed": null,
+      "first_seen": "2025-02-02T11:00:00"
+    },
+    {
+      "id": "shopping-2",
+      "category": "shopping",
+      "type": "preference",
+      "text": "Buys refurbished electronics to save money",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "m022"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2024-08-15T20:30:00",
+      "last_confirmed": null,
+      "first_seen": "2024-08-15T20:30:00"
+    },
+    {
+      "id": "home-1",
+      "category": "home",
+      "type": "preference",
+      "text": "Bills due on the 1st; remind 3 days before",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m037"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2025-09-01T10:00:00",
+      "last_confirmed": "2026-10-01T10:05:00",
+      "first_seen": "2025-09-01T10:00:00",
+      "note": "Rent is the big one"
+    },
+    {
+      "id": "entertainment-1",
+      "category": "entertainment",
+      "type": "preference",
+      "text": "Likes sci-fi and true crime; no horror",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m025"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2024-10-05T22:00:00",
+      "last_confirmed": "2026-10-05T22:10:00",
+      "first_seen": "2024-10-05T22:00:00",
+      "note": "Sam picks rom-coms on Fridays"
+    },
+    {
+      "id": "fitness-1",
+      "category": "fitness",
+      "type": "preference",
+      "text": "Runs 3 mornings a week; half marathon training",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "m041"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-01-08T07:00:00",
+      "last_confirmed": null,
+      "first_seen": "2026-01-08T07:00:00"
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Lower back pain; avoids long drives",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.7,
+      "sources": [
+        "m052"
+      ],
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-08-14T16:00:00",
+      "last_confirmed": null,
+      "first_seen": "2026-08-14T16:00:00"
+    }
+  ]
+}

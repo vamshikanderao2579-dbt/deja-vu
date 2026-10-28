@@ -105,6 +105,15 @@ route('POST', '/api/reset', () => {
   return statePayload();
 });
 
+// Loads the ready-made synthetic memory (mixed statuses) for demos.
+route('POST', '/api/demo/load', async () => {
+  const demo = JSON.parse(await readFile(join(ROOT, 'data', 'demo-memory.json'), 'utf8'));
+  const s = getState();
+  Object.assign(s, { cards: demo.cards, rejected: [], cueLog: [] });
+  save();
+  return statePayload();
+});
+
 route('POST', '/api/cue-cooldown/reset', () => {
   getState().cueLog = [];
   save();
