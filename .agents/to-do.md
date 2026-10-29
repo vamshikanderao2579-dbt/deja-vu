@@ -17,6 +17,9 @@ Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Cla
 - [x] **Grader on Muse Wonder** (`GRADER_MODEL=muse-wonder-1.0`, priced separately in the spend guard). A/B: same verdicts as Spark, faster.
 - [x] **Answer first, as a plain reply:** the pick sits inside the answer (no "draft" label, memory chips only under ⓘ); the check card comes after it; every ✓/✕ plays as a visible swipe with a stamp (demo too).
 - [x] **Staged memory build** (`src/engine/build.js`): guard → scan (500-turn cap) → draft as it reads → self-review + `summary.md` → Wonder grade with priority → contract check that reruns; checkpoints; **Rebuild from all my chats** with live % and a chat note when done. Memory header: *Memory since* / *Last verified*.
+- [x] **Rebuild rules:** confirm sheet; once a month, sooner only for new chats; confirmed cards passed as trusted; grader checks each card at its exact chat spot; "Go to this point in the chat ↗" on every card's sources; steering caught in any wording (live test: 5/5).
+- [x] **Fits the screen:** phone as before; iPad full width; laptop sidebar that opens/closes (remembered); pencil = fresh chat.
+- [x] **Fixed:** "Chat about it" could confirm an unrelated card (fallback to the last card); a rebuild overwrote the demo's starting memory.
 - [x] **Repo layout:** `src/engine`, `src/prompts`, `src/platform`, `src/ui`.
 - [x] **Plug-in API** (`/api/recall`, `/api/remember`, `/api/cards/:id`) and README that leads with the engine. Demos re-recorded: Vamshi, Alex.
 

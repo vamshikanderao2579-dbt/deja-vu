@@ -69,9 +69,11 @@ export function reset() {
   if (existsSync(statePath)) rmSync(statePath);
 }
 
-// A snapshot of freshly built memory, so a demo can always start from it.
+// A snapshot of freshly built memory, so a demo can always start from it. Only the
+// first build sets it: a later rebuild must not change what a recorded demo starts from.
 const seedPath = () => statePath.replace(/\.json$/, '') + '.seed.json';
 export function saveSeed() {
+  if (existsSync(seedPath())) return;
   mkdirSync(dirname(statePath), { recursive: true });
   writeFileSync(seedPath(), JSON.stringify({ cards: state.cards }, null, 2));
 }

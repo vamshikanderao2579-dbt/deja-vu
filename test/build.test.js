@@ -84,3 +84,14 @@ test('build: a run that stopped mid-draft resumes from its checkpoint', async ()
   assert.equal(seen.filter((p) => p.stage === 'draft').length, total - 1, 'batch 1 is not read again');
   assert.ok(cards.length >= 1);
 });
+
+test('build: confirmed cards are kept as they are; reading from a point skips what came before', async () => {
+  const since = history.map((c) => `${c.date}T${c.time ?? '00:00'}`).sort().at(-1);
+  const { cards, report } = await buildMemory({ conversations: history, profileId: 'unit-since', since });
+  assert.equal(report.turns, 0, 'nothing after the newest chat');
+  assert.deepEqual(cards, []);
+  const { applyBuild } = await import('../src/engine/build.js');
+  const mine = [{ id: 'travel-1', category: 'travel', type: 'preference', text: 'Books direct flights only', status: 'confirmed', sources: ['m1'] }, { id: 'food-1', category: 'food', type: 'preference', text: 'Loves ramen', status: 'inferred', sources: ['m2'] }];
+  assert.deepEqual(applyBuild(mine, [], [], { partial: false }).map((c) => c.id), ['travel-1'], 'a full rebuild keeps only confirmed cards');
+  assert.deepEqual(applyBuild(mine, [], [], { partial: true }).map((c) => c.id), ['travel-1', 'food-1'], 'reading new chats keeps everything');
+});

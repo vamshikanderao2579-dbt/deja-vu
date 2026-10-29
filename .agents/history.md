@@ -42,3 +42,6 @@
 - Answer-first layout: pick inside the reply, check below it, Tinder-style swipe animation on every choice.
 - **Staged memory build** with guard, checkpoints, self-review, Wonder grade, contract rerun; Rebuild button with live progress; Memory since / Last verified. Live run on Alex: 37 turns → 23 cards, ~$0.05.
 - Repo split into `src/engine`, `src/prompts`, `src/platform`, `src/ui`. 46 tests.
+- Rebuild: confirm sheet, monthly limit (+ new-chats-only reads), confirmed cards as trusted input, grader at the exact chat spot, jump-to-message link. Live: plain-language injections 5/5 skipped by the writer (code guard 0/5); a real rebuild of Vamshi's 304 turns → 22 cards, 3 secrets removed.
+- Fixed two bugs found in end-to-end testing: the update route could confirm the wrong card; a rebuild overwrote the demo seed.
+- Responsive layout (phone / iPad / laptop with a toggleable sidebar). 49 tests.

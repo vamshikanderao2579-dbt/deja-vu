@@ -7,7 +7,7 @@ export const estimateTokens = (text) => Math.ceil(text.length / 4);
 
 const words = (s) => new Set(s.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2));
 
-function similarity(a, b) {
+export function similarity(a, b) {
   const A = words(a), B = words(b);
   if (!A.size || !B.size) return 0;
   let shared = 0;

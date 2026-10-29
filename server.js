@@ -7,7 +7,7 @@ import * as store from './src/platform/store.js';
 import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/engine/agent.js';
 import { cueDecision, checkReason, applyFeedback, implicitYes } from './src/engine/cue.js';
 import { transcribe, interpret } from './src/platform/voice.js';
-import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState, renderContext } from './src/engine/cards.js';
+import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState, renderContext, similarity } from './src/engine/cards.js';
 import { todayMs } from './src/platform/config.js';
 import { addReviewStats, emptyReviewStats } from './src/engine/review.js';
 import { buildMemory, applyBuild } from './src/engine/build.js';
@@ -30,19 +30,41 @@ route('GET', '/api/state', () => statePayload());
 // Building memory from the whole history runs as a background job: the page polls
 // GET /api/build for progress and tells the user in chat when it's done.
 let buildJob = null;
-function startBuild() {
+
+// One full rebuild per month per person. Sooner only once the history has grown, and
+// then it reads just the new chats. When every card is confirmed, a rebuild starts
+// after the newest one: everything before it is already approved.
+const REBUILD_DAYS = Number(process.env.REBUILD_DAYS ?? 30);
+const REBUILD_GROWTH_TOKENS = Number(process.env.REBUILD_GROWTH_TOKENS ?? 20000);
+const DAY_MS = 24 * 60 * 60 * 1000;
+// Counted fresh (the comparison figure above is cached): live chats grow the history.
+const historyTokensNow = () => estimateTokens(historyAsText());
+function rebuildPlan() {
+  const s = getState();
+  const last = s.build?.at ? Date.parse(s.build.at) : null;
+  const tokens = historyTokensNow();
+  const growth = last ? tokens - (s.build.historyTokens ?? tokens) : 0;
+  const allConfirmed = s.cards.length && s.cards.every((c) => c.status === 'confirmed');
+  const confirmedThrough = allConfirmed ? s.cards.map((c) => c.last_seen).filter(Boolean).sort().at(-1) ?? null : null;
+  const base = { lastAt: s.build?.at ?? null, nextAt: last ? new Date(last + REBUILD_DAYS * DAY_MS).toISOString() : null, cards: s.cards.length, confirmed: s.cards.filter((c) => c.status === 'confirmed').length };
+  if (!last || Date.now() - last >= REBUILD_DAYS * DAY_MS) return { ...base, allowed: true, mode: 'full', since: confirmedThrough };
+  if (growth >= REBUILD_GROWTH_TOKENS) return { ...base, allowed: true, mode: 'new', since: s.build.readThrough ?? null, growth };
+  return { ...base, allowed: false, mode: 'wait', growth, needTokens: REBUILD_GROWTH_TOKENS - growth };
+}
+
+function startBuild(plan = { mode: 'full', since: null }) {
   if (buildJob?.running) return buildJob;
   const s = getState();
   const profileId = store.profile.id;
   const job = { running: true, profileId, pct: 0, stage: 'guard', label: 'Starting', startedAt: new Date().toISOString() };
   buildJob = job;
-  job.promise = buildMemory({ conversations: store.history.conversations, rejected: s.rejected, profileId, onProgress: (p) => Object.assign(job, p) })
+  job.promise = buildMemory({ conversations: store.history.conversations, existing: s.cards, rejected: s.rejected, profileId, since: plan.since, onProgress: (p) => Object.assign(job, p) })
     .then(({ cards, report }) => {
       // Only into the profile it was built for: someone may have switched meanwhile.
       if (store.profile.id !== profileId) throw new Error('Switched profiles during the build; run it again.');
       const st = getState();
-      st.cards = applyBuild(st.cards, cards, st.rejected);
-      st.build = report;
+      st.cards = applyBuild(st.cards, cards, st.rejected, { partial: plan.mode === 'new' || !!plan.since });
+      st.build = { ...report, mode: plan.mode, historyTokens: historyTokensNow() };
       st.review = emptyReviewStats();
       save();
       saveSeed();
@@ -53,10 +75,17 @@ function startBuild() {
 }
 const jobView = (j) => (j ? { running: j.running, done: !!j.done, pct: j.pct, stage: j.stage, label: j.label, report: j.report ?? null, error: j.error ?? null, profileId: j.profileId } : { running: false });
 
-route('POST', '/api/build', () => jobView(startBuild()));
+route('GET', '/api/build/plan', () => rebuildPlan());
+route('POST', '/api/build', (body) => {
+  if (buildJob?.running) return jobView(buildJob);
+  if (!body?.confirm) throw httpError(400, 'Confirm the rebuild first.');
+  const plan = rebuildPlan();
+  if (!plan.allowed) throw httpError(429, `You refreshed your memory recently. Try again on ${new Date(plan.nextAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}.`);
+  return jobView(startBuild(plan));
+});
 route('GET', '/api/build', () => jobView(buildJob));
 
-// The same build, waited on (tests and scripts).
+// The same build, waited on, without the monthly limit (tests and scripts).
 route('POST', '/api/distill', async () => {
   const job = startBuild();
   await job.promise;
@@ -231,8 +260,15 @@ route('POST', '/api/memory/update', async (body) => {
   const next = await rewriteCard(category, oldText ?? '', message);
   if (!next) { save(); return { card: null, ...statePayload() }; }
   // Merge without the rejected list: the new wording can be close to the old one.
+  const before = new Set(s.cards.map((c) => c.id));
   s.cards = mergeCards(s.cards, [{ category, type: next.type, text: next.text, confidence: 1 }], []);
-  const card = s.cards.find((c) => c.category === category && c.text === next.text) ?? s.cards.at(-1);
+  // The card this became: a new one, or the existing card it merged into (which keeps
+  // its old wording, so take the user's new words). Never just "the last card".
+  const card = s.cards.find((c) => !before.has(c.id)) ??
+    s.cards.find((c) => c.category === category && c.text === next.text) ??
+    s.cards.filter((c) => c.category === category).sort((a, b) => similarity(b.text, next.text) - similarity(a.text, next.text))[0];
+  if (!card) { save(); return { card: null, ...statePayload() }; }
+  card.text = next.text;
   applyCardAction(s, card.id, 'confirm');
   save();
   return { card: publicCard(card), ...statePayload() };

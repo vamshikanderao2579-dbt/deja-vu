@@ -70,7 +70,12 @@ export function contractErrors({ cards, summary, turns }) {
 
 // ---------- stage 1: which turns to read ----------
 // The most recent TURN_CAP user turns, whole conversations, oldest first.
-function scan(convs) {
+// With `since` (an ISO date-time), only conversations after it: the new chats since
+// the last build, or everything after the point where every card is confirmed.
+const whenOf = (c) => `${c.date}T${c.time ?? '00:00'}`;
+function scan(allConvs, since) {
+  // Oldest first, whatever order the export came in, so the cap keeps the newest turns.
+  const convs = (since ? allConvs.filter((c) => whenOf(c) > since) : [...allConvs]).sort((a, b) => whenOf(a).localeCompare(whenOf(b)));
   const picked = [];
   let turns = 0;
   for (const c of [...convs].reverse()) {
@@ -80,17 +85,19 @@ function scan(convs) {
     turns += t;
   }
   const all = convs.reduce((n, c) => n + c.messages.filter((m) => m.role === 'user').length, 0);
-  return { convs: picked, turns, skippedTurns: all - turns, from: picked[0]?.date, to: picked.at(-1)?.date };
+  return { convs: picked, turns, skippedTurns: all - turns, from: picked[0]?.date, to: picked.at(-1)?.date, readThrough: picked.length ? whenOf(picked.at(-1)) : since ?? null };
 }
 
-const keyOf = (convs) => createHash('sha1').update(convs.map((c) => `${c.id}:${c.messages.length}`).join('|') + rules()).digest('hex').slice(0, 16);
+const keyOf = (convs, confirmed) => createHash('sha1').update(convs.map((c) => `${c.id}:${c.messages.length}`).join('|') + confirmed + rules()).digest('hex').slice(0, 16);
 
 // Runs the whole build. onProgress({ pct, stage, label }) is called as it goes.
-export async function buildMemory({ conversations, rejected = [], profileId = 'default', onProgress = () => {} }) {
+// `existing` cards the user confirmed go to every stage as trusted (build.rules.md says
+// why); `since` limits the read to conversations after that point.
+export async function buildMemory({ conversations, existing = [], rejected = [], profileId = 'default', since = null, onProgress = () => {} }) {
   let lastErr;
   for (let run = 0; run < RUN_TRIES; run++) {
     try {
-      return await buildOnce({ conversations, rejected, profileId, onProgress, fresh: run > 0 });
+      return await buildOnce({ conversations, existing, rejected, profileId, since, onProgress, fresh: run > 0 });
     } catch (err) {
       lastErr = err;
       if (/spend cap/i.test(err.message)) break;
@@ -100,7 +107,7 @@ export async function buildMemory({ conversations, rejected = [], profileId = 'd
   throw lastErr;
 }
 
-async function buildOnce({ conversations, rejected, profileId, onProgress, fresh }) {
+async function buildOnce({ conversations, existing, rejected, profileId, since, onProgress, fresh }) {
   const dir = dirFor(profileId);
   if (fresh) rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
@@ -113,16 +120,25 @@ async function buildOnce({ conversations, rejected, profileId, onProgress, fresh
 
   // Stage 1: scan.
   progress(3, 'scan', 'Reading the shape of your history');
-  const plan = scan(safe);
-  const key = keyOf(plan.convs);
+  const plan = scan(safe, since);
+  const confirmed = existing.filter((c) => c.status === 'confirmed').map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)';
+  const key = keyOf(plan.convs, confirmed);
   const work = batches(plan.convs);
   const messages = messageMap(plan.convs);
+  // Where each message sits, so the grader can go to the exact spot a card came from.
+  const spot = new Map(plan.convs.flatMap((c) => c.messages.map((m, i) => [m.id, { conv: c, i }])));
 
   // Resume from a checkpoint for the same history, or start over.
   let cp = existsSync(cpPath) ? readJson(cpPath) : null;
   // A finished build is never resumed: a rebuild means reading again.
   if (!cp || cp.key !== key || cp.stage === 'done') cp = { key, stage: 'draft', next: 0, cards: [], notes: [], skipped: [] };
   const saveCp = () => writeJson(cpPath, { ...cp, updated: new Date().toISOString() });
+  if (!plan.turns) {
+    progress(100, 'done', 'Nothing new to read');
+    const report = { turns: 0, skippedTurns: 0, since, readThrough: plan.readThrough, batches: 0, cards: 0, dropped: 0, instructionsSkipped: 0, secretsRemoved: 0, graderFailed: false, at: new Date().toISOString() };
+    writeJson(join(dir, 'report.json'), report);
+    return { cards: [], report };
+  }
   progress(8, 'scan', `Reading ${plan.turns} turns in ${work.length} batch${work.length === 1 ? '' : 'es'}`);
 
   // Stage 2: draft, batch by batch, written as it reads.
@@ -135,7 +151,7 @@ async function buildOnce({ conversations, rejected, profileId, onProgress, fresh
         ? mockDraft(i)
         : await call('bg', [
             { role: 'system', content: prompt('build.write.system', { rules: rules(), pace }) },
-            { role: 'user', content: prompt('build.write.user', { batch: i + 1, batches: work.length, tree: treeLine(cp.cards) || '(empty)', draft: cp.cards.map(cardLine).join('\n') || '(none yet)', conversations: work[i].texts.join('\n\n') }) },
+            { role: 'user', content: prompt('build.write.user', { batch: i + 1, batches: work.length, confirmed, tree: treeLine(cp.cards) || '(empty)', draft: cp.cards.map(cardLine).join('\n') || '(none yet)', conversations: work[i].texts.join('\n\n') }) },
           ], { maxTokens: 6000, reasoning: 'low' }, (o) => Array.isArray(o?.cards));
       // Mock cards are fixtures, not model output: they skip the rules, as before.
       const kept = config.mock ? out.cards : out.cards.map((c) => ruleCheck(c, messages).card).filter(Boolean);
@@ -157,7 +173,7 @@ async function buildOnce({ conversations, rejected, profileId, onProgress, fresh
       ? { cards: cp.cards.map((c) => ({ id: c.id })), summary: mockSummary(plan) }
       : await call('bg', [
           { role: 'system', content: prompt('build.review.system', { rules: rules() }) },
-          { role: 'user', content: prompt('build.review.user', { draft: cp.cards.map(cardLine).join('\n') || '(none)', notes: cp.notes.join('\n') || '(none)' }) },
+          { role: 'user', content: prompt('build.review.user', { confirmed, draft: cp.cards.map(cardLine).join('\n') || '(none)', notes: cp.notes.join('\n') || '(none)' }) },
         ], { maxTokens: 8000, reasoning: 'low' }, (o) => Array.isArray(o?.cards) && typeof o?.summary === 'string');
     const edits = new Map(out.cards.map((e) => [e.id, e]));
     cp.cards = cp.cards.flatMap((c) => {
@@ -180,14 +196,21 @@ async function buildOnce({ conversations, rejected, profileId, onProgress, fresh
     for (let i = 0; i < cp.cards.length; i += GRADE_CHUNK) chunks.push(cp.cards.slice(i, i + GRADE_CHUNK));
     for (const [n, chunk] of chunks.entries()) {
       progress(86 + (11 * n) / Math.max(chunks.length, 1), 'grade', 'Checking every card with fresh eyes');
-      const quotes = (c) => (c.sources ?? []).map((id) => messages.get(id)).filter((m) => m?.role === 'user').slice(0, 2).map((m) => `   “${m.text.slice(0, QUOTE_CHARS)}”`).join('\n');
+      // The exact spot: the cited user message (▶) with the message before and after it.
+      const around = (id) => {
+        const at = spot.get(id);
+        if (!at || at.conv.messages[at.i].role !== 'user') return null;
+        const line = (m, mark) => m ? `   ${mark} ${m.role === 'user' ? 'user' : 'assistant'}: ${m.text.slice(0, mark === '▶' ? QUOTE_CHARS : 140)}` : null;
+        return [`   (${at.conv.date} · ${at.conv.title})`, line(at.conv.messages[at.i - 1], ' '), line(at.conv.messages[at.i], '▶'), line(at.conv.messages[at.i + 1], ' ')].filter(Boolean).join('\n');
+      };
+      const quotes = (c) => (c.sources ?? []).map(around).filter(Boolean).slice(0, 2).join('\n');
       let verdicts;
       try {
         verdicts = config.mock || !config.graderEnabled
           ? chunk.map((c) => ({ id: c.id, verdict: c.sensitive ? 'lock' : 'keep', priority: 2 }))
           : (await call('grader', [
               { role: 'system', content: prompt('build.grade.system', { rules: rules() }) },
-              { role: 'user', content: prompt('build.grade.user', { summary: cp.summary, cards: chunk.map((c) => `${cardLine(c)}${c.sensitive ? ' (sensitive)' : ''}\n${quotes(c)}`).join('\n') }) },
+              { role: 'user', content: prompt('build.grade.user', { confirmed, summary: cp.summary, cards: chunk.map((c) => `${cardLine(c)}${c.sensitive ? ' (sensitive)' : ''}\n${quotes(c)}`).join('\n') }) },
             ], { maxTokens: 4000, temperature: 0, reasoning: 'low' }, (o) => Array.isArray(o?.verdicts))).verdicts;
       } catch (err) {
         // The grader is down: keep what passed the rules, and say so in the report.
@@ -223,6 +246,8 @@ async function buildOnce({ conversations, rejected, profileId, onProgress, fresh
     skippedTurns: plan.skippedTurns,
     from: plan.from,
     to: plan.to,
+    since,
+    readThrough: plan.readThrough,
     batches: work.length,
     cards: cards.length,
     dropped: (cp.dropped ?? []).length,
@@ -241,8 +266,9 @@ async function buildOnce({ conversations, rejected, profileId, onProgress, fresh
 
 // Puts a finished build into memory: cards you confirmed stay as they are, the rest
 // is replaced by the new build, and cards you rejected never come back.
-export function applyBuild(existing, built, rejected = []) {
-  const kept = existing.filter((c) => c.status === 'confirmed');
+// A partial read (only new chats) keeps every existing card and adds to it.
+export function applyBuild(existing, built, rejected = [], { partial = false } = {}) {
+  const kept = partial ? existing : existing.filter((c) => c.status === 'confirmed');
   return stampDates(mergeCards(kept, built, rejected));
 }
 

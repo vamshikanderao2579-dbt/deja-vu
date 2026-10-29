@@ -559,7 +559,7 @@ svg.line path.s3 { stroke: var(--series-3); }
 .ff-card .cat-icon svg { width: 17px; height: 17px; }
 @keyframes ffin { from { opacity: 0; transform: translateY(-10px) scale(.97); } }
 .ff-done { color: #a3a9bd !important; margin: 14px 0; }
-#memoryIntro { z-index: 70; } /* opens from the Memory page, so above it */
+#memoryIntro, #rebuildSheet { z-index: 70; } /* opens from the Memory page, so above it */
 
 /* The hidden attribute always hides, whatever display a class sets. */
 [hidden] { display: none !important; }
@@ -572,3 +572,38 @@ svg.line path.s3 { stroke: var(--series-3); }
 .build-top b { font: 600 14px "Geist Mono", ui-monospace, monospace; color: var(--accent); }
 .build-bar { height: 6px; border-radius: 6px; background: var(--line); margin: 10px 0 8px; overflow: hidden; }
 .build-bar i { display: block; height: 100%; width: 0; background: var(--grad-strong); border-radius: 6px; transition: width .5s ease; }
+.cm.flash { animation: spotflash 1.6s ease-out; }
+@keyframes spotflash { 0%, 40% { box-shadow: 0 0 0 2px var(--accent); } 100% { box-shadow: 0 0 0 0 transparent; } }
+
+/* ---------- Fits the screen: phone, iPad, laptop ----------
+   Phone: one column, as designed. iPad: full width, content in a readable column.
+   Laptop: the menu becomes a sidebar that's always there; pages open beside it and
+   sheets become centered dialogs. */
+@media (min-width: 768px) {
+  .app { max-width: none; box-shadow: none; }
+  .view { padding-left: max(24px, calc((100% - 760px) / 2)); padding-right: max(24px, calc((100% - 760px) / 2)); }
+  .composer { left: max(24px, calc((100% - 760px) / 2)); right: max(24px, calc((100% - 760px) / 2)); }
+  .topbar { padding: 18px 24px 0; }
+  .page { padding-left: max(24px, calc((100% - 820px) / 2)); padding-right: max(24px, calc((100% - 820px) / 2)); }
+  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  .drawer { width: 340px; }
+  .sheet { left: 50%; right: auto; width: min(560px, calc(100% - 48px)); translate: -50% 0; top: auto; bottom: 0; max-height: 88dvh; }
+  .deck, .deck-buttons { max-width: 480px; margin-left: auto; margin-right: auto; }
+  .toast { top: 96px; }
+}
+@media (min-width: 1100px) {
+  :root { --side: 300px; }
+  /* The sidebar is open by default and closes with the menu button; it remembers. */
+  .drawer { width: 300px; transform: none; box-shadow: none; border-right: 1px solid var(--line); z-index: 30; }
+  .scrim, .scrim.on { display: none; }
+  main, .topbar, .composer, .page, .sheet, .toast { transition: left .3s cubic-bezier(.2,.8,.2,1), right .3s; }
+  .app.side-closed { --side: 0px; }
+  .app.side-closed .drawer { transform: translateX(-102%); }
+  main, .topbar { left: var(--side); }
+  .composer { left: calc(var(--side) + max(24px, (100% - var(--side) - 760px) / 2)); right: max(24px, calc((100% - var(--side) - 760px) / 2)); }
+  .page { left: var(--side); padding-left: max(32px, calc((100% - 860px) / 2)); padding-right: max(32px, calc((100% - 860px) / 2)); }
+  .cat-grid { grid-template-columns: repeat(4, 1fr); }
+  .sheet { left: calc(50% + var(--side) / 2); bottom: auto; top: 50%; translate: -50% -50%; border-radius: 28px; transform: translateY(40px); opacity: 0; pointer-events: none; transition: transform .25s, opacity .25s; }
+  .sheet.open { transform: none; opacity: 1; pointer-events: auto; }
+  .toast { left: calc(50% + var(--side) / 2); }
+}

@@ -51,14 +51,17 @@ async function loadSources(box, cardId) {
   box.innerHTML = res.conversations.map((c) => `<div class="src">
       <div class="src-when">${esc(fmtWhen(c.date, c.time))} · ${esc(c.title)}</div>
       ${c.messages.filter((m) => srcIds.has(m.id)).map((m) => `<div class="quote">“${esc(m.text)}”</div>`).join('')}
-      <button type="button" class="conv-toggle">Open conversation</button>
+      <button type="button" class="conv-toggle">Go to this point in the chat ↗</button>
       <div class="conv hidden">${c.messages.map((m) => `<div class="cm ${m.role}${srcIds.has(m.id) ? ' hl' : ''}"><b>${m.role === 'user' ? 'You' : 'Agent'}</b>${esc(m.text).replace(/\n/g, '<br>')}</div>`).join('')}</div>
     </div>`).join('');
   box.querySelectorAll('.conv-toggle').forEach((b) => b.addEventListener('click', (e) => {
     e.stopPropagation();
     const conv = b.nextElementSibling;
     conv.classList.toggle('hidden');
-    b.textContent = conv.classList.contains('hidden') ? 'Open conversation' : 'Hide conversation';
+    b.textContent = conv.classList.contains('hidden') ? 'Go to this point in the chat ↗' : 'Hide conversation';
+    // Land on the exact message the card came from, not the top of the chat.
+    const spot = conv.querySelector('.cm.hl');
+    if (spot && !conv.classList.contains('hidden')) { spot.scrollIntoView({ block: 'center', behavior: 'smooth' }); spot.classList.add('flash'); }
   }));
 }
 const STATUS_LABEL = { confirmed: '✓ Confirmed', inferred: '~ My guess', pending: '🔒 Needs your OK' };
@@ -131,7 +134,7 @@ function el(html) {
 }
 
 // ---------------- navigation: drawer, sheet, pages ----------------
-const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insights', 'memoryIntro'];
+const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insights', 'memoryIntro', 'rebuildSheet'];
 
 function open(id) {
   if (id === 'chat') return closeAll();
@@ -163,7 +166,11 @@ function syncChrome() {
   $$('.drow').forEach((d) => d.classList.toggle('active', d.dataset.go === top));
 }
 
-$('#menuBtn').addEventListener('click', () => open('drawer'));
+// Laptop: the menu button opens and closes the sidebar (remembered). Phone and iPad: it slides over.
+const SIDE_KEY = 'dv-side';
+const setSide = (closed) => { $('.app').classList.toggle('side-closed', closed); try { localStorage.setItem(SIDE_KEY, closed ? 'closed' : 'open'); } catch {} };
+try { $('.app').classList.toggle('side-closed', localStorage.getItem(SIDE_KEY) === 'closed'); } catch {}
+$('#menuBtn').addEventListener('click', () => (wide.matches ? setSide(!$('.app').classList.contains('side-closed')) : open('drawer')));
 $('#scrim').addEventListener('click', () => close('drawer'));
 $('#openSettings').addEventListener('click', () => open('settings'));
 $('#openProfiles').addEventListener('click', () => open('profiles'));
@@ -178,7 +185,11 @@ async function refresh(next) {
   $('#menuDot').classList.toggle('hidden', !toCheck);
   $('#drawerCount').classList.toggle('hidden', !toCheck);
   $('#drawerCount').textContent = toCheck;
+  // On a laptop the menu is a sidebar that's always showing, so keep it current.
+  if (wide.matches) renderDrawer();
 }
+const wide = matchMedia('(min-width: 1100px)');
+wide.addEventListener('change', () => { if (wide.matches) { renderDrawer(); $('#scrim').classList.remove('on'); } });
 
 // Sidebar: the newest cards learned from chat, newest first.
 function renderDrawer() {
@@ -201,12 +212,7 @@ function renderWelcome() {
   thread.innerHTML = '';
   if (!data.cards.length) {
     const box = el(`<div class="msg assistant"><p>Hi ${esc(data.userName)}! I haven't organized what I know about you yet. Want me to turn our past chats into a few short cards you can check?</p><div class="suggestions"><button>Build my memory from our chats</button></div></div>`);
-    box.querySelector('button').addEventListener('click', async (e) => {
-      e.target.disabled = true;
-      e.target.textContent = 'Reading our chats…';
-      await buildContext();
-      renderWelcome();
-    });
+    box.querySelector('button').addEventListener('click', askRebuild);
     thread.append(box);
     return;
   }
@@ -388,6 +394,7 @@ function renderCheck(check, question) {
   };
   const no = async () => {
     if (!settle()) return;
+    wrap.querySelector('.q')?.remove(); // the reply right after says what was forgotten
     try {
       await refresh(await api(`/api/cards/${check.card.id}`, { action: 'reject' }));
       offerChatInline(`Got it, I’ve forgotten “${check.card.text}”.`, () => startUpdateChat({ category: check.card.category, oldText: check.card.text, question }), () => offerRedo(question, 'Redo it without that?'));
@@ -658,7 +665,7 @@ $('#composer').addEventListener('submit', (e) => {
 });
 $('#plusBtn').addEventListener('click', () => { if (!thread.querySelector('.suggestions')) renderWelcome(); });
 voiceButton($('#micBtn'), (v) => { if (v.transcript) { $('#input').value = v.transcript; $('#input').focus(); } else toast('Didn’t catch that.'); }, $('#micBtn').innerHTML);
-const newChat = () => { demoRunning = false; conversationId = newId(); renderWelcome(); closeAll(); };
+const newChat = () => { demoRunning = false; conversationId = newId(); renderWelcome(); closeAll(); $('#view-chat').scrollTop = 0; $('#input').value = ''; growInput(); if (wide.matches) $('#input').focus(); };
 $('#newChatBtn').addEventListener('click', newChat);
 $('#drawerNewChat').addEventListener('click', newChat);
 
@@ -675,8 +682,38 @@ $('#modeChip').addEventListener('click', () => {
 // Building memory from the whole history runs in the background with a live progress
 // bar; when it's done, one note in chat links to Memory.
 let buildPoll = null;
+// Every rebuild asks first, and says what it will and won't touch.
+const dayLabel = (d) => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+async function askRebuild() {
+  let plan;
+  try { plan = await api('/api/build/plan'); } catch (err) { return toast(err.message); }
+  const li = (b, t) => `<li><b>${esc(b)}</b> ${esc(t)}</li>`;
+  const go = $('#rebuildGo');
+  go.hidden = !plan.allowed;
+  $('#rebuildCancel').textContent = plan.allowed ? 'Not now' : 'OK';
+  if (plan.mode === 'wait') {
+    $('#rebuildTitle').textContent = 'Memory was refreshed recently';
+    $('#rebuildList').innerHTML = li(`You rebuilt it on ${dayLabel(plan.lastAt)}.`, `You can rebuild again on ${dayLabel(plan.nextAt)}.`) +
+      li('Sooner once you’ve chatted more.', 'Then I read only the new chats.') +
+      li('Nothing is lost meanwhile.', 'I keep learning from each chat as it happens.');
+  } else if (plan.mode === 'new') {
+    $('#rebuildTitle').textContent = 'Read your new chats?';
+    $('#rebuildList').innerHTML = li(`Only what’s new since ${dayLabel(plan.since ?? plan.lastAt)}.`, 'Everything already in memory stays as it is.') +
+      li('Confirmed cards guide me.', 'I won’t repeat or reword them; if one changed, I’ll ask you.');
+    go.textContent = 'Read new chats';
+  } else {
+    $('#rebuildTitle').textContent = plan.lastAt || plan.cards ? 'Rebuild from all your chats?' : 'Build from your chats?';
+    $('#rebuildList').innerHTML = li(plan.since ? `I’ll read from ${dayLabel(plan.since)}.` : 'I’ll re-read your whole history.', plan.since ? 'Every card before that is already confirmed by you.' : 'It runs in the background; keep chatting.') +
+      (plan.confirmed ? li(`Your ${plan.confirmed} confirmed card${plan.confirmed === 1 ? '' : 's'} stay.`, 'I use them as a guide and won’t reword them; if one changed, I’ll ask you.') : '') +
+      (plan.cards > plan.confirmed ? li('Guesses may change.', 'Cards you haven’t confirmed yet can be replaced or removed.') : '') +
+      li('Once a month.', 'Sooner only for new chats.');
+    go.textContent = plan.lastAt || plan.cards ? 'Rebuild memory' : 'Build my memory';
+  }
+  open('rebuildSheet');
+}
+$('#rebuildGo').addEventListener('click', () => { close('rebuildSheet'); startBuild(); });
 async function startBuild() {
-  try { showBuild(await api('/api/build', {})); } catch (err) { return toast(err.message); }
+  try { showBuild(await api('/api/build', { confirm: true })); } catch (err) { return toast(err.message); }
   clearInterval(buildPoll);
   buildPoll = setInterval(async () => {
     const job = await fetch('/api/build').then((r) => r.json()).catch(() => null);
@@ -693,21 +730,23 @@ function showBuild(job) {
   $('#redistillBtn').disabled = $('#distillBtn').disabled = !!job.running;
 }
 async function buildDone(job) {
+  if (job.report && !job.report.turns) return addMsg('assistant', '<p>No new chats to read since your last rebuild. Your memory is up to date.</p>');
   if (job.error) return addMsg('assistant', `<p>${esc(`I couldn’t finish rebuilding your memory: ${job.error}`)}</p>`);
   await refresh(await api('/api/state'));
   renderMemory();
   const r = job.report;
   const toCheck = data.cards.filter((c) => c.checkReason).length;
+  const confirmed = data.cards.filter((c) => c.status === 'confirmed').length;
   const notes = [
     r.instructionsSkipped ? `skipped ${r.instructionsSkipped} message${r.instructionsSkipped === 1 ? '' : 's'} that read like instructions to me` : '',
     r.secretsRemoved ? `left out ${r.secretsRemoved} password${r.secretsRemoved === 1 ? '' : 's'} or code${r.secretsRemoved === 1 ? '' : 's'}` : '',
   ].filter(Boolean);
-  const m = addMsg('assistant', `<p>${esc(`Your memory is rebuilt: ${r.cards} cards from ${r.turns} turns, ${toCheck} for you to check.`)}${notes.length ? ` ${esc(`I ${notes.join(' and ')}.`)}` : ''}</p>
+  const m = addMsg('assistant', `<p>${esc(`Your memory is rebuilt from ${r.turns} turns: ${data.cards.length} cards, ${confirmed ? `${confirmed} you confirmed kept as they are, ` : ''}${toCheck} for you to check.`)}${notes.length ? ` ${esc(`I ${notes.join(' and ')}.`)}` : ''}</p>
     <div class="inline-actions"><button class="ilink open-mem">Open Memory</button></div>`);
   m.querySelector('.open-mem').addEventListener('click', () => { renderMemory(); open('memory'); });
 }
-$('#distillBtn').addEventListener('click', startBuild);
-$('#redistillBtn').addEventListener('click', startBuild);
+$('#distillBtn').addEventListener('click', askRebuild);
+$('#redistillBtn').addEventListener('click', askRebuild);
 
 const subsOf = (cards) => [...new Set(cards.map((c) => c.sub).filter(Boolean))];
 
@@ -1114,7 +1153,7 @@ function applyProfileChrome() {
 function renderMemSwitch() {
   const on = !data.memoryOff;
   $('#memToggle').setAttribute('aria-checked', String(on));
-  $('#memSwitchSub').textContent = on ? 'On: I use, check and learn from your cards.' : 'Off: I don’t use, ask or learn anything.';
+  $('#memSwitchSub').textContent = on ? 'On: I remember what matters to you.' : 'Off: I don’t remember anything.';
   $('#modeChip').classList.toggle('off', !on);
   $('#modeLabel').textContent = on ? MODES.find((m) => m.id === mode).label : 'Memory: off';
 }

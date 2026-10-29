@@ -49,6 +49,28 @@ test('builds dated cards from chat history', async () => {
   assert.ok(s.cards.some((c) => c.status === 'pending'), 'a sensitive card is locked');
 });
 
+test('saying what changed confirms that card, never an unrelated one', async () => {
+  const s = await get('/api/state');
+  const target = s.cards.find((c) => c.category === 'travel') ?? s.cards[0];
+  await post(`/api/cards/${target.id}`, { action: 'confirm' });
+  // The new wording is close to the confirmed card, so it merges into it.
+  const r = await post('/api/memory/update', { category: target.category, oldText: 'something else entirely', message: `now ${target.text} too` });
+  assert.equal(r.card.category, target.category);
+  assert.equal(r.card.id, target.id, 'the card it merged into');
+  assert.match(r.card.text, new RegExp(target.text.split(' ')[0], 'i'));
+});
+
+test('a rebuild needs a confirm, and then waits a month unless the history grows', async () => {
+  const unconfirmed = await fetch(BASE + '/api/build', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+  assert.equal(unconfirmed.status, 400);
+  const plan = await get('/api/build/plan');
+  assert.equal(plan.mode, 'wait', 'the build above counts as this month’s');
+  assert.equal(plan.allowed, false);
+  assert.ok(Date.parse(plan.nextAt) > Date.now());
+  const again = await fetch(BASE + '/api/build', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"confirm":true}' });
+  assert.equal(again.status, 429);
+});
+
 test('answer first, check after: a high-stakes request answers at once, with one check above it', async () => {
   const r = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 't1' });
   assert.equal(r.type, 'answer');
