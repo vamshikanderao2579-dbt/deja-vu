@@ -1,0 +1,5 @@
+DRAFT CARDS:
+{{draft}}
+
+YOUR NOTES FROM EACH BATCH:
+{{notes}}

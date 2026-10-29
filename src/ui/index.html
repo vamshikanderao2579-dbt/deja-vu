@@ -111,7 +111,10 @@
     <section class="page" id="memory" aria-label="Memory">
       <div class="page-head"><button class="circle line" data-close="memory" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button></div>
       <h1 class="big">Memory</h1>
+      <div class="mem-switch" id="memSwitch"><div><b>Memory</b><span class="fine" id="memSwitchSub"></span></div><button class="switch" id="memToggle" role="switch" aria-checked="true" aria-label="Memory on or off"><i></i></button></div>
+      <div class="mem-dates" id="memDates"></div>
       <p class="sub">What I know about you, in short cards. You own them: tap a topic and swipe. Right if it's right, left if it's not.</p>
+      <div class="build-box" id="buildBox" hidden><div class="build-top"><span id="buildLabel">Starting</span><b id="buildPct">0%</b></div><div class="build-bar"><i id="buildFill"></i></div><p class="fine">Runs in the background. Keep chatting; I'll tell you in chat when it's done.</p></div>
       <div id="memorySummary"></div>
       <div class="cat-grid" id="catGrid"></div>
       <div id="memoryEmpty" class="empty hidden">
@@ -121,7 +124,7 @@
       </div>
       <div class="group" id="memoryLinks">
         <button class="srow" data-go="insights"><svg viewBox="0 0 24 24"><use href="#i-insights"/></svg>How lean is my memory?<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
-        <button class="srow" id="redistillBtn"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Update from recent chats<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+        <button class="srow" id="redistillBtn"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.2M4 4v4h4"/></svg>Rebuild from all my chats<svg class="chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
       </div>
     </section>
 
@@ -151,10 +154,36 @@
       <h1 class="big">How lean is my memory?</h1>
       <p class="sub">Each answer only sees a few relevant cards instead of your whole history.</p>
       <div class="stats" id="stats"></div>
+      <div class="card-box" id="traceBox" hidden></div>
       <div class="card-box" id="gateBox" hidden></div>
       <div id="evalBox"></div>
       <div class="card-box" id="sessionLog"><h3>This session</h3><p class="fine">Ask something in chat to see the comparison.</p></div>
     </section>
+
+    <!-- Turning memory on: what will happen, then a fast-forward through the first weeks -->
+    <section class="sheet" id="memoryIntro" aria-label="Turn on memory">
+      <button class="circle line close" data-close="memoryIntro" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div class="intro-mark"><svg viewBox="0 0 24 24"><use href="#i-logo"/></svg></div>
+      <h1 class="big">Turn on memory?</h1>
+      <ul class="intro-list">
+        <li><b>Short notes from our chats.</b> Cards like “Vegetarian on Tuesdays”, each linked to where you said it.</li>
+        <li><b>I ask rarely.</b> Only when a guess is about to shape a booking or a plan, and never twice in a chat.</li>
+        <li><b>You own it.</b> See, confirm, remove or export every card.</li>
+        <li><b>Private stays locked.</b> Health, money and similar cards are never used until you say yes.</li>
+      </ul>
+      <button class="primary wide" id="memOnBtn">Turn on memory</button>
+      <button class="link center" data-close="memoryIntro">Not now</button>
+    </section>
+    <div class="ff" id="fastForward" hidden>
+      <div class="ff-inner">
+        <svg class="ff-mark" viewBox="0 0 24 24"><use href="#i-logo"/></svg>
+        <p class="ff-week" id="ffWeek">Week 1</p>
+        <p class="ff-count"><b id="ffCards">0</b> cards · <b id="ffTopics">0</b> topics</p>
+        <div class="ff-cards" id="ffCardsList"></div>
+        <p class="ff-done fine" id="ffDone"></p>
+        <button class="primary wide" id="ffGo" hidden>Start chatting</button>
+      </div>
+    </div>
 
     <div class="toast" id="toast"></div>
 

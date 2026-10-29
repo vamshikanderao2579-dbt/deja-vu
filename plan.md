@@ -1,7 +1,7 @@
 # Plan: User-owned, confirmed context for personal AI agents
 
 **Meta Global AI Developer Hackathon (Cerebral Valley)** · Indie Developer track · Theme 1: Build for Your World
-**Team:** Keyholders (working name) · **Submission due:** Wed Nov 4, 2026, 9:00 PM ET (target: done by Nov 3, the last full support day)
+**Team:** Sreenidhi (Nidhi) Durgam + Vamshi Kanderao · **Submission due:** Wed Nov 4, 2026, 9:00 PM ET (target: done by Nov 3, the last full support day)
 
 **One-liner:** Personal AI that asks before it assumes: your memory becomes cards you can see, confirm with a swipe, and own.
 
@@ -147,6 +147,6 @@ Each provider is one config line (all speak the OpenAI chat format). With no key
 
 ## 10. Open questions
 
-- Product name (not "Cue"; team name is Keyholders).
+- Product name (not "Cue").
 - Exact Muse Spark model ID from the Model list page.
 - Hosting choice (Render, Railway or Fly for a Node server).

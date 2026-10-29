@@ -9,6 +9,11 @@ import { config, ROOT } from './config.js';
 const SPEND_PATH = join(ROOT, 'data', 'spend.json');
 const PRICE_IN = Number(process.env.PRICE_IN_PER_M ?? 1.25); // USD per 1M input tokens
 const PRICE_OUT = Number(process.env.PRICE_OUT_PER_M ?? 4.25); // USD per 1M output tokens
+// Models priced differently from the default above, as [in, out] USD per 1M tokens.
+const MODEL_PRICES = { 'muse-wonder-1.0': [4, 20] };
+const priceOf = (model) => MODEL_PRICES[model] ?? [PRICE_IN, PRICE_OUT];
+// Days recorded before per-model pricing have no token_usd; price them at the default.
+const tokenUsd = (day) => day.token_usd ?? (day.in * PRICE_IN + day.out * PRICE_OUT) / 1e6;
 const CAP = Number(process.env.SPEND_CAP_USD ?? 3);
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -19,12 +24,14 @@ function readSpend() {
 export function spentToday() {
   return readSpend().day;
 }
-function recordSpend(inTok, outTok) {
+function recordSpend(inTok, outTok, model) {
   const { all, day } = readSpend();
+  const [pin, pout] = priceOf(model);
+  day.token_usd = tokenUsd(day) + (inTok * pin + outTok * pout) / 1e6;
   day.in += inTok;
   day.out += outTok;
   day.calls += 1;
-  day.usd = Math.round(((day.in * PRICE_IN + day.out * PRICE_OUT) / 1e6 + (day.audio_usd ?? 0)) * 10000) / 10000;
+  day.usd = Math.round((day.token_usd + (day.audio_usd ?? 0)) * 10000) / 10000;
   all[today()] = day;
   writeFileSync(SPEND_PATH, JSON.stringify(all, null, 2));
   return day;
@@ -36,7 +43,7 @@ const AUDIO_PER_MIN = Number(process.env.PRICE_AUDIO_PER_MIN ?? 0.02);
 export function recordAudioSpend(seconds) {
   const { all, day } = readSpend();
   day.audio_usd = Math.round(((day.audio_usd ?? 0) + (seconds / 60) * AUDIO_PER_MIN) * 10000) / 10000;
-  day.usd = Math.round((((day.in * PRICE_IN + day.out * PRICE_OUT) / 1e6) + day.audio_usd) * 10000) / 10000;
+  day.usd = Math.round((tokenUsd(day) + day.audio_usd) * 10000) / 10000;
   if (day.usd >= CAP) throw new Error(`Daily spend cap reached ($${day.usd.toFixed(2)} of $${CAP}).`);
   all[today()] = day;
   writeFileSync(SPEND_PATH, JSON.stringify(all, null, 2));
@@ -58,16 +65,18 @@ function saveCache() {
   writeFileSync(CACHE_PATH, JSON.stringify(cache));
 }
 const cacheKey = (role, body) =>
-  createHash('sha1').update(JSON.stringify({ role, model: body.model, messages: body.messages, json: !!body.response_format, reasoning: body.reasoning_effort })).digest('hex');
+  createHash('sha1').update(JSON.stringify({ role, model: body.model, messages: body.messages, json: !!body.response_format, reasoning: body.reasoning_effort, ...(body.tools ? { tools: body.tools.map((t) => t.function.name) } : {}) })).digest('hex');
 export const replayStats = { hits: 0, misses: 0 };
 
 // Both Meta Model API and Baseten speak the OpenAI chat-completions format.
 // `reasoning` sets how long the model thinks first (minimal | low | medium). Thinking
 // tokens count toward maxTokens and are billed as output, so keep it low for small jobs.
-export async function complete(role, messages, { json = false, maxTokens = 1500, temperature = 0.2, reasoning = 'low' } = {}) {
+// `tools` (OpenAI function tools) lets the model call one; calls come back as `toolCalls`.
+export async function complete(role, messages, { json = false, maxTokens = 1500, temperature = 0.2, reasoning = 'low', tools = null } = {}) {
   const p = config.providers[role];
   const body = { model: p.model, messages, max_tokens: maxTokens, temperature };
   if (json) body.response_format = { type: 'json_object' };
+  if (tools?.length) { body.tools = tools; body.tool_choice = 'auto'; }
   if (reasoning) body.reasoning_effort = reasoning;
   const key = cacheKey(role, body);
 
@@ -80,7 +89,7 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
     }
     replayStats.hits++;
     await new Promise((r) => setTimeout(r, 250 + Math.random() * 350)); // feels natural, still instant
-    return { text: hit.text, usage: hit.usage, model: p.model, replayed: true };
+    return { text: hit.text, toolCalls: hit.toolCalls ?? [], usage: hit.usage, model: p.model, replayed: true };
   }
 
   return liveCall();
@@ -93,10 +102,13 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
   }
 
   let res = await post(p, body);
-  // Some providers reject response_format or reasoning_effort; retry once without them.
-  if (!res.ok && res.status === 400 && (body.response_format || body.reasoning_effort)) {
+  // Some providers reject response_format, reasoning_effort or tools; retry once without them.
+  if (!res.ok && res.status === 400 && (body.response_format || body.reasoning_effort || body.tools)) {
+    console.warn(`[llm] ${role} rejected the request (${(await res.text().catch(() => '')).slice(0, 160)}); retrying plain`);
     delete body.response_format;
     delete body.reasoning_effort;
+    delete body.tools;
+    delete body.tool_choice;
     res = await post(p, body);
   }
   if (!res.ok) {
@@ -105,14 +117,19 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
   }
   const data = await res.json();
   const text = data.choices?.[0]?.message?.content ?? '';
+  const toolCalls = (data.choices?.[0]?.message?.tool_calls ?? []).map((c) => {
+    let args = {};
+    try { args = JSON.parse(c.function?.arguments || '{}'); } catch {}
+    return { name: c.function?.name, args };
+  }).filter((c) => c.name);
   if (data.choices?.[0]?.finish_reason === 'length') console.warn(`[llm] ${role} reply hit maxTokens (${maxTokens}); raise it if output looks cut off`);
   // Use the provider's token counts; fall back to a character estimate.
   const inTok = data.usage?.prompt_tokens ?? Math.ceil(JSON.stringify(messages).length / 4);
   const outTok = data.usage?.completion_tokens ?? Math.ceil(text.length / 4);
-  recordSpend(inTok, outTok);
-  loadCache()[key] = { text, usage: data.usage ?? null, at: new Date().toISOString() };
+  recordSpend(inTok, outTok, p.model);
+  loadCache()[key] = { text, ...(toolCalls.length ? { toolCalls } : {}), usage: data.usage ?? null, at: new Date().toISOString() };
   saveCache();
-  return { text, usage: data.usage ?? null, model: p.model };
+  return { text, toolCalls, usage: data.usage ?? null, model: p.model };
   }
 }
 

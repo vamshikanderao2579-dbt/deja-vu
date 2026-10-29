@@ -131,14 +131,14 @@ function el(html) {
 }
 
 // ---------------- navigation: drawer, sheet, pages ----------------
-const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insights'];
+const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insights', 'memoryIntro'];
 
 function open(id) {
   if (id === 'chat') return closeAll();
   if (id !== 'drawer') $('#drawer').classList.remove('open');
   $(`#${id}`).classList.add('open');
   $('#scrim').classList.toggle('on', id === 'drawer');
-  if (id === 'memory') renderMemory();
+  if (id === 'memory') { renderMemory(); renderMemSwitch(); }
   if (id === 'insights') renderInsights();
   if (id === 'settings') renderSettings();
   if (id === 'profiles') renderProfiles();
@@ -246,7 +246,7 @@ async function sendInner(message, { skipCue = false } = {}) {
   try {
     const res = await api('/api/chat', { message, mode, conversationId, skipCue, demo: demoRunning });
     t.remove();
-    if (res.type === 'cue') return renderCue(res.cue, message);
+    if (res.trace?.quietYes?.confirmed) toast(`Confirmed “${res.trace.quietYes.text}”: you went with it twice.`);
     renderAnswer(res, message);
   } catch (err) {
     t.remove();
@@ -256,7 +256,9 @@ async function sendInner(message, { skipCue = false } = {}) {
 
 // After an answer: one quiet row. Details (cards used, tokens) only on ⓘ.
 function renderAnswer(res, question) {
-  addMsg('assistant', md(res.text));
+  // Answer first, check after: the pick reads as a normal reply, the check sits under it.
+  addMsg('assistant', md(res.text) + (res.draft ? pickHtml(res.draft, question) : ''));
+  if (res.check) renderCheck(res.check, question);
   const ctx = res.tokens.context;
   const full = res.tokens.fullHistory;
   sessionLog.push({ question, mode: res.mode, tokens: ctx, full, cards: res.usedCards.length });
@@ -277,7 +279,7 @@ function renderAnswer(res, question) {
       const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
       line = used.length ? `Used ${used.length} card${used.length > 1 ? 's' : ''} · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
     } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory off';
-    detail.innerHTML = `<div>${line}</div>`;
+    detail.innerHTML = `<div>${line}</div>${res.trace ? `<div class="trace-line">${traceLine(res.trace)}</div>` : ''}`;
     if (used.length) {
       const chips = el('<div class="chips"></div>');
       for (const c of used) {
@@ -317,10 +319,17 @@ function scheduleLearnedCheck() {
     const prev = learnedSeen;
     await refresh();
     const fresh = (data.learned ?? []).filter((l) => !prev || l.at > prev);
-    if (fresh.length) {
-      learnedSeen = fresh.at(-1).at;
-      toast(`${data.agent.name} noticed: “${fresh.at(-1).text}”${fresh.length > 1 ? ` (+${fresh.length - 1} more)` : ''}`);
+    if (!fresh.length) return;
+    learnedSeen = fresh.at(-1).at;
+    // Memory changing on its own from what was said: shown where it happened.
+    for (const l of fresh.filter((x) => x.was)) {
+      const n = el(`<button class="mem-update"><span class="mu-tag">↻ Memory updated</span><s>${esc(l.was)}</s><b>${esc(l.text)}</b></button>`);
+      n.addEventListener('click', () => openCard(l.id));
+      thread.append(n);
+      scrollDown();
     }
+    const plain = fresh.filter((x) => !x.was);
+    if (plain.length) toast(`${data.agent.name} noticed: “${plain.at(-1).text}”${plain.length > 1 ? ` (+${plain.length - 1} more)` : ''}`);
   }, ms);
 }
 
@@ -338,38 +347,50 @@ function cardHtml(card, { why = '', sources = false } = {}) {
   </div>`;
 }
 
-function renderCue(cue, question) {
-  const wrap = el(`<div class="cue"><p class="q">${esc(cue.question)}</p>${cardHtml(cue.card)}
+// What the loop decided for one answer, in a line (shown under ⓘ).
+const QUIET = {
+  low_stakes: 'no check: nothing at stake',
+  asked_this_chat: 'no check: already asked once in this chat',
+  cooldown: 'no check: asked recently',
+  recently_asked: 'no check: asked about these this week',
+  nothing_to_check: 'no check: the cards it used are confirmed or fresh',
+  redo: 'redone with your change',
+};
+function traceLine(t) {
+  if (t.mode !== 'cards') return t.mode === 'none' ? 'Memory off: nothing used, asked or learned' : 'Full history, no checks';
+  const parts = [`Picked ${t.picked} card${t.picked === 1 ? '' : 's'}`, `${t.stakes} stakes`];
+  parts.push(t.check ? `checked “${esc(t.check)}”` : esc(QUIET[t.quiet] ?? 'no check'));
+  if (t.quietYes) parts.push(`you carried on, so “${esc(t.quietYes.text)}” counts as a yes`);
+  return parts.join(' · ');
+}
+
+// The check line above an answer: what it went with, ✓ / ✕, never blocking.
+// Sending the next message without ✕ counts as a quiet yes (the server keeps score).
+function renderCheck(check, question) {
+  const wrap = el(`<div class="cue check"><p class="q">${esc(check.question)}</p>${cardHtml(check.card)}
     <div class="cue-actions"><button class="no">✕ Not anymore</button><button class="mic" aria-label="Answer by voice">🎙</button><button class="yes">✓ Still true</button></div></div>`);
   thread.append(wrap);
   scrollDown();
   const card = wrap.querySelector('.swipe-card');
   let done = false;
-  const settle = () => { if (done) return false; done = true; clearTimeout(timer); openCueSkip = null; wrap.querySelector('.cue-actions')?.remove(); return true; };
-  // Not answering is fine: after a pause (or a new message) it goes with what it knows.
-  const skip = async () => {
-    if (!settle()) return;
-    card.style.display = 'none';
-    wrap.append(el(`<p class="q" style="margin-top:8px">No worries, going with what I know.</p>`));
-    await send(question, { skipCue: true });
-  };
-  const timer = setTimeout(skip, 8000);
-  openCueSkip = skip;
+  const settle = () => { if (done) return false; done = true; openCueSkip = null; wrap.querySelector('.cue-actions')?.remove(); return true; };
+  const note = (text) => wrap.append(el(`<p class="q settled">${esc(text)}</p>`));
+  // Carrying on: fold the card away; it stays a guess the server just nudged up.
+  openCueSkip = () => { if (!settle()) return; card.style.display = 'none'; note(`Kept “${check.card.text}”.`); };
 
   const yes = async () => {
     if (!settle()) return;
     try {
-      await refresh(await api(`/api/cards/${cue.card.id}`, { action: 'confirm' }));
-      wrap.append(el(`<p class="q" style="margin-top:8px">Thanks. Saved as confirmed.</p>`));
-      await send(question, { skipCue: true });
+      await refresh(await api(`/api/cards/${check.card.id}`, { action: 'confirm' }));
+      card.style.display = 'none';
+      note(`✓ Saved “${check.card.text}” as confirmed.`);
     } catch (err) { toast(err.message); }
   };
   const no = async () => {
     if (!settle()) return;
     try {
-      await refresh(await api(`/api/cards/${cue.card.id}`, { action: 'reject' }));
-      offerChatInline(`Got it, I’ve forgotten “${cue.card.text}”.`, () => startUpdateChat({ category: cue.card.category, oldText: cue.card.text }));
-      await send(question, { skipCue: true });
+      await refresh(await api(`/api/cards/${check.card.id}`, { action: 'reject' }));
+      offerChatInline(`Got it, I’ve forgotten “${check.card.text}”.`, () => startUpdateChat({ category: check.card.category, oldText: check.card.text, question }), () => offerRedo(question, 'Redo it without that?'));
     } catch (err) { toast(err.message); }
   };
 
@@ -384,20 +405,55 @@ function renderCue(cue, question) {
     // A spoken correction ("No, it's Wednesdays now") updates the card directly.
     if (!settle()) return;
     card.style.display = 'none';
-    await applyUpdate({ category: cue.card.category, oldText: cue.card.text, cardId: cue.card.id }, v.text);
-    await send(question, { skipCue: true });
+    await applyUpdate({ category: check.card.category, oldText: check.card.text, cardId: check.card.id }, v.text);
+    offerRedo(question);
   }, '🎙');
+}
+
+// One button: redo the last answer with what just changed. Only on request.
+function offerRedo(question, label = 'Redo it with that?') {
+  if (!question) return;
+  const m = addMsg('assistant', `<div class="inline-actions"><button class="ilink redo">↻ ${esc(label)}</button></div>`);
+  m.classList.add('bare');
+  m.querySelector('.redo').addEventListener('click', () => { m.remove(); send(question, { skipCue: true }); });
+}
+
+// ---------------- picks: the action a confirmation controls ----------------
+// A booking or order the agent picked from memory, shown inside its reply. Redone
+// after a ✕, the new pick marks what changed against the last one for the same request.
+const lastDraft = new Map();
+function pickHtml(d, question) {
+  const prev = lastDraft.get(question);
+  lastDraft.set(question, d);
+  const lines = [...(d.items ?? []), ...(d.details ?? [])];
+  const prevLines = prev ? [...(prev.items ?? []), ...(prev.details ?? [])] : [];
+  // The model rewords freely between picks: a line counts as the same if most of its words match.
+  const words = (l) => new Set(l.toLowerCase().replace(/[^a-z0-9$\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2));
+  const same = (a, b) => { const A = words(a), B = words(b); let n = 0; for (const w of A) if (B.has(w)) n++; return n / (Math.min(A.size, B.size) || 1) >= 0.5; };
+  const isNew = (l) => prev && !prevLines.some((p) => same(p, l));
+  const gone = prev ? prevLines.filter((p) => !lines.some((l) => same(p, l))) : [];
+  const head = [d.when, d.party].filter(Boolean).map(esc).join(' · ');
+  return `<div class="pick${prev ? ' updated' : ''}">
+    <div class="pick-title">${esc(d.title)}</div>
+    ${head ? `<div class="pick-when">${head}</div>` : ''}
+    <ul>${lines.map((l) => `<li class="${isNew(l) ? 'new' : ''}">${esc(l)}</li>`).join('')}${gone.map((l) => `<li class="gone">${esc(l)}</li>`).join('')}</ul>
+  </div>`;
 }
 
 // A normal agent message with two quiet links. Nothing waits on it: the person can
 // tap Chat about it, tap Skip, or just send their next message.
-function offerChatInline(lead, onChat) {
+function offerChatInline(lead, onChat, onSkip) {
   const m = addMsg('assistant', `<p>${esc(lead)} Want to tell me what changed?</p>
     <div class="inline-actions"><button class="ilink chat">💬 Chat about it</button><button class="ilink skip">Skip for now</button></div>`);
   const actions = m.querySelector('.inline-actions');
   actions.querySelector('.chat').addEventListener('click', () => { actions.remove(); onChat(); });
-  actions.querySelector('.skip').addEventListener('click', () => actions.remove());
+  actions.querySelector('.skip').addEventListener('click', () => { actions.remove(); onSkip?.(); });
 }
+
+// The opener for telling the agent what changed, one form for every kind of card
+// (a preference, a person, a lesson): the old card, shortened, then "→ now ".
+const shortCard = (text, words = 6) => { const w = text.split(/\s+/); return w.length > words ? w.slice(0, words).join(' ') + '…' : text; };
+const changeLine = (text) => `“${shortCard(text)}” → now `;
 
 // Land in chat with the sentence started for them; they only finish it.
 let pendingUpdate = null;
@@ -406,7 +462,7 @@ function startUpdateChat(info) {
   closeAll();
   pendingUpdate = info;
   const input = $('#input');
-  input.value = `Hey ${data.agent.name}, my ${catLabel(info.category)} preference “${info.oldText}” has changed. Now I’d like `;
+  input.value = changeLine(info.oldText);
   growInput();
   input.focus();
   input.setSelectionRange(input.value.length, input.value.length);
@@ -417,7 +473,7 @@ function startMultiUpdate(category, cards) {
   closeAll();
   pendingUpdate = { items: cards.map((c) => ({ category: c.category, oldText: c.text })) };
   const input = $('#input');
-  input.value = `Hey ${data.agent.name}, a few ${catLabel(category)} things changed:\n` + cards.map((c) => `• “${c.text}” → now `).join('\n');
+  input.value = cards.map((c) => `• ${changeLine(c.text)}`).join('\n');
   growInput();
   input.focus();
   // Cursor at the end of the first bullet.
@@ -433,7 +489,7 @@ async function applyUpdates(items, message) {
     const after = (lines[i] ?? '').split('→ now')[1]?.trim();
     if (!after) continue; // left blank: nothing to save
     try {
-      const res = await api('/api/memory/update', { ...item, message: `My ${item.category} preference “${item.oldText}” changed. Now ${after}` });
+      const res = await api('/api/memory/update', { ...item, message: `${changeLine(item.oldText)}${after}` });
       await refresh(res);
       if (res.card) saved.push(res.card);
     } catch (err) { toast(err.message); }
@@ -536,24 +592,38 @@ function makeSwipeable(card, onAction) {
     if (!active) return;
     active = false;
     card.classList.remove('dragging');
+    if (Math.abs(dx) > 90) {
+      card.dataset.dragged = '1';
+      return fling(card, dx > 0 ? 'confirm' : 'reject', () => onAction(dx > 0 ? 'confirm' : 'reject'));
+    }
     Object.values(stamps).forEach((s) => (s.style.opacity = 0));
-    if (dx > 90) fling(card, 'confirm', () => onAction('confirm'));
-    else if (dx < -90) fling(card, 'reject', () => onAction('reject'));
-    else if (dy < -80 && Math.abs(dx) < 60) { card.style.transform = ''; onAction('edit'); }
+    if (dy < -80 && Math.abs(dx) < 60) { card.style.transform = ''; onAction('edit'); }
     else card.style.transform = '';
   };
   card.addEventListener('pointerup', end);
   card.addEventListener('pointercancel', end);
 }
 
+// Every choice reads as a swipe, even from a button, voice or the demo: the card leans
+// with its stamp showing, then flies off. A card already dragged past the line just flies.
 function fling(card, action, after) {
-  const x = action === 'confirm' ? 500 : -500;
-  card.style.transform = `translate(${x}px, -20px) rotate(${x / 20}deg)`;
-  card.style.opacity = '0';
-  setTimeout(() => {
-    if (card.closest('.cue')) card.style.display = 'none';
-    after();
-  }, 220);
+  const dir = action === 'confirm' ? 1 : -1;
+  const stamp = card.querySelector(action === 'confirm' ? '.stamp.yes' : '.stamp.no');
+  const fly = () => {
+    card.style.transition = 'transform .35s ease-in, opacity .35s ease-in';
+    card.style.transform = `translate(${dir * 520}px, -30px) rotate(${dir * 24}deg)`;
+    card.style.opacity = '0';
+    setTimeout(() => {
+      card.style.transition = '';
+      if (card.closest('.cue')) card.style.display = 'none';
+      after();
+    }, 340);
+  };
+  if (card.dataset.dragged) { delete card.dataset.dragged; return fly(); }
+  card.style.transition = 'transform .55s cubic-bezier(.2, .8, .2, 1)';
+  card.style.transform = `translate(${dir * 70}px, -4px) rotate(${dir * 5}deg)`;
+  if (stamp) { stamp.style.transition = 'opacity .3s'; stamp.style.opacity = 1; }
+  setTimeout(fly, 750);
 }
 
 // ---------------- composer ----------------
@@ -581,7 +651,7 @@ $('#composer').addEventListener('submit', (e) => {
     const info = pendingUpdate;
     pendingUpdate = null;
     addMsg('user', esc(v));
-    applyUpdate({ category: info.category, oldText: info.oldText }, v).then(() => info.question && send(info.question, { skipCue: true }));
+    applyUpdate({ category: info.category, oldText: info.oldText }, v).then(() => offerRedo(info.question));
     return;
   }
   send(v);
@@ -593,6 +663,7 @@ $('#newChatBtn').addEventListener('click', newChat);
 $('#drawerNewChat').addEventListener('click', newChat);
 
 $('#modeChip').addEventListener('click', () => {
+  if (data.memoryOff) return open('memoryIntro');
   const i = MODES.findIndex((m) => m.id === mode);
   mode = MODES[(i + 1) % MODES.length].id;
   $('#modeChip').dataset.mode = mode;
@@ -601,24 +672,42 @@ $('#modeChip').addEventListener('click', () => {
 });
 
 // ---------------- memory: categories ----------------
-async function buildContext() {
-  try {
-    const res = await api('/api/distill', {});
-    await refresh(res);
-    toast(`Built ${res.cards.length} cards from your chats.`);
-  } catch (err) {
-    toast(err.message);
-  }
+// Building memory from the whole history runs in the background with a live progress
+// bar; when it's done, one note in chat links to Memory.
+let buildPoll = null;
+async function startBuild() {
+  try { showBuild(await api('/api/build', {})); } catch (err) { return toast(err.message); }
+  clearInterval(buildPoll);
+  buildPoll = setInterval(async () => {
+    const job = await fetch('/api/build').then((r) => r.json()).catch(() => null);
+    if (!job) return;
+    showBuild(job);
+    if (job.done) { clearInterval(buildPoll); await buildDone(job); }
+  }, 700);
 }
-$('#distillBtn').addEventListener('click', async (e) => {
-  e.target.disabled = true;
-  e.target.textContent = 'Reading our chats…';
-  await buildContext();
-  e.target.disabled = false;
-  e.target.textContent = 'Build from my chats';
+function showBuild(job) {
+  $('#buildBox').hidden = !job.running;
+  $('#buildLabel').textContent = job.label ?? 'Working';
+  $('#buildPct').textContent = `${job.pct ?? 0}%`;
+  $('#buildFill').style.width = `${job.pct ?? 0}%`;
+  $('#redistillBtn').disabled = $('#distillBtn').disabled = !!job.running;
+}
+async function buildDone(job) {
+  if (job.error) return addMsg('assistant', `<p>${esc(`I couldn’t finish rebuilding your memory: ${job.error}`)}</p>`);
+  await refresh(await api('/api/state'));
   renderMemory();
-});
-$('#redistillBtn').addEventListener('click', async () => { await buildContext(); renderMemory(); });
+  const r = job.report;
+  const toCheck = data.cards.filter((c) => c.checkReason).length;
+  const notes = [
+    r.instructionsSkipped ? `skipped ${r.instructionsSkipped} message${r.instructionsSkipped === 1 ? '' : 's'} that read like instructions to me` : '',
+    r.secretsRemoved ? `left out ${r.secretsRemoved} password${r.secretsRemoved === 1 ? '' : 's'} or code${r.secretsRemoved === 1 ? '' : 's'}` : '',
+  ].filter(Boolean);
+  const m = addMsg('assistant', `<p>${esc(`Your memory is rebuilt: ${r.cards} cards from ${r.turns} turns, ${toCheck} for you to check.`)}${notes.length ? ` ${esc(`I ${notes.join(' and ')}.`)}` : ''}</p>
+    <div class="inline-actions"><button class="ilink open-mem">Open Memory</button></div>`);
+  m.querySelector('.open-mem').addEventListener('click', () => { renderMemory(); open('memory'); });
+}
+$('#distillBtn').addEventListener('click', startBuild);
+$('#redistillBtn').addEventListener('click', startBuild);
 
 const subsOf = (cards) => [...new Set(cards.map((c) => c.sub).filter(Boolean))];
 
@@ -637,6 +726,11 @@ function renderMemory() {
   $('#memorySummary').innerHTML = empty
     ? ''
     : `<div class="summary"><div><b>${data.cards.length}</b> things I know</div><div><b>${confirmed}</b> confirmed by you</div><div><b>${toCheck}</b> to check</div></div>`;
+  // When memory started (the earliest thing a card was learned from) and when you last approved a card.
+  const starts = data.cards.map((c) => c.first_seen ?? c.created).filter(Boolean).sort();
+  const verified = data.cards.map((c) => c.last_confirmed).filter(Boolean).sort();
+  const day = (d) => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  $('#memDates').innerHTML = empty ? '' : `<span>Memory since <b>${starts.length ? day(starts[0]) : '—'}</b></span><span>Last verified <b>${verified.length ? day(verified.at(-1)) : 'not yet'}</b></span>`;
   const grid = $('#catGrid');
   grid.innerHTML = '';
   for (const [cat, cards] of groups()) {
@@ -807,6 +901,7 @@ function renderInsights() {
     <div class="stat"><div class="n">~${data.fullHistoryTokens.toLocaleString()}</div><div class="l">tokens for full history</div></div>
     <div class="stat"><div class="n">${data.cuesShown}</div><div class="l">quick checks asked</div></div>`;
 
+  renderTrace();
   renderGate();
   renderEval();
   const box = $('#sessionLog');
@@ -816,6 +911,24 @@ function renderInsights() {
     <div class="bar"><span class="lbl">Full history</span><span class="track"><span class="fill" style="width:100%;background:var(--series-2)"></span></span><span class="val">${full.toLocaleString()}</span></div>
     <div class="bar"><span class="lbl">Your cards (avg)</span><span class="track"><span class="fill" style="width:${Math.max(1, (avg / full) * 100)}%;background:var(--series-1)"></span></span><span class="val">${avg}</span></div>
     ${sessionLog.map((l) => `<div class="log-row"><span>${esc(l.question)}</span><span>${l.mode === 'cards' ? `${l.cards} cards · ${l.tokens} tok` : l.mode === 'full' ? `full · ${l.tokens.toLocaleString()} tok` : 'no memory'}</span></div>`).join('')}`;
+}
+
+// What the loop decided across answers: checks asked, and why it stayed quiet the rest of the time.
+function renderTrace() {
+  const box = $('#traceBox');
+  const t = data.trace;
+  if (!t?.answers) { box.hidden = true; return; }
+  const quiet = Object.entries(t.quiet ?? {}).filter(([k]) => k !== 'redo');
+  const quietTotal = quiet.reduce((a, [, n]) => a + n, 0);
+  box.hidden = false;
+  box.innerHTML = `<h3>What I decided</h3>
+    <p class="fine">Every answer, I pick the cards that matter and decide whether a guess is worth a quick check. Most of the time the answer is no.</p>
+    <div class="log-row"><span>Answers</span><span>${t.answers}</span></div>
+    <div class="log-row"><span>Quick checks asked</span><span>${t.checksAsked} <span class="fine">(${Math.round((t.checksAsked / t.answers) * 100)} per 100 answers)</span></span></div>
+    <div class="log-row"><span>Stayed quiet</span><span>${quietTotal}</span></div>
+    ${quiet.map(([k, n]) => `<div class="log-row sub"><span>${esc((QUIET[k] ?? k).replace(/^no check: /, ''))}</span><span>${n}</span></div>`).join('')}
+    <div class="log-row"><span>Quiet yeses (you carried on)</span><span>${t.quietYes}</span></div>
+    <div class="log-row"><span>Drafts made from memory</span><span>${t.drafts}</span></div>`;
 }
 
 // What the memory agent did: one model writes cards, rules and a second model screen them.
@@ -921,7 +1034,6 @@ const DEMO_SCRIPT = [
 ];
 let demoRunning = false;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const waitingOnUser = () => !!document.querySelector('#thread .cue .cue-actions');
 
 async function playDemo() {
   if (demoRunning) return;
@@ -938,26 +1050,28 @@ async function playDemo() {
   thread.innerHTML = '';
   const input = $('#input');
   const typeIn = async (text) => { for (const ch of text) { input.value += ch; growInput(); await sleep(28); } await sleep(350); $('#composer').requestSubmit(); };
-  const settled = async () => { await sleep(400); while (demoRunning && (inFlight > 0 || waitingOnUser())) await sleep(300); };
+  const settled = async () => { await sleep(400); while (demoRunning && inFlight > 0) await sleep(300); };
+  const until = async (sel, ms = 15000) => { for (let t = 0; t < ms && demoRunning; t += 300) { const n = [...document.querySelectorAll(sel)].at(-1); if (n) return n; await sleep(300); } return null; };
   for (const raw of data.profile?.script?.length ? data.profile.script : DEMO_SCRIPT) {
     if (!demoRunning) break;
     const step = typeof raw === 'string' ? { text: raw } : raw;
     if (step.newChat) { await sleep(1200); conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); continue; }
     await sleep(900);
     await typeIn(step.text);
-    // React to a quick check the way the script says: confirm, reject (+ chat), or ignore.
-    await sleep(400);
-    while (demoRunning && inFlight > 0 && !document.querySelector('#thread .cue .cue-actions')) await sleep(300);
-    const cueYes = document.querySelector('#thread .cue .cue-actions .yes');
-    if (cueYes && step.onCue !== 'ignore') {
-      await sleep(1500);
-      document.querySelector(`#thread .cue .cue-actions .${step.onCue === 'reject' ? 'no' : 'yes'}`).click();
+    // The answer arrives first; react to its check line the way the script says:
+    // ignore (carry on = quiet yes, the default), confirm, or reject (+ chat, then redo).
+    await settled();
+    const open = [...document.querySelectorAll('#thread .cue.check')].at(-1)?.querySelector('.cue-actions');
+    if (open && step.onCue && step.onCue !== 'ignore') {
+      await sleep(1800);
+      open.querySelector(step.onCue === 'reject' ? '.no' : '.yes').click();
       if (step.onCue === 'reject' && step.chat) {
         await settled();
-        await sleep(1200);
-        document.querySelector('#thread .inline-actions .chat')?.click();
+        (await until('#thread .inline-actions .chat'))?.click();
         await sleep(600);
         await typeIn(step.chat);
+        await settled();
+        if (step.redo !== false) { await sleep(1200); (await until('#thread .inline-actions .redo'))?.click(); }
       }
     }
     await settled();
@@ -993,7 +1107,64 @@ async function switchProfile(id) {
 }
 function applyProfileChrome() {
   $('#profileInitial').textContent = (data.profile?.name ?? '?')[0];
+  renderMemSwitch();
 }
+
+// ---------------- memory on/off + the fast-forward ----------------
+function renderMemSwitch() {
+  const on = !data.memoryOff;
+  $('#memToggle').setAttribute('aria-checked', String(on));
+  $('#memSwitchSub').textContent = on ? 'On: I use, check and learn from your cards.' : 'Off: I don’t use, ask or learn anything.';
+  $('#modeChip').classList.toggle('off', !on);
+  $('#modeLabel').textContent = on ? MODES.find((m) => m.id === mode).label : 'Memory: off';
+}
+$('#memToggle').addEventListener('click', async () => {
+  if (!data.memoryOff) {
+    await refresh(await api('/api/memory/switch', { on: false }));
+    renderMemSwitch();
+    return toast('Memory is off. Your cards are kept; I just won’t use them.');
+  }
+  open('memoryIntro');
+});
+$('#memOnBtn').addEventListener('click', async () => {
+  await refresh(await api('/api/memory/switch', { on: true }));
+  renderMemSwitch();
+  closeAll();
+  fastForward();
+});
+
+// A time-lapse of the first weeks: cards collecting into topics. Front end only, no model calls.
+async function fastForward() {
+  const ff = $('#fastForward');
+  // One card per topic, preferences and lessons only: a varied, non-personal sample.
+  const pool = data.cards.filter((c) => c.status !== 'pending' && !c.sensitive && !['people', 'family', 'privacy', 'assistant', 'other', 'work'].includes(c.category) && !/\b(agent|avatar|charmander|pikachu|emoji)\b/i.test(c.text));
+  const shown = [...new Map(pool.map((c) => [c.category, c])).values()].slice(0, 6);
+  const total = data.cards.length;
+  const topics = new Set(data.cards.map((c) => c.category)).size;
+  const weeks = 5;
+  $('#ffCardsList').innerHTML = '';
+  $('#ffDone').textContent = '';
+  $('#ffGo').hidden = true;
+  ff.hidden = false;
+  requestAnimationFrame(() => ff.classList.add('on'));
+  for (let w = 1; w <= weeks; w++) {
+    $('#ffWeek').textContent = `Week ${w}`;
+    $('#ffCards').textContent = Math.round((total * w) / weeks);
+    $('#ffTopics').textContent = Math.max(1, Math.round((topics * w) / weeks));
+    for (const c of shown.slice(Math.floor(((w - 1) * shown.length) / weeks), Math.floor((w * shown.length) / weeks))) {
+      $('#ffCardsList').prepend(el(`<div class="ff-card"><span class="cat-icon">${catIcon(c.category)}</span><span>${esc(c.text)}</span></div>`));
+    }
+    await sleep(900);
+  }
+  $('#ffDone').textContent = `${weeks} weeks of chats → ${total} short cards, about ${data.budget.totalTokens.toLocaleString()} tokens instead of ${data.fullHistoryTokens.toLocaleString()}.`;
+  $('#ffGo').hidden = false;
+}
+$('#ffGo').addEventListener('click', () => {
+  const ff = $('#fastForward');
+  ff.classList.remove('on');
+  setTimeout(() => { ff.hidden = true; }, 300);
+  renderWelcome();
+});
 
 // ---------------- appearance ----------------
 // System by default; Light or Dark when picked. Kept in this browser only.

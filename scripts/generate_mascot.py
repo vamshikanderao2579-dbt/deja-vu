@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """Generate Sparky, the app's mascot, with Muse Image (Meta Model API).
 
-    python3 scripts/generate_mascot.py            # 4 options -> public/sparky-option-1..4.png
+    python3 scripts/generate_mascot.py            # 4 options -> src/ui/sparky-option-1..4.png
     python3 scripts/generate_mascot.py --n 2      # fewer options (each one is a paid call)
     python3 scripts/generate_mascot.py --prompt "..."  # try your own wording
 
 Reads MAIN_API_KEY (and MAIN_BASE_URL) from .env. Every option is resized and
-center-cropped to 1024x765, the same size as the placeholder public/sparky.jpeg.
-Pick one, save it as public/sparky.png and set AGENT_AVATAR=sparky.png in .env.
+center-cropped to 1024x765, the same size as the placeholder src/ui/sparky.jpeg.
+Pick one, save it as src/ui/sparky.png and set AGENT_AVATAR=sparky.png in .env.
 No dependencies: standard library + macOS `sips` for the resize.
 """
 import argparse, base64, json, os, shutil, subprocess, sys, urllib.request, urllib.error
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-WIDTH, HEIGHT = 1024, 765  # match public/sparky.jpeg
+WIDTH, HEIGHT = 1024, 765  # match src/ui/sparky.jpeg
 
-# The prompt lives with the engine's other prompts.
-with open(os.path.join(ROOT, "src", "engine", "prompts", "mascot.image.md")) as f:
+# The prompt lives with the other prompts.
+with open(os.path.join(ROOT, "src", "prompts", "mascot.image.md")) as f:
     PROMPT = f.read().rstrip("\n")
 
 # Sizes to try, closest to 1024x765 first; the result is resized/cropped either way.
@@ -93,7 +93,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--n", type=int, default=4, help="how many options (default 4)")
     ap.add_argument("--prompt", default=PROMPT)
-    ap.add_argument("--out", default=os.path.join(ROOT, "public"))
+    ap.add_argument("--out", default=os.path.join(ROOT, "src", "ui"))
     args = ap.parse_args()
 
     key = env("MAIN_API_KEY")
@@ -108,7 +108,7 @@ def main():
         save(item, path)
         fit(path)
         print(f"  saved {os.path.relpath(path, ROOT)} ({WIDTH}x{HEIGHT})")
-    print("\nPick one: cp public/sparky-option-N.png public/sparky.png, then set AGENT_AVATAR=sparky.png in .env and restart the app.")
+    print("\nPick one: cp src/ui/sparky-option-N.png src/ui/sparky.png, then set AGENT_AVATAR=sparky.png in .env and restart the app.")
 
 
 if __name__ == "__main__":

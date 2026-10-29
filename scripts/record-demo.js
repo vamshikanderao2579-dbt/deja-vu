@@ -28,37 +28,38 @@ if (!s.cards.length) {
 }
 await call('/api/demo/load', {});
 let conversationId = 'demo-' + Date.now().toString(36);
-const label = (c) => c[0].toUpperCase() + c.slice(1);
+// The same opener the app pre-fills for "Chat about it".
+const shortCard = (text, words = 6) => { const w = text.split(/\s+/); return w.length > words ? w.slice(0, words).join(' ') + '…' : text; };
+const changeLine = (text) => `“${shortCard(text)}” → now `;
 
-// Same steps as the app's demo player: text, a new chat ("next day"), and how to
-// react to a quick check (confirm by default, reject + chat, or ignore = skip).
+// Same steps as the app's demo player: the answer comes first with any check line
+// above it; then react the way the script says: ignore (default: carrying on is a
+// quiet yes), confirm, or reject (+ chat about it, then redo the answer).
 for (const raw of s.profile.script) {
   const step = typeof raw === 'string' ? { text: raw } : raw;
   if (step.newChat) { conversationId = 'demo-' + Math.random().toString(36).slice(2); console.log(`\n— ${step.newChat}`); continue; }
   const t0 = Date.now();
   let r = await call('/api/chat', { message: step.text, mode: 'cards', conversationId, demo: true });
-  let note = '';
-  if (r.type === 'cue') {
-    const card = r.cue.card;
-    if (step.onCue === 'reject') {
-      await call(`/api/cards/${r.cue.cardId}`, { action: 'reject' });
-      r = await call('/api/chat', { message: step.text, mode: 'cards', conversationId, skipCue: true, demo: true });
-      note = `  ↳ quick check: “${card.text}” → ✕ not anymore`;
-      if (step.chat) {
-        const message = `Hey ${s.agent.name}, my ${label(card.category)} preference “${card.text}” has changed. Now I’d like ${step.chat}`;
-        const u = await call('/api/memory/update', { category: card.category, oldText: card.text, message });
-        note += `\n  ↳ chat about it: “${step.chat}” → saved “${u.card?.text}”`;
+  const show = (x) => `  ${x.text.replace(/\s+/g, ' ').slice(0, 140)}…${x.draft ? `\n  ↳ draft: ${x.draft.title} · ${[...(x.draft.items ?? []), ...x.draft.details].join(' · ')}` : ''}`;
+  let out = `\n› ${step.text}  (${((Date.now() - t0) / 1000).toFixed(1)}s)\n${show(r)}`;
+  const card = r.check?.card;
+  if (card) out += `\n  ↳ check: “${card.text}”`;
+  if (card && step.onCue === 'confirm') {
+    await call(`/api/cards/${card.id}`, { action: 'confirm' });
+    out += ' → ✓ still true';
+  } else if (card && step.onCue === 'reject') {
+    await call(`/api/cards/${card.id}`, { action: 'reject' });
+    out += ' → ✕ not anymore';
+    if (step.chat) {
+      const u = await call('/api/memory/update', { category: card.category, oldText: card.text, message: changeLine(card.text) + step.chat });
+      out += `\n  ↳ chat about it: “${step.chat}” → saved “${u.card?.text}”`;
+      if (step.redo !== false) {
+        r = await call('/api/chat', { message: step.text, mode: 'cards', conversationId, skipCue: true, demo: true });
+        out += `\n  ↳ redo:\n${show(r)}`;
       }
-    } else if (step.onCue === 'ignore') {
-      r = await call('/api/chat', { message: step.text, mode: 'cards', conversationId, skipCue: true, demo: true });
-      note = `  ↳ quick check: “${card.text}” → no answer (skipped)`;
-    } else {
-      await call(`/api/cards/${r.cue.cardId}`, { action: 'confirm' });
-      r = await call('/api/chat', { message: step.text, mode: 'cards', conversationId, skipCue: true, demo: true });
-      note = `  ↳ quick check: “${card.text}” → ✓ still true`;
     }
-  }
-  console.log(`\n› ${step.text}  (${((Date.now() - t0) / 1000).toFixed(1)}s)${note ? '\n' + note : ''}\n  ${r.text.replace(/\s+/g, ' ').slice(0, 140)}…`);
+  } else if (card) out += ' → no answer (quiet yes)';
+  console.log(out);
 }
 // Let background learning from the last message finish and be saved.
 await new Promise((r) => setTimeout(r, 6000));

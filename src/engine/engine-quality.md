@@ -1,6 +1,6 @@
 # Engine quality: six writing principles
 
-Everything the engine says, to a model or to a person, follows these six. That covers prompts (`prompts/`), card text, quick-check questions, UI copy, `.sparky/` notes and code comments. Prompt-specific rules build on them in [`prompts/prompt-quality.md`](prompts/prompt-quality.md); the same six applied to card text are in [Card wording](#card-wording-the-six-principles-applied-to-cards) below.
+Everything the engine says, to a model or to a person, follows these six. That covers prompts (`prompts/`), card text, quick-check questions, UI copy, `.agents/` notes and code comments. Prompt-specific rules build on them in [`prompts/prompt-quality.md`](prompts/prompt-quality.md); the same six applied to card text are in [Card wording](#card-wording-the-six-principles-applied-to-cards) below.
 
 ## 1. Build up in layers
 Open with the job in one plain sentence, then add the detail. When a task has several stages, number them so each step can be read and checked by itself.

@@ -1,6 +1,7 @@
-import { config } from './config.js';
-import { complete, parseJson } from './llm.js';
-import { prompt } from './engine/prompts/index.js';
+import { config } from '../platform/config.js';
+import { complete, parseJson } from '../platform/llm.js';
+import { prompt } from '../prompts/index.js';
+import { hasSecret, hasContact } from './guard.js';
 
 // The gate every new card passes before it enters memory:
 //   1. code rules (free, deterministic): length, evidence from the user, no traits,
@@ -24,9 +25,12 @@ export function ruleCheck(raw, messages) {
   const category = String(raw.category).toLowerCase().trim();
   if (category === 'assistant' || ABOUT_AGENT.test(text) || new RegExp(`\\b${escape(config.agent.name)}\\b`, 'i').test(text)) return { reason: 'about_agent' };
   if (TRAIT.test(text)) return { reason: 'trait' };
+  if (hasSecret(text)) return { reason: 'secret' };
   // Evidence: at least one cited message the user wrote themselves.
   const cited = (raw.sources ?? []).map((id) => messages.get(id)).filter(Boolean);
   if (!cited.some((m) => m.role === 'user')) return { reason: 'no_user_source' };
+  // Phone numbers and emails may be kept, but only locked, under "sensitive".
+  if (hasContact(text)) return { card: { ...raw, text, category: 'sensitive', sensitive: true } };
   const sensitive = !!raw.sensitive || SENSITIVE.test(text);
   return { card: { ...raw, text, category, sensitive } };
 }

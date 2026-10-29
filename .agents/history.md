@@ -26,3 +26,19 @@
 - Answers now see recent turns ("lunch near the hotel" → knows it's the Inn at Sunset Cliffs).
 - San Diego trip demo scripts recorded for all 4 profiles.
 - Spend Oct 28: ~$8.85 of a $10 cap.
+
+## Oct 29: engine you can see, own shell
+- **Writer → grader gate** (`src/engine/review.js`), sensitive texts never logged; Insights "What I kept".
+- **Prompts** moved word for word to `src/prompts/*.md`; `engine-quality.md` (six principles, own wording) + card-wording rules; `prompt-quality.md` with an audit.
+- **Learning never blocks chat**; merges into memory as it is when ready.
+- **Own shell:** Muse-derived tabs/sidebar/placeholder Settings removed; chat home; "Memory · by Déjà Vu" menu section; wordmark + rewind-clock mark; deck palette; light/dark switch; `.sparky/` renamed `.agents/`.
+- **Answer first, check after**, quiet yeses, **draft_booking / draft_order** tool calls with a redo that marks what changed, **↻ Memory updated** in chat, **agent trace** (ⓘ + Insights), **memory on/off + fast-forward**, **topic relevance cache + single relevance call**, short reusable "Chat about it" opener, **plug-in API** (`/api/recall`, `/api/remember`).
+- Re-recorded Vamshi and Alex live (~$0.30). README leads with the engine. 40 tests.
+
+## Oct 29 (later)
+- Grader moved to **Muse Wonder 1.0**; spend guard prices per model.
+- App cards restyled to match the deck; dark-mode screenshots for deck slides 7–9 (Alex for Memory: Vamshi's real topics include sensitive ones).
+- Fixed: an invisible fast-forward overlay swallowed every click (`[hidden]` now always wins).
+- Answer-first layout: pick inside the reply, check below it, Tinder-style swipe animation on every choice.
+- **Staged memory build** with guard, checkpoints, self-review, Wonder grade, contract rerun; Rebuild button with live progress; Memory since / Last verified. Live run on Alex: 37 turns → 23 cards, ~$0.05.
+- Repo split into `src/engine`, `src/prompts`, `src/platform`, `src/ui`. 46 tests.

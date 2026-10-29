@@ -1,5 +1,5 @@
-import { config } from './config.js';
-import { prompt } from './engine/prompts/index.js';
+import { config } from '../platform/config.js';
+import { prompt } from '../prompts/index.js';
 
 const { maxCategories, maxCardsPerCategory, maxWordsPerCard } = config.budget;
 
@@ -86,6 +86,7 @@ export function mergeCards(existing, incoming, rejected = [], now = new Date().t
       ...(raw.changed_from ? { changed_from: raw.changed_from } : {}),
       ...(raw.sub ? { sub: String(raw.sub) } : {}),
       ...(raw.season?.start && raw.season?.end ? { season: raw.season } : {}),
+      ...([1, 2, 3].includes(raw.priority) ? { priority: raw.priority } : {}),
       created: now,
       last_seen: now,
       last_confirmed: null,

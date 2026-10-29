@@ -1,12 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { config, ROOT, todayString } from './config.js';
-import { complete, parseJson } from './llm.js';
-import { prompt } from './engine/prompts/index.js';
+import { config, ROOT, todayString } from '../platform/config.js';
+import { complete, parseJson } from '../platform/llm.js';
+import { prompt } from '../prompts/index.js';
+import { ACTION_TOOLS, toDraft } from './actions.js';
 import { mergeCards, renderContext, estimateTokens, usable, seasonState } from './cards.js';
-import { todayMs } from './config.js';
-import { history, historyAsText, messageTime } from './store.js';
+import { todayMs } from '../platform/config.js';
+import { history, historyAsText, messageTime } from '../platform/store.js';
 import { reviewCards, addReviewStats, emptyReviewStats } from './review.js';
+import { guardHistory } from './guard.js';
 
 // Conversations are batched up to this many characters per extraction call, so
 // memory builds incrementally and each call stays small.
@@ -21,7 +23,7 @@ const convForPrompt = (c) =>
     .join('\n');
 
 // Each batch keeps its conversations too, so the review can check what cards cite.
-function batches(convs) {
+export function batches(convs) {
   const out = [];
   let cur = { texts: [], convs: [] }, size = 0;
   for (const c of convs) {
@@ -35,7 +37,7 @@ function batches(convs) {
   return out;
 }
 
-const messageMap = (convs) => new Map(convs.flatMap((c) => c.messages.map((m) => [m.id, m])));
+export const messageMap = (convs) => new Map(convs.flatMap((c) => c.messages.map((m) => [m.id, m])));
 
 // Build cards from chat history, a few conversations at a time. Each call sees
 // the cards so far, so it updates them instead of starting over.
@@ -75,7 +77,7 @@ export async function distill(existing, rejected = []) {
 }
 
 // When each card was first and last mentioned, from its source messages.
-function stampDates(cards) {
+export function stampDates(cards) {
   for (const c of cards) {
     const times = (c.sources ?? []).map(messageTime).filter(Boolean).sort();
     if (!times.length) continue;
@@ -85,11 +87,47 @@ function stampDates(cards) {
   return cards;
 }
 
+// ---------- relevance cache, by topic ----------
+// A request like one answered recently (the redo after a ✕, "lunch near the hotel"
+// twice) reuses that pick: the same cards if they still exist, plus any newer card in
+// the same topics, so a change you just made is included. Saves a model call (~3-6 s).
+const RELEVANCE_TTL_MS = 30 * 60 * 1000;
+const STOP = new Set('the and for with our you your can please find get some any this that what who are was now just from near about into have has had will would like want need me my us we it its'.split(' '));
+const intent = (msg) => new Set(msg.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w)));
+const overlap = (a, b) => { let n = 0; for (const w of a) if (b.has(w)) n++; return n / (Math.max(a.size, b.size) || 1); };
+const relevanceCache = [];
+export const relevanceStats = { hits: 0, misses: 0 };
+
+function cachedPick(message, pool) {
+  if (process.env.RELEVANCE_CACHE === 'off') return null;
+  const words = intent(message);
+  const now = Date.now();
+  const hit = relevanceCache.find((e) => now - e.at < RELEVANCE_TTL_MS && overlap(words, e.words) >= 0.75);
+  if (!hit) return null;
+  const ids = new Set(hit.ids);
+  const newer = (c) => hit.categories.has(c.category) && Date.parse(c.created ?? 0) > hit.at;
+  const relevant = pool.filter((c) => ids.has(c.id) || newer(c) || c.category === 'style');
+  return { relevant, key: pool.filter((c) => hit.key.includes(c.id) || newer(c)), stakes: hit.stakes, cached: true };
+}
+function rememberPick(message, result) {
+  relevanceCache.unshift({ words: intent(message), at: Date.now(), ids: result.relevant.map((c) => c.id), key: result.key.map((c) => c.id), categories: new Set(result.relevant.filter((c) => c.category !== 'style').map((c) => c.category)), stakes: result.stakes });
+  relevanceCache.length = Math.min(relevanceCache.length, 50);
+}
+
 // Which cards matter for this request, and how costly a wrong guess would be.
 export async function selectRelevant(message, cards) {
   // Cards about the agent itself (its name, avatar) aren't about the user.
   const candidates = cards.filter((c) => c.category !== 'assistant' && !/\b(avatar|pikachu|charmander)\b/i.test(c.text) && seasonState(c, todayMs())?.active !== false);
   if (config.mock) return mockRelevance(message, candidates);
+  const cached = cachedPick(message, candidates);
+  if (cached) { relevanceStats.hits++; return cached; }
+  relevanceStats.misses++;
+  const result = await pickRelevant(message, candidates);
+  if (!result.failed) rememberPick(message, result);
+  return result;
+}
+
+async function pickRelevant(message, candidates) {
   // Large memories: pick branches of the tree first (names only), then only their cards.
   let pool = candidates;
   if (candidates.length > TREE_FIRST_OVER) {
@@ -118,7 +156,7 @@ export async function selectRelevant(message, cards) {
   } catch {
     // A malformed reply shouldn't break the chat: answer without cards this time.
     console.warn('[agent] relevance reply was not JSON; answering without cards');
-    return { relevant: [], stakes: 'low' };
+    return { relevant: [], key: [], stakes: 'low', failed: true };
   }
   const ids = new Set(out.relevant_card_ids ?? []);
   // Style cards (how the user wants answers) are tiny and apply to everything.
@@ -143,8 +181,10 @@ export async function rewriteCard(category, oldText, message) {
 }
 
 // The memory tree as one line: "food (6) · seasonal: Thanksgiving (2), Christmas (2) · …"
-const TREE_FIRST_OVER = 40;
-function treeLine(cards) {
+// Budgets cap memory at 80 cards, so one relevance call over the whole index is small
+// (~1K tokens) and saves a round trip. Branch-first picking is kept for larger memories.
+const TREE_FIRST_OVER = 120;
+export function treeLine(cards) {
   const t = {};
   for (const c of cards) { (t[c.category] ??= {})[c.sub ?? ''] = ((t[c.category] ??= {})[c.sub ?? ''] ?? 0) + 1; }
   return Object.entries(t).map(([cat, subs]) => {
@@ -161,11 +201,13 @@ export async function learnFrom(conv, existing, rejected = []) {
 }
 
 // Step 1 (slow, background): the writer proposes cards, the gate screens them.
-export async function proposeFrom(conv, existing) {
+export async function proposeFrom(rawConv, existing) {
   if (config.mock) return { kept: [], review: emptyReviewStats(), dropped: [] };
+  // Same step 0 as a full build: steering text skipped, secrets removed, before the model reads it.
+  const conv = guardHistory([rawConv]).convs[0];
   const existingText = (existing.length ? `TREE: ${treeLine(existing)}\n` : '') + (existing.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)');
   const res = await complete('bg', [
-    { role: 'system', content: prompt('distill.system') + '\n\n' + prompt('learn.system-addendum') },
+    { role: 'system', content: prompt('distill.system') + '\n\n' + prompt('learn.system-addendum') + '\n\n' + prompt('build.rules') },
     // Neutral labels (n1, n2…) instead of ids and clock times, so the same chat always
     // produces the same request (and a recorded demo replays exactly).
     { role: 'user', content: prompt('learn.user', { existing: existingText, conversation: conv.messages.map((m, i) => `[n${i + 1}] ${m.role}: ${m.text}`).join('\n') }) },
@@ -206,7 +248,9 @@ export async function summarizeHistory() {
 
 // mode: "cards" (bounded, relevant cards only), "summary" (a memory summary, every message),
 // "full" (entire history), "none" (no memory)
-export async function answer(message, mode, relevantCards, { summary, recent = [] } = {}) {
+// `actions`: let the answer propose a booking or order draft through a tool call (the app
+// passes it for high-stakes requests; the eval leaves it off so answers stay plain text).
+export async function answer(message, mode, relevantCards, { summary, recent = [], actions = false } = {}) {
   const today = todayString();
   let context = '';
   if (mode === 'cards') context = renderContext(relevantCards.filter(usable));
@@ -215,16 +259,22 @@ export async function answer(message, mode, relevantCards, { summary, recent = [
 
   const contextTokens = estimateTokens(context);
   if (config.mock) {
-    return { text: mockAnswer(message, mode, relevantCards.filter(usable)), contextTokens, usage: null };
+    const draft = actions && /\b(book|reserve|order)\b/i.test(message)
+      ? { type: 'booking', kind: 'other', title: 'Mock draft', when: '', party: '', details: relevantCards.filter(usable).slice(0, 3).map((c) => c.text), basedOn: relevantCards.filter(usable).slice(0, 3).map((c) => c.text) }
+      : null;
+    return { text: mockAnswer(message, mode, relevantCards.filter(usable)), draft, contextTokens, usage: null };
   }
   const messages = [
-    { role: 'system', content: prompt('answer.system', { userName: config.userName, today, agentName: config.agent.name }) + (context ? `\n\n${context}` : '') },
+    { role: 'system', content: prompt('answer.system', { userName: config.userName, today, agentName: config.agent.name }) + (actions ? `\n\n${prompt('answer.tools-addendum')}` : '') + (context ? `\n\n${context}` : '') },
     // Earlier turns of this conversation, so "near the hotel" knows which hotel.
     ...recent.slice(-6).map((m) => ({ role: m.role, content: m.text })),
     { role: 'user', content: message },
   ];
-  const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: 'low' });
-  return { text: res.text.trim(), contextTokens, usage: res.usage };
+  const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: 'low', tools: actions ? ACTION_TOOLS : null });
+  const draft = toDraft(res.toolCalls?.[0]);
+  // A tool call can come with no text; give the draft a short lead-in.
+  const text = res.text.trim() || (draft ? `Here's a draft${draft.title ? ` for ${draft.title}` : ''}, based on what I know. Want me to change anything?` : '');
+  return { text, draft, contextTokens, usage: res.usage };
 }
 
 // ---------- mock mode (no API key): deterministic stand-ins for UI work ----------

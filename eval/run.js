@@ -45,15 +45,16 @@ process.env.HISTORY_FILE = P.history;
 process.env.USER_NAME = key.userName ?? historyJson.user?.name ?? 'the user';
 process.env.DEMO_TODAY = key.today; // answers must agree on what "today" is
 process.env.REPLAY = 'off'; // every eval run asks Muse fresh
+process.env.RELEVANCE_CACHE = 'off'; // every question picks its own cards
 // --grader off: keep only the code rules, to measure what the grader model adds.
 if (arg('grader')) process.env.GRADER = arg('grader');
 
-const { config } = await import('../src/config.js');
-const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/agent.js');
-const { applyCardAction, estimateTokens, renderContext } = await import('../src/cards.js');
-const { complete, parseJson } = await import('../src/llm.js');
-const { prompt } = await import('../src/engine/prompts/index.js');
-const { history, historyAsText } = await import('../src/store.js');
+const { config } = await import('../src/platform/config.js');
+const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/engine/agent.js');
+const { applyCardAction, estimateTokens, renderContext } = await import('../src/engine/cards.js');
+const { complete, parseJson } = await import('../src/platform/llm.js');
+const { prompt } = await import('../src/prompts/index.js');
+const { history, historyAsText } = await import('../src/platform/store.js');
 
 const CONCURRENCY = Number(arg('concurrency', 3));
 const MODES = arg('modes', 'full,summary,confirmed').split(',');

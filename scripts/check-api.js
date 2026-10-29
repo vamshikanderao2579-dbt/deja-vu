@@ -1,8 +1,8 @@
 // Checks the API keys in .env before a demo:  npm run check-api
 // Lists the models each provider offers and makes one tiny call per role.
 
-import { config } from '../src/config.js';
-import { complete } from '../src/llm.js';
+import { config } from '../src/platform/config.js';
+import { complete } from '../src/platform/llm.js';
 
 if (config.mock) {
   console.log('\n  No MAIN_API_KEY in .env, so the app runs in mock mode.');

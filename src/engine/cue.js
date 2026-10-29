@@ -1,4 +1,4 @@
-import { config, todayMs } from './config.js';
+import { config, todayMs } from '../platform/config.js';
 
 const DAY = 24 * 60 * 60 * 1000;
 const STALE_DAYS = 180; // confirmed cards are left alone for six months
@@ -25,20 +25,38 @@ const PRIORITY = { changed: 0, old: 1, guessed: 2, stale: 3, sensitive: 4 };
 //  3. no cue was shown in this conversation or within the cooldown,
 //  4. this card wasn't asked about in the last week.
 // `now` is the demo date (for card age); `clock` is real time (for the cooldown).
-export function decideCue({ relevant, stakes, conversationId, cueLog, now = todayMs(), clock = Date.now() }) {
-  if (stakes !== 'high') return null;
-  if (cueLog.some((e) => e.conversationId === conversationId)) return null;
-  const last = cueLog.at(-1);
-  if (last && clock - Date.parse(last.at) < config.cueCooldownHours * 60 * 60 * 1000) return null;
+export function decideCue(args) {
+  return cueDecision(args).cue;
+}
 
-  const candidates = relevant
-    .map((card) => ({ card, reason: checkReason(card, now) }))
-    .filter(({ card, reason }) => reason && !cueLog.some((e) => e.cardId === card.id && clock - Date.parse(e.at) < RECHECK_DAYS * DAY))
+// The same rule, plus why it stayed quiet (for the agent trace): low_stakes,
+// asked_this_chat, cooldown, recently_asked or nothing_to_check.
+export function cueDecision({ relevant, stakes, conversationId, cueLog, now = todayMs(), clock = Date.now() }) {
+  if (stakes !== 'high') return { cue: null, why: 'low_stakes' };
+  if (cueLog.some((e) => e.conversationId === conversationId)) return { cue: null, why: 'asked_this_chat' };
+  const last = cueLog.at(-1);
+  if (last && clock - Date.parse(last.at) < config.cueCooldownHours * 60 * 60 * 1000) return { cue: null, why: 'cooldown' };
+
+  const needing = relevant.map((card) => ({ card, reason: checkReason(card, now) })).filter(({ reason }) => reason);
+  const candidates = needing
+    .filter(({ card }) => !cueLog.some((e) => e.cardId === card.id && clock - Date.parse(e.at) < RECHECK_DAYS * DAY))
     .sort((a, b) => PRIORITY[a.reason] - PRIORITY[b.reason] || a.card.confidence - b.card.confidence);
 
-  if (!candidates.length) return null;
+  if (!candidates.length) return { cue: null, why: needing.length ? 'recently_asked' : 'nothing_to_check' };
   const { card, reason } = candidates[0];
-  return { cardId: card.id, reason, question: questionFor(card, reason) };
+  return { cue: { cardId: card.id, reason, question: questionFor(card, reason) }, why: 'asked' };
+}
+
+// Answer first, check after: carrying on without ✕ counts as a quiet yes. Two quiet
+// yeses confirm a guessed card, the same as a ✓.
+export const IMPLICIT_YES_TO_CONFIRM = 2;
+export function implicitYes(card, now = new Date().toISOString()) {
+  card.implicit_yes = (card.implicit_yes ?? 0) + 1;
+  card.confidence = Math.min(1, (card.confidence ?? 0.6) + 0.1);
+  if (card.implicit_yes >= IMPLICIT_YES_TO_CONFIRM && card.status === 'inferred') {
+    Object.assign(card, { status: 'confirmed', confidence: 1, last_confirmed: now });
+    delete card.changed_from;
+  }
 }
 
 function questionFor(card, reason) {
@@ -46,15 +64,15 @@ function questionFor(card, reason) {
     case 'sensitive':
       return 'This seems relevant, but I won’t use it unless you say so. Should I factor it in?';
     case 'changed':
-      return `Quick check: you used to say “${card.changed_from}”. Is this the new normal?`;
+      return `Went with the new one (you used to say “${card.changed_from}”). Still right?`;
     case 'old': {
       const when = new Date(card.last_seen).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-      return `You last mentioned this in ${when}. Still true?`;
+      return `Went with this, from ${when}. Still true?`;
     }
     case 'stale':
-      return 'It’s been a while. Still true?';
+      return 'Went with this. It’s been a while: still true?';
     default:
-      return 'Quick check before I answer. Still true?';
+      return 'Went with my guess. Still true?';
   }
 }
 

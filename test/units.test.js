@@ -4,10 +4,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 process.env.MAIN_API_KEY = '';
-const { mergeCards, applyCardAction, renderContext, usable } = await import('../src/cards.js');
-const { decideCue, checkReason } = await import('../src/cue.js');
-const { interpret } = await import('../src/voice.js');
-const { config } = await import('../src/config.js');
+const { mergeCards, applyCardAction, renderContext, usable } = await import('../src/engine/cards.js');
+const { decideCue, checkReason } = await import('../src/engine/cue.js');
+const { interpret } = await import('../src/platform/voice.js');
+const { config } = await import('../src/platform/config.js');
 
 const card = (over = {}) => ({ category: 'food', type: 'preference', text: 'Loves Thai food', confidence: 0.9, sources: ['m1'], ...over });
 const NOW = Date.parse('2026-10-27T12:00:00');
@@ -127,7 +127,7 @@ test('voice: yes, no and corrections', () => {
 });
 
 test('seasonal cards: awake inside their window, sleeping outside, windows wrap the year', async () => {
-  const { seasonState } = await import('../src/cards.js');
+  const { seasonState } = await import('../src/engine/cards.js');
   const thanksgiving = { season: { start: '10-25', end: '11-30' } };
   const winter = { season: { start: '12-15', end: '01-10' } };
   assert.deepEqual(seasonState(thanksgiving, Date.parse('2026-10-27T12:00:00')), { active: true });

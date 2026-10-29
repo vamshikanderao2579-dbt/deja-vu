@@ -11,8 +11,8 @@ import { fileURLToPath } from 'node:url';
 
 process.env.HISTORY_FILE = ''; // always the synthetic history
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { mergeCards } = await import('../src/cards.js');
-const { messageTime } = await import('../src/store.js');
+const { mergeCards } = await import('../src/engine/cards.js');
+const { messageTime } = await import('../src/platform/store.js');
 
 const fixture = JSON.parse(readFileSync(join(ROOT, 'data', 'fixture-cards.json'), 'utf8')).cards;
 const cards = mergeCards([], fixture, [], '2026-10-20T09:00:00');

@@ -1,17 +1,18 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
-import { config, ROOT } from './src/config.js';
-import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed } from './src/store.js';
-import * as store from './src/store.js';
-import { distill, selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/agent.js';
-import { decideCue, checkReason, applyFeedback } from './src/cue.js';
-import { transcribe, interpret } from './src/voice.js';
-import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState } from './src/cards.js';
-import { todayMs } from './src/config.js';
-import { addReviewStats, emptyReviewStats } from './src/review.js';
+import { config, ROOT } from './src/platform/config.js';
+import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed } from './src/platform/store.js';
+import * as store from './src/platform/store.js';
+import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/engine/agent.js';
+import { cueDecision, checkReason, applyFeedback, implicitYes } from './src/engine/cue.js';
+import { transcribe, interpret } from './src/platform/voice.js';
+import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState, renderContext } from './src/engine/cards.js';
+import { todayMs } from './src/platform/config.js';
+import { addReviewStats, emptyReviewStats } from './src/engine/review.js';
+import { buildMemory, applyBuild } from './src/engine/build.js';
 
-const PUBLIC = join(ROOT, 'public');
+const PUBLIC = join(ROOT, 'src', 'ui');
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
 // Full-history size per profile, for the "x% less than full history" comparison.
 const historyTokens = new Map();
@@ -26,64 +27,157 @@ const route = (method, path, fn) => routes.push({ method, re: new RegExp(`^${pat
 
 route('GET', '/api/state', () => statePayload());
 
-route('POST', '/api/distill', async () => {
+// Building memory from the whole history runs as a background job: the page polls
+// GET /api/build for progress and tells the user in chat when it's done.
+let buildJob = null;
+function startBuild() {
+  if (buildJob?.running) return buildJob;
   const s = getState();
-  const { cards, calls, usage, review, dropped } = await distill(s.cards, s.rejected);
-  s.cards = cards;
-  // A rebuild starts the review log over: it describes how this memory was made.
-  s.review = review;
-  s.screened = dropped.slice(-30);
-  save();
-  saveSeed();
-  return { ...statePayload(), distill: { calls, usage } };
+  const profileId = store.profile.id;
+  const job = { running: true, profileId, pct: 0, stage: 'guard', label: 'Starting', startedAt: new Date().toISOString() };
+  buildJob = job;
+  job.promise = buildMemory({ conversations: store.history.conversations, rejected: s.rejected, profileId, onProgress: (p) => Object.assign(job, p) })
+    .then(({ cards, report }) => {
+      // Only into the profile it was built for: someone may have switched meanwhile.
+      if (store.profile.id !== profileId) throw new Error('Switched profiles during the build; run it again.');
+      const st = getState();
+      st.cards = applyBuild(st.cards, cards, st.rejected);
+      st.build = report;
+      st.review = emptyReviewStats();
+      save();
+      saveSeed();
+      Object.assign(job, { running: false, done: true, pct: 100, report });
+    })
+    .catch((err) => Object.assign(job, { running: false, done: true, error: err.message }));
+  return job;
+}
+const jobView = (j) => (j ? { running: j.running, done: !!j.done, pct: j.pct, stage: j.stage, label: j.label, report: j.report ?? null, error: j.error ?? null, profileId: j.profileId } : { running: false });
+
+route('POST', '/api/build', () => jobView(startBuild()));
+route('GET', '/api/build', () => jobView(buildJob));
+
+// The same build, waited on (tests and scripts).
+route('POST', '/api/distill', async () => {
+  const job = startBuild();
+  await job.promise;
+  if (job.error) throw httpError(500, job.error);
+  return { ...statePayload(), build: job.report };
 });
 
 route('POST', '/api/chat', async (body) => {
-  const { message, mode = 'cards', conversationId = 'default', skipCue = false, demo = false } = body;
+  const { message, conversationId = 'default', skipCue = false, demo = false } = body;
   if (!message?.trim()) throw httpError(400, 'message is required');
   // Learning (writer + grader) runs in the background and never delays an answer:
   // new cards join memory when they're ready. Only a scripted demo waits for it,
   // so a replay sees exactly the memory the recorded run saw.
   if (demo) await learning;
   const s = getState();
+  // Memory switched off: answer like an agent with no memory, ask nothing, learn nothing.
+  const mode = s.memoryOff ? 'none' : (body.mode ?? 'cards');
+  const trace = { mode, stakes: 'low', picked: 0, check: null, quiet: null, quietYes: null };
+
+  // Answer first, check after: carrying on in the same chat without ✕ is a quiet yes.
+  const open = [...s.cueLog].reverse().find((e) => e.conversationId === conversationId && !e.outcome);
+  if (open) {
+    const card = s.cards.find((c) => c.id === open.cardId);
+    if (card) { implicitYes(card); trace.quietYes = { text: card.text, confirmed: card.status === 'confirmed' }; }
+    open.outcome = 'implicit';
+  }
 
   let relevant = [];
   let key = [];
   let stakes = 'low';
+  let check = null;
   if (mode === 'cards') {
     ({ relevant, key = [], stakes } = await selectRelevant(message, s.cards));
-    if (!skipCue) {
-      // Ask only about a card central to this answer; never style or agent-identity cards.
+    if (skipCue) trace.quiet = 'redo';
+    else {
+      // Check only a card central to this answer; never style or agent-identity cards.
       // Sensitive (locked) cards are only ever reviewed in Memory, never raised mid-task.
       const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending');
       // A scripted demo spans several "days": only the once-per-chat rule applies.
       const log = demo ? s.cueLog.filter((e) => e.conversationId === conversationId) : s.cueLog;
-      const cue = decideCue({ relevant: askable, stakes, conversationId, cueLog: log });
-      if (cue) {
-        s.cueLog.push({ cardId: cue.cardId, conversationId, at: new Date().toISOString(), outcome: null });
-        save();
-        return { type: 'cue', cue: { ...cue, card: publicCard(s.cards.find((c) => c.id === cue.cardId)) }, stakes };
-      }
+      const decision = cueDecision({ relevant: askable, stakes, conversationId, cueLog: log });
+      if (decision.cue) {
+        s.cueLog.push({ cardId: decision.cue.cardId, conversationId, at: new Date().toISOString(), outcome: null });
+        check = { ...decision.cue, card: publicCard(s.cards.find((c) => c.id === decision.cue.cardId)) };
+        trace.check = check.card.text;
+      } else trace.quiet = decision.why;
     }
   }
+  trace.stakes = stakes;
+  trace.picked = relevant.length;
 
+  // One answer call, right away. The check (if any) rides along above it; a high-stakes
+  // request may come back with a booking or order draft built from the same cards.
   const prior = s.live.find((c) => c.id === `live-${conversationId}`)?.messages ?? [];
-  const res = await answer(message, mode, relevant, { recent: prior });
+  // Draft tools only for requests that are about acting: booking, ordering, a stay or a flight.
+  const actions = stakes === 'high' && ACTION_WORDS.test(message);
+  const res = await answer(message, mode, relevant, { recent: prior, actions });
   const used = relevant.filter(usable);
   for (const c of used) c.last_used = new Date().toISOString();
+  s.trace = countTrace(s.trace, trace, !!res.draft);
   // Keep the exchange, then learn from it in the background (never blocks the answer).
   const { conv } = addLiveMessage(conversationId, 'user', message);
   addLiveMessage(conversationId, 'assistant', res.text);
   save();
-  learnInBackground(conv);
+  if (!s.memoryOff) learnInBackground(conv);
   return {
     type: 'answer',
     text: res.text,
+    draft: res.draft ?? null,
+    check,
+    trace,
     mode,
     stakes,
     usedCards: used.map(publicCard),
     tokens: { context: res.contextTokens, fullHistory: fullHistoryTokens(), usage: res.usage },
   };
+});
+
+const ACTION_WORDS = /\b(book|booking|reserve|reservation|order|buy|purchase|stay|hotel|airbnb|room|flights?|fly|tickets?)\b/i;
+
+// Running totals of what the memory agent decided, for Insights.
+function countTrace(t = {}, one, drafted) {
+  const out = { answers: 0, checksAsked: 0, quiet: {}, quietYes: 0, drafts: 0, ...t, quiet: { ...(t.quiet ?? {}) } };
+  out.answers++;
+  if (one.check) out.checksAsked++;
+  if (one.quiet && one.mode === 'cards') out.quiet[one.quiet] = (out.quiet[one.quiet] ?? 0) + 1;
+  if (one.quietYes) out.quietYes++;
+  if (drafted) out.drafts++;
+  return out;
+}
+
+// ---------- plug-in API: the memory layer for any agent ----------
+// recall: the cards (and prompt text) for one message, plus a check if one is due.
+// The host agent puts `context` in its own prompt and shows `check` above its answer.
+route('POST', '/api/recall', async ({ message, conversationId = 'external' }) => {
+  if (!message?.trim()) throw httpError(400, 'message is required');
+  const s = getState();
+  if (s.memoryOff) return { stakes: 'low', cards: [], context: '', check: null };
+  const { relevant, key = [], stakes } = await selectRelevant(message, s.cards);
+  const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending');
+  const { cue } = cueDecision({ relevant: askable, stakes, conversationId, cueLog: s.cueLog });
+  if (cue) { s.cueLog.push({ cardId: cue.cardId, conversationId, at: new Date().toISOString(), outcome: null }); save(); }
+  const cards = relevant.filter(usable);
+  return { stakes, cards: cards.map(publicCard), context: renderContext(cards), check: cue ? { ...cue, card: publicCard(s.cards.find((c) => c.id === cue.cardId)) } : null };
+});
+// remember: hand over an exchange; cards are written, graded and merged in the background.
+route('POST', '/api/remember', ({ messages, conversationId = 'external' }) => {
+  if (!Array.isArray(messages) || !messages.length) throw httpError(400, 'messages is required: [{ role, text }]');
+  if (getState().memoryOff) return { queued: false };
+  let conv;
+  for (const m of messages) ({ conv } = addLiveMessage(conversationId, m.role === 'assistant' ? 'assistant' : 'user', String(m.text ?? '')));
+  save();
+  learnInBackground(conv);
+  return { queued: true };
+});
+// confirm / reject: POST /api/cards/:id { action: 'confirm' | 'reject' } (below).
+
+route('POST', '/api/memory/switch', (body) => {
+  getState().memoryOff = !body.on;
+  save();
+  return statePayload();
 });
 
 let learning = Promise.resolve();
@@ -98,6 +192,7 @@ function learnInBackground(conv) {
       if (store.profile.id !== who) return;
       // Merge into memory as it is now: chat and swipes kept going while the writer and grader worked.
       const s = getState();
+      const before = new Map(s.cards.map((c) => [c.id, c.text]));
       const { cards, added } = applyLearned(s.cards, kept, s.rejected);
       s.review = addReviewStats(s.review, review);
       s.screened = [...(s.screened ?? []), ...dropped].slice(-30);
@@ -106,7 +201,8 @@ function learnInBackground(conv) {
       const at = new Date().toISOString();
       // Locked (sensitive) learnings are saved quietly, never announced.
       const shareable = added.filter((c) => c.status !== 'pending');
-      s.learned = [...(s.learned ?? []), ...shareable.map((c) => ({ id: c.id, text: c.text, category: c.category, at }))].slice(-20);
+      // `was`: the card this learning changed, so the chat can show the update happening.
+      s.learned = [...(s.learned ?? []), ...shareable.map((c) => ({ id: c.id, text: c.text, category: c.category, at, ...(before.has(c.id) && before.get(c.id) !== c.text ? { was: before.get(c.id) } : {}) }))].slice(-20);
       save();
     } catch (err) {
       console.warn('[learn]', err.message);
@@ -215,7 +311,10 @@ function statePayload() {
     learned: s.learned ?? [],
     // How the writer → grader gate has screened cards (counts only; dropped texts in `screened`).
     review: s.review ?? emptyReviewStats(),
+    trace: s.trace ?? null,
+    memoryOff: !!s.memoryOff,
     screened: s.screened ?? [],
+    build: s.build ?? null,
   };
 }
 

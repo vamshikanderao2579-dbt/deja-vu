@@ -11,6 +11,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 3199;
 const BASE = `http://localhost:${PORT}`;
 const STATE = 'data/test-state.json';
+const TEST_BUILD = join(ROOT, 'data', 'private', 'test-build');
 let server;
 
 const post = (path, body = {}) =>
@@ -20,7 +21,7 @@ const get = (path) => fetch(BASE + path).then((r) => r.json());
 before(async () => {
   server = spawn(process.execPath, ['server.js'], {
     cwd: ROOT,
-    env: { ...process.env, MAIN_API_KEY: '', BG_API_KEY: '', PORT: String(PORT), STATE_FILE: STATE, HISTORY_FILE: '', PROFILE: 'alex', MUSE_ENABLED: 'true', CUE_COOLDOWN_HOURS: '0', RATE_LIMIT_PER_MINUTE: '1000', DEMO_TODAY: '2026-10-27' },
+    env: { ...process.env, MAIN_API_KEY: '', BG_API_KEY: '', PORT: String(PORT), STATE_FILE: STATE, BUILD_DIR: TEST_BUILD, HISTORY_FILE: '', PROFILE: 'alex', MUSE_ENABLED: 'true', CUE_COOLDOWN_HOURS: '0', RATE_LIMIT_PER_MINUTE: '1000', DEMO_TODAY: '2026-10-27' },
     stdio: 'ignore',
   });
   for (let i = 0; i < 50; i++) {
@@ -31,6 +32,7 @@ before(async () => {
 after(() => {
   server?.kill();
   rmSync(join(ROOT, STATE), { force: true });
+  rmSync(TEST_BUILD, { recursive: true, force: true });
 });
 
 test('starts in mock mode with an empty memory', async () => {
@@ -47,21 +49,58 @@ test('builds dated cards from chat history', async () => {
   assert.ok(s.cards.some((c) => c.status === 'pending'), 'a sensitive card is locked');
 });
 
-test('a high-stakes request with a changed card asks once, then answers', async () => {
-  const cue = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 't1' });
-  assert.equal(cue.type, 'cue');
-  assert.match(cue.cue.question, /used to say/);
-  const confirmed = await post(`/api/cards/${cue.cue.cardId}`, { action: 'confirm' });
-  assert.equal(confirmed.cards.find((c) => c.id === cue.cue.cardId).status, 'confirmed');
-  const ans = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 't1', skipCue: true });
-  assert.equal(ans.type, 'answer');
-  assert.ok(ans.usedCards.length >= 1);
-  assert.ok(ans.tokens.context < ans.tokens.fullHistory);
+test('answer first, check after: a high-stakes request answers at once, with one check above it', async () => {
+  const r = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 't1' });
+  assert.equal(r.type, 'answer');
+  assert.ok(r.text, 'the answer is already there');
+  assert.match(r.check.question, /used to say/);
+  assert.ok(r.usedCards.length >= 1);
+  assert.ok(r.tokens.context < r.tokens.fullHistory);
+  assert.equal(r.trace.check, r.check.card.text);
+  const confirmed = await post(`/api/cards/${r.check.cardId}`, { action: 'confirm' });
+  assert.equal(confirmed.cards.find((c) => c.id === r.check.cardId).status, 'confirmed');
 });
 
-test('the same conversation is never asked twice', async () => {
+test('the same conversation is never asked twice, and the trace says why', async () => {
   const again = await post('/api/chat', { message: 'Find us a place to stay in Miami for spring break', conversationId: 't1' });
   assert.equal(again.type, 'answer');
+  assert.equal(again.check, null);
+  assert.equal(again.trace.quiet, 'asked_this_chat');
+});
+
+test('carrying on without ✕ counts as a quiet yes; two of them confirm a guess', async () => {
+  const first = await post('/api/chat', { message: 'Book us a hotel in Miami for spring break', conversationId: 'q1' });
+  if (!first.check) return; // the mock picked nothing to check: nothing to count
+  const id = first.check.cardId;
+  const next = await post('/api/chat', { message: 'thanks!', conversationId: 'q1' });
+  assert.equal(next.trace.quietYes.text, first.check.card.text);
+  const s = await get('/api/state');
+  assert.equal(s.cards.find((c) => c.id === id).implicit_yes, 1);
+});
+
+test('a booking request comes back with a draft built from memory', async () => {
+  const r = await post('/api/chat', { message: 'Book us a hotel in Miami for spring break', conversationId: 'd1', skipCue: true });
+  assert.equal(r.stakes, 'high');
+  assert.ok(r.draft, 'draft returned');
+  assert.ok(r.draft.basedOn.length >= 1);
+});
+
+test('plug-in API: recall returns the cards and prompt text for a message; remember queues learning', async () => {
+  const r = await post('/api/recall', { message: 'Book us a hotel in Miami for spring break', conversationId: 'ext1' });
+  assert.ok(r.cards.length >= 1);
+  assert.ok(r.context.length > 0);
+  const m = await post('/api/remember', { conversationId: 'ext1', messages: [{ role: 'user', text: 'we only fly direct now' }, { role: 'assistant', text: 'Noted.' }] });
+  assert.equal(m.queued, true);
+});
+
+test('memory off: no cards used, no checks, nothing learned', async () => {
+  await post('/api/memory/switch', { on: false });
+  const r = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 'off1' });
+  assert.equal(r.mode, 'none');
+  assert.equal(r.check, null);
+  assert.equal(r.usedCards.length, 0);
+  const s = await post('/api/memory/switch', { on: true });
+  assert.equal(s.memoryOff, false);
 });
 
 test('a casual question is never interrupted', async () => {

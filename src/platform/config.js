@@ -2,7 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 // Minimal .env loader so the project has zero dependencies.
 const envPath = join(ROOT, '.env');
@@ -27,11 +27,12 @@ const bg = bgKey
   ? { baseUrl: env('BG_BASE_URL', 'https://inference.baseten.co/v1'), apiKey: bgKey, model: env('BG_MODEL', 'meta-models/muse-spark-open-1026') }
   : main;
 // "grader" checks every card bg proposes before it enters memory: a second model,
-// so the one that writes a card isn't the one that approves it. Defaults to main.
+// so the one that writes a card isn't the one that approves it. Defaults to
+// Muse Wonder on the same Meta key; cards are short, so a batch costs under a cent.
 const graderKey = env('GRADER_API_KEY');
 const grader = graderKey
   ? { baseUrl: env('GRADER_BASE_URL', main.baseUrl), apiKey: graderKey, model: env('GRADER_MODEL', main.model) }
-  : { ...main, model: env('GRADER_MODEL', main.model) };
+  : { ...main, model: env('GRADER_MODEL', 'muse-wonder-1.0') };
 
 export const config = {
   port: Number(env('PORT', '3000')),
@@ -45,7 +46,7 @@ export const config = {
   // GRADER=off keeps only the code rules (for the eval's with/without comparison).
   graderEnabled: env('GRADER', 'on').toLowerCase() !== 'off',
   userName: env('USER_NAME', 'Alex'),
-  // The agent's name and avatar. AGENT_AVATAR is a file inside public/.
+  // The agent's name and avatar. AGENT_AVATAR is a file inside src/ui/.
   agent: { name: env('AGENT_NAME', 'Pip'), avatar: env('AGENT_AVATAR') },
   today: env('DEMO_TODAY'), // optional fixed date for a repeatable demo, e.g. 2026-10-27
   cueCooldownHours: Number(env('CUE_COOLDOWN_HOURS', '24')),

@@ -4,8 +4,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 process.env.MAIN_API_KEY = '';
-const { ruleCheck, reviewCards, addReviewStats, emptyReviewStats } = await import('../src/review.js');
-const { config } = await import('../src/config.js');
+const { ruleCheck, reviewCards, addReviewStats, emptyReviewStats } = await import('../src/engine/review.js');
+const { config } = await import('../src/platform/config.js');
 
 const messages = new Map([
   ['m1', { role: 'user', text: 'We only do direct flights now, layovers with the kids are a nightmare' }],

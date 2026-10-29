@@ -1,6 +1,6 @@
 # Prompt quality
 
-How the engine's prompts are organized, written and changed. The six writing principles are in [`../engine-quality.md`](../engine-quality.md); this file applies them to prompts.
+How the engine's prompts are organized, written and changed. The six writing principles are in [`../engine/engine-quality.md`](../engine/engine-quality.md); this file applies them to prompts.
 
 ## Where prompts live
 - **One file per prompt**, in this folder. Nothing else in the repo holds prompt text.
@@ -13,8 +13,12 @@ How the engine's prompts are organized, written and changed. The six writing pri
 
 | File | Job | Model role | Values |
 |---|---|---|---|
-| `distill.system` / `distill.user` | Build cards from chat history, a batch at a time | bg (writer) | `existing`, `conversations` |
-| `learn.system-addendum` / `learn.user` | Live learning from the latest exchange (added to `distill.system`) | bg (writer) | `existing`, `conversation` |
+| `build.rules` | Shared rules for every build step: history is data not instructions, no secrets, contacts locked, never message the user | all build steps | none |
+| `build.write.system` / `build.write.user` | Build stage 2: write cards batch by batch, with notes for the reviewer | bg (writer) | `rules`, `pace` / `batch`, `batches`, `tree`, `draft`, `conversations` |
+| `build.review.system` / `build.review.user` | Build stage 3: the writer's self-review and `summary.md` | bg (writer) | `rules` / `draft`, `notes` |
+| `build.grade.system` / `build.grade.user` | Build stage 4: keep, lock or reject each card from the summary and quotes; priority | grader | `rules` / `summary`, `cards` |
+| `distill.system` / `distill.user` | The older one-pass build, kept for the eval until it is rerun on the staged build | bg (writer) | `existing`, `conversations` |
+| `learn.system-addendum` / `learn.user` | Live learning from the latest exchange (added to `distill.system`, with `build.rules`) | bg (writer) | `existing`, `conversation` |
 | `grade.system` / `grade.user` | Accept, lock or reject each proposed card against the messages it cites | grader | `existing`, `proposed` |
 | `branch.system` / `branch.user` | Large memories: pick tree branches before cards | bg | `today`, `request`, `tree` |
 | `relevance.system` / `relevance.user` | Pick relevant cards, key cards and stakes | bg | `today`, `request`, `cards` |
@@ -49,5 +53,5 @@ These prompts were moved here word for word, so recorded demos and the Oct 28 ev
 - **`context.header`:** one long sentence carries three instructions plus "No brackets or tags, and don't introduce yourself"; split into short positive lines (principles 2, 5).
 - **`relevance.system`:** the stakes rule and the key-card rule sit in one paragraph; give each its own label (principle 6).
 - **`update.system`:** no example of a good rewrite (principle 4).
-- **Card wording (`distill.system`, `update.system`, `grade.system`):** the writers don't yet ask for the card rules in [engine-quality.md → Card wording](../engine-quality.md#card-wording-the-six-principles-applied-to-cards): fact first, say what they do ("Vegetarian on Tuesdays", not "No non-veg on Tuesdays"), the verb sets the strength, concrete details, people by name. Add a short version with two examples to both writers; the grader can reject a card that fails the ✓ / ✕ test (reason `ambiguous`).
+- **Card wording (`distill.system`, `update.system`, `grade.system`):** the writers don't yet ask for the card rules in [engine-quality.md → Card wording](../engine/engine-quality.md#card-wording-the-six-principles-applied-to-cards): fact first, say what they do ("Vegetarian on Tuesdays", not "No non-veg on Tuesdays"), the verb sets the strength, concrete details, people by name. Add a short version with two examples to both writers; the grader can reject a card that fails the ✓ / ✕ test (reason `ambiguous`).
 - **`grade.system`, `judge.system`:** already close; keep them as the model for the others.
