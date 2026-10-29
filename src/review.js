@@ -1,6 +1,6 @@
 import { config } from './config.js';
 import { complete, parseJson } from './llm.js';
-import { GRADE_SYSTEM } from './prompts.js';
+import { prompt } from './engine/prompts/index.js';
 
 // The gate every new card passes before it enters memory:
 //   1. code rules (free, deterministic): length, evidence from the user, no traits,
@@ -49,8 +49,8 @@ export async function gradeWithModel(candidates, { existing, messages }) {
   }).join('\n');
   const known = existing.map((c) => `${c.id}: ${c.text}`).join('\n') || '(none)';
   const res = await complete('grader', [
-    { role: 'system', content: GRADE_SYSTEM },
-    { role: 'user', content: `EXISTING cards:\n${known}\n\nPROPOSED cards (with the messages they cite):\n${list}` },
+    { role: 'system', content: prompt('grade.system') },
+    { role: 'user', content: prompt('grade.user', { existing: known, proposed: list }) },
   ], { json: true, maxTokens: 3000, temperature: 0, reasoning: 'minimal' });
   const verdicts = parseJson(res.text).verdicts ?? [];
   return candidates.map((_, i) => {

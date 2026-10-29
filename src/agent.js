@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { config, ROOT, todayString } from './config.js';
 import { complete, parseJson } from './llm.js';
-import { DISTILL_SYSTEM, BRANCH_SYSTEM, RELEVANCE_SYSTEM, HISTORY_HEADER, SUMMARY_SYSTEM, SUMMARY_HEADER, UPDATE_SYSTEM, answerSystem } from './prompts.js';
+import { prompt } from './engine/prompts/index.js';
 import { mergeCards, renderContext, estimateTokens, usable, seasonState } from './cards.js';
 import { todayMs } from './config.js';
 import { history, historyAsText, messageTime } from './store.js';
@@ -55,8 +55,8 @@ export async function distill(existing, rejected = []) {
     const res = await complete(
       'bg',
       [
-        { role: 'system', content: DISTILL_SYSTEM },
-        { role: 'user', content: `EXISTING cards:\n${existingText}\n\nNEW conversations:\n${convText}` },
+        { role: 'system', content: prompt('distill.system') },
+        { role: 'user', content: prompt('distill.user', { existing: existingText, conversations: convText }) },
       ],
       { json: true, maxTokens: 6000, reasoning: 'low' }
     );
@@ -94,8 +94,8 @@ export async function selectRelevant(message, cards) {
   let pool = candidates;
   if (candidates.length > TREE_FIRST_OVER) {
     const res = await complete('bg', [
-      { role: 'system', content: BRANCH_SYSTEM },
-      { role: 'user', content: `Today: ${todayString()}\nRequest: ${message}\n\nTree: ${treeLine(candidates)}` },
+      { role: 'system', content: prompt('branch.system') },
+      { role: 'user', content: prompt('branch.user', { today: todayString(), request: message, tree: treeLine(candidates) }) },
     ], { json: true, maxTokens: 1500, reasoning: 'minimal' });
     try {
       const picked = new Set((parseJson(res.text).branches ?? []).map((b) => String(b).toLowerCase()));
@@ -107,8 +107,8 @@ export async function selectRelevant(message, cards) {
   const res = await complete(
     'bg',
     [
-      { role: 'system', content: RELEVANCE_SYSTEM },
-      { role: 'user', content: `Today: ${todayString()}\nRequest: ${message}\n\nCards:\n${index}` },
+      { role: 'system', content: prompt('relevance.system') },
+      { role: 'user', content: prompt('relevance.user', { today: todayString(), request: message, cards: index }) },
     ],
     { json: true, maxTokens: 3000, reasoning: 'minimal' }
   );
@@ -135,8 +135,8 @@ export async function rewriteCard(category, oldText, message) {
     return words ? { text: words.charAt(0).toUpperCase() + words.slice(1), type: 'preference' } : null;
   }
   const res = await complete('bg', [
-    { role: 'system', content: UPDATE_SYSTEM },
-    { role: 'user', content: `Category: ${category}\nOld card: ${oldText}\nUser's message: ${message}` },
+    { role: 'system', content: prompt('update.system') },
+    { role: 'user', content: prompt('update.user', { category, oldCard: oldText, message }) },
   ], { json: true, maxTokens: 1500, reasoning: 'minimal' });
   const out = parseJson(res.text);
   return out.text ? { text: out.text, type: out.type === 'lesson' ? 'lesson' : 'preference' } : null;
@@ -156,19 +156,31 @@ function treeLine(cards) {
 // Learns from one live conversation as it happens: same extraction prompt,
 // just the new exchange. Returns the merged cards and the ones that are new.
 export async function learnFrom(conv, existing, rejected = []) {
-  if (config.mock) return { cards: existing, added: [], review: emptyReviewStats(), dropped: [] };
+  const { kept, review, dropped } = await proposeFrom(conv, existing);
+  return { ...applyLearned(existing, kept, rejected), review, dropped };
+}
+
+// Step 1 (slow, background): the writer proposes cards, the gate screens them.
+export async function proposeFrom(conv, existing) {
+  if (config.mock) return { kept: [], review: emptyReviewStats(), dropped: [] };
   const existingText = (existing.length ? `TREE: ${treeLine(existing)}\n` : '') + (existing.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)');
   const res = await complete('bg', [
-    { role: 'system', content: DISTILL_SYSTEM + '\n\nOnly return cards that are new or changed by these NEW messages. Return {"cards":[]} if nothing lasting was said.' },
+    { role: 'system', content: prompt('distill.system') + '\n\n' + prompt('learn.system-addendum') },
     // Neutral labels (n1, n2…) instead of ids and clock times, so the same chat always
     // produces the same request (and a recorded demo replays exactly).
-    { role: 'user', content: `EXISTING cards:\n${existingText}\n\nNEW conversation:\n${conv.messages.map((m, i) => `[n${i + 1}] ${m.role}: ${m.text}`).join('\n')}` },
+    { role: 'user', content: prompt('learn.user', { existing: existingText, conversation: conv.messages.map((m, i) => `[n${i + 1}] ${m.role}: ${m.text}`).join('\n') }) },
   ], { json: true, maxTokens: 3000, reasoning: 'minimal' });
   let incoming = [];
-  try { incoming = parseJson(res.text).cards ?? []; } catch { return { cards: existing, added: [], review: emptyReviewStats(), dropped: [] }; }
+  try { incoming = parseJson(res.text).cards ?? []; } catch { return { kept: [], review: emptyReviewStats(), dropped: [] }; }
   const realId = (ref) => conv.messages[Number(String(ref).replace(/\D/g, '')) - 1]?.id ?? ref;
   incoming = incoming.map((c) => ({ ...c, sources: (c.sources ?? []).map(realId) }));
   const { kept, stats: review, dropped } = await reviewCards(incoming, { existing, messages: messageMap([conv]) });
+  return { kept, review, dropped };
+}
+
+// Step 2 (instant): merge screened cards into memory as it is now, so a swipe made
+// while step 1 ran is kept.
+export function applyLearned(existing, kept, rejected = []) {
   const before = new Map(existing.map((c) => [c.id, c.text]));
   const cards = stampDates(mergeCards(existing, kept, rejected));
   const added = cards.filter((c) => !before.has(c.id) || before.get(c.id) !== c.text);
@@ -180,13 +192,13 @@ export async function learnFrom(conv, existing, rejected = []) {
       delete c.changed_from;
     }
   }
-  return { cards, added, review, dropped };
+  return { cards, added };
 }
 
 // The baseline memory summary: written once from the whole history.
 export async function summarizeHistory() {
   const res = await complete('main', [
-    { role: 'system', content: SUMMARY_SYSTEM },
+    { role: 'system', content: prompt('summary.system') },
     { role: 'user', content: historyAsText() },
   ], { maxTokens: 4000, reasoning: 'low' });
   return res.text.trim();
@@ -198,15 +210,15 @@ export async function answer(message, mode, relevantCards, { summary, recent = [
   const today = todayString();
   let context = '';
   if (mode === 'cards') context = renderContext(relevantCards.filter(usable));
-  if (mode === 'full') context = `${HISTORY_HEADER}\n${historyAsText()}`;
-  if (mode === 'summary') context = `${SUMMARY_HEADER}\n${summary}`;
+  if (mode === 'full') context = `${prompt('history.header')}\n${historyAsText()}`;
+  if (mode === 'summary') context = `${prompt('summary.header')}\n${summary}`;
 
   const contextTokens = estimateTokens(context);
   if (config.mock) {
     return { text: mockAnswer(message, mode, relevantCards.filter(usable)), contextTokens, usage: null };
   }
   const messages = [
-    { role: 'system', content: answerSystem(config.userName, today, config.agent.name) + (context ? `\n\n${context}` : '') },
+    { role: 'system', content: prompt('answer.system', { userName: config.userName, today, agentName: config.agent.name }) + (context ? `\n\n${context}` : '') },
     // Earlier turns of this conversation, so "near the hotel" knows which hotel.
     ...recent.slice(-6).map((m) => ({ role: m.role, content: m.text })),
     { role: 'user', content: message },

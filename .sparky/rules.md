@@ -27,6 +27,9 @@
 - **The agent is Sparky** (or Pip publicly), never Muse/Claude/Gemini, and never calls the user by the agent's name.
 - Generic, multi-demographic examples; realistic conversations (the San Diego trip story).
 
+## Prompts
+- Prompt text lives only in `src/engine/prompts/*.md`. Follow `src/engine/engine-quality.md` and `prompt-quality.md`. After editing one: `npm test`, an eval run, and re-record demos (the replay cache is keyed on prompt text).
+
 ## Working style
 - Test end to end (front end + back end) after changes: `npm test`, then the browser flow. Verify with the real model when it matters, within budget.
 - Be honest in numbers and docs (state caveats; don't rig evals).

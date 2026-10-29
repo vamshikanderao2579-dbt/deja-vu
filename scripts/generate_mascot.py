@@ -15,14 +15,9 @@ import argparse, base64, json, os, shutil, subprocess, sys, urllib.request, urll
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WIDTH, HEIGHT = 1024, 765  # match public/sparky.jpeg
 
-PROMPT = (
-    "Cute friendly cartoon mascot named Sparky: a glossy golden-yellow five-pointed star with a soft "
-    "amber outline, big shiny blue eyes, small happy open smile, tiny eyebrows, short rounded arms "
-    "open wide in a welcoming pose, two short legs, standing. Soft warm glow, a little trail of tiny "
-    "golden stars curving behind it. Centered inside a pale sky-blue circular badge with a thin gold "
-    "ring and a few small sparkles. Clean modern cartoon style, smooth shading, original character, "
-    "not resembling any existing brand or franchise mascot. Off-white background, no text, no logos."
-)
+# The prompt lives with the engine's other prompts.
+with open(os.path.join(ROOT, "src", "engine", "prompts", "mascot.image.md")) as f:
+    PROMPT = f.read().rstrip("\n")
 
 # Sizes to try, closest to 1024x765 first; the result is resized/cropped either way.
 SIZES = ["1024x768", "1536x1024", "1024x1024"]

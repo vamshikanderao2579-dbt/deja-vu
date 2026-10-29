@@ -31,6 +31,8 @@
 | Next: Seasonal topic | Occasion sub-topics with recurring windows | Cards that matter every year, dormant otherwise (user idea, agreed) |
 | Card gate | Writer proposes, code rules + a **different** grader model approve; uncertain → reject; grader failure → rules only | A wrong card gets acted on; a missing one is learned later. Same model shouldn't approve its own work |
 | Open weights host | Prefer Baseten hosted Spark Open or Glimmer on one Modal GPU over self-hosting the 816B Spark Open | $100 Modal won't run a multi-GPU node for long |
+| Prompts | One `.md` file per prompt in `src/engine/prompts/`, loaded by `prompt(name, vars)`; writing rules in `engine-quality.md` + `prompt-quality.md` | Readable, reviewable, one place to change; moved word for word so replays and eval numbers hold |
+| Learning never blocks chat | Writer + grader run in the background; the answer doesn't wait; new cards merge into memory as it is when they're ready (swipes made meanwhile are kept). Only scripted demos wait, for exact replay | UX first: the grader screens proposals, it never sits between the user and an answer |
 
 ## Rejected (and why)
 - **Repo-onboarding / dev-productivity idea**: Claude/OpenAI own that space; less exciting to Meta.

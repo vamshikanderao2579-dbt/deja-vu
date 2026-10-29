@@ -1,5 +1,5 @@
 import { config } from './config.js';
-import { CONTEXT_HEADER } from './prompts.js';
+import { prompt } from './engine/prompts/index.js';
 
 const { maxCategories, maxCardsPerCategory, maxWordsPerCard } = config.budget;
 
@@ -147,7 +147,7 @@ export function renderContext(cards) {
   const body = Object.entries(groups)
     .map(([cat, cs]) => `${cat}:\n` + cs.map((c) => `- ${c.status === 'confirmed' ? '✓' : '~'} ${c.text}${c.note ? ` (note: ${c.note})` : ''}`).join('\n'))
     .join('\n');
-  return `${CONTEXT_HEADER}\n${body}`;
+  return `${prompt('context.header')}\n${body}`;
 }
 
 export function renderMarkdown(cards, userName) {

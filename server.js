@@ -4,7 +4,7 @@ import { join, extname, normalize } from 'node:path';
 import { config, ROOT } from './src/config.js';
 import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed } from './src/store.js';
 import * as store from './src/store.js';
-import { distill, selectRelevant, answer, rewriteCard, learnFrom } from './src/agent.js';
+import { distill, selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/agent.js';
 import { decideCue, checkReason, applyFeedback } from './src/cue.js';
 import { transcribe, interpret } from './src/voice.js';
 import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState } from './src/cards.js';
@@ -41,9 +41,10 @@ route('POST', '/api/distill', async () => {
 route('POST', '/api/chat', async (body) => {
   const { message, mode = 'cards', conversationId = 'default', skipCue = false, demo = false } = body;
   if (!message?.trim()) throw httpError(400, 'message is required');
-  // Finish learning from the previous message first, so memory is up to date
-  // (and a replayed demo sees exactly what the live run saw).
-  await learning;
+  // Learning (writer + grader) runs in the background and never delays an answer:
+  // new cards join memory when they're ready. Only a scripted demo waits for it,
+  // so a replay sees exactly the memory the recorded run saw.
+  if (demo) await learning;
   const s = getState();
 
   let relevant = [];
@@ -90,9 +91,14 @@ function learnInBackground(conv) {
   // One at a time, so two quick messages don't overwrite each other's cards.
   learning = learning.then(async () => {
     try {
-      const s = getState();
       const recent = { ...conv, messages: conv.messages.slice(-6) };
-      const { cards, added, review, dropped } = await learnFrom(recent, s.cards, s.rejected);
+      const who = store.profile.id;
+      const { kept, review, dropped } = await proposeFrom(recent, getState().cards);
+      // Switched profiles meanwhile: these cards belong to someone else's memory.
+      if (store.profile.id !== who) return;
+      // Merge into memory as it is now: chat and swipes kept going while the writer and grader worked.
+      const s = getState();
+      const { cards, added } = applyLearned(s.cards, kept, s.rejected);
       s.review = addReviewStats(s.review, review);
       s.screened = [...(s.screened ?? []), ...dropped].slice(-30);
       if (!added.length) { save(); return; }

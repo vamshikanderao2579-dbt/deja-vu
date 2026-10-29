@@ -54,7 +54,9 @@ src/
   cue.js                  the don't-nag rule: when to ask a quick check
   review.js               the writer → grader gate for new cards
   llm.js                  OpenAI-compatible client, spend cap
-  prompts.js              all model prompts
+  engine/
+    engine-quality.md     six writing principles for prompts, cards and copy
+    prompts/              every model prompt, one .md file each (+ prompt-quality.md)
   store.js                me.json (source of truth) and chat history
   config.js               .env loading and settings
 public/                   mobile web app (chat, Memory, insights)

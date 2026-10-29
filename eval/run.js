@@ -52,7 +52,7 @@ const { config } = await import('../src/config.js');
 const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/agent.js');
 const { applyCardAction, estimateTokens, renderContext } = await import('../src/cards.js');
 const { complete, parseJson } = await import('../src/llm.js');
-const { JUDGE_SYSTEM } = await import('../src/prompts.js');
+const { prompt } = await import('../src/engine/prompts/index.js');
 const { history, historyAsText } = await import('../src/store.js');
 
 const CONCURRENCY = Number(arg('concurrency', 3));
@@ -92,7 +92,7 @@ function factFor(card) {
 async function modelReview(cards) {
   if (config.mock || !cards.length) return {};
   const res = await complete('main', [
-    { role: 'system', content: `You are ${process.env.USER_NAME}, reviewing what your personal agent remembers about you. These facts about you are true:\n${key.facts.map((f) => `- ${f.text}`).join('\n')}\n\nFor each memory card: "confirm" if it is true or a fair summary, "reject" if it is wrong or outdated, "edit" with corrected text if partly right. Cards on topics the facts don't cover: "confirm" unless they contradict a fact.\nReturn only JSON: {"decisions":[{"id":"","action":"confirm|reject|edit","text":"only for edit"}]}` },
+    { role: 'system', content: prompt('eval-reviewer.system', { userName: process.env.USER_NAME, facts: key.facts.map((f) => `- ${f.text}`).join('\n') }) },
     { role: 'user', content: cards.map((c) => `${c.id}: ${c.text}`).join('\n') },
   ], { json: true, maxTokens: 6000, reasoning: 'low' });
   return Object.fromEntries((parseJson(res.text).decisions ?? []).map((d) => [d.id, d]));
@@ -158,8 +158,8 @@ async function llmJudge(q, text) {
   const res = await complete(
     'main',
     [
-      { role: 'system', content: JUDGE_SYSTEM },
-      { role: 'user', content: `Question: ${q.text}\n\nAnswer:\n${text}\n\nStatements:\n${statements}` },
+      { role: 'system', content: prompt('judge.system') },
+      { role: 'user', content: prompt('judge.user', { question: q.text, answer: text, statements }) },
     ],
     { json: true, maxTokens: 4000, temperature: 0, reasoning: 'low' }
   );

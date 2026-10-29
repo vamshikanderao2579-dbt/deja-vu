@@ -6,6 +6,8 @@ Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Cla
 
 ## Done Oct 28
 - [x] **Writer → grader gate** (`src/review.js`). Every card the background model proposes passes code rules (≤14 words, cites a message the *user* wrote, no personality labels, nothing about the agent, sensitive topics always locked), then a second model (`GRADER_MODEL`, default Muse Spark 1.3) accepts, locks or rejects it against the cited messages. A failing grader never blocks learning. `GRADER=off` / `npm run eval -- --grader off` for the comparison. Tests: `test/review.test.js`.
+- [x] **Learning never blocks chat:** writer + grader run after the answer; new cards merge when ready without overwriting swipes made meanwhile (live check: answer returned, the grader finished ~6 s later).
+- [x] **Prompts moved** to `src/engine/prompts/*.md` (word for word; verified identical; replay still hits) with `src/engine/engine-quality.md` (six principles) and `prompt-quality.md`.
 - [x] **First piece of the agent trace:** Insights → "What I kept, and what I didn't" (proposed / kept / locked / dropped by reason, recently dropped; sensitive texts never shown).
 
 ## Backlog, in suggested priority order (reorder together)
@@ -25,6 +27,7 @@ Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Cla
 | 11 | **Muse Wonder as independent eval judge** (today Spark answers *and* judges); later a monthly memory audit and seasonal refresh | Tech depth: removes the self-judging objection | nothing (~$1–2) | 2 h |
 | 12 | **Muse Image:** Sparky mascot (`scripts/generate_mascot.py`, replaces the Gemini placeholder) and a shareable "Memory Wrapped" image for the X post | Tooling (small) + Most Viral | nothing | 1 h + your pick |
 | 13 | **SAM 3.1 in the video:** masks to spotlight the ✕ card and the draft changing | Demo polish | recorded video | stretch |
+| 15 | **Prompt rewrite pass** against the six principles (audit list in `src/engine/prompts/prompt-quality.md`): distill 12 vs 14 words, positive phrasing in answer/context header, examples in update/distill. Measure with the eval before and after; re-record demos | Tech depth: prompts that read as deliberate | after #1 | ½ day |
 | 14 | ✅ **IP tidy-up:** README no longer says "Muse-style" (done Oct 28). Never use Meta/Muse logos or say it's a Meta product; model names are fine | Avoids any "looks like Meta's product" question | nothing | 10 min |
 
 ## Fixed dates
