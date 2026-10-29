@@ -49,4 +49,5 @@ These prompts were moved here word for word, so recorded demos and the Oct 28 ev
 - **`context.header`:** one long sentence carries three instructions plus "No brackets or tags, and don't introduce yourself"; split into short positive lines (principles 2, 5).
 - **`relevance.system`:** the stakes rule and the key-card rule sit in one paragraph; give each its own label (principle 6).
 - **`update.system`:** no example of a good rewrite (principle 4).
+- **Card wording (`distill.system`, `update.system`, `grade.system`):** the writers don't yet ask for the card rules in [engine-quality.md → Card wording](../engine-quality.md#card-wording-the-six-principles-applied-to-cards): fact first, say what they do ("Vegetarian on Tuesdays", not "No non-veg on Tuesdays"), the verb sets the strength, concrete details, people by name. Add a short version with two examples to both writers; the grader can reject a card that fails the ✓ / ✕ test (reason `ambiguous`).
 - **`grade.system`, `judge.system`:** already close; keep them as the model for the others.

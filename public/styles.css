@@ -1,15 +1,19 @@
 :root {
-  --bg: #f4f4f5;
+  --bg: #f4f7fb;
   --surface: #ffffff;
-  --bubble: #ececee;
-  --user-bubble: #1f1f22;
+  --bubble: #eaf0f7;
+  --user-bubble: linear-gradient(135deg, #0a8dff, #0064e0);
   --user-text: #ffffff;
-  --text: #111113;
-  --muted: #6e6e76;
+  --text: #0b1524;
+  --muted: #5f6b7d;
   --line: rgba(0, 0, 0, 0.08);
   --glass: rgba(255, 255, 255, 0.72);
   --glass-line: rgba(0, 0, 0, 0.06);
-  --accent: #ff7a3d;
+  /* Déjà Vu's colors, from the deck: a cyan-to-blue gradient on deep navy */
+  --accent: #0064e0;
+  --accent-bg: #e6f0fd;
+  --grad: linear-gradient(90deg, #5cc8ff, #0082fb);
+  --grad-strong: linear-gradient(135deg, #0a8dff, #0064e0);
   --yes: #1fa36a;
   --no: #e5484d;
   --edit: #5b6cff;
@@ -21,40 +25,68 @@
   --pending-fg: #b5541c;
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
   --radius: 26px;
-  --series-1: #2a78d6;
+  --series-1: #0082fb;
   --series-2: #eb6834;
   --series-3: #1baf7a;
   --series-muted: #c8c8ce;
 }
+/* Theme: follows the system unless the person picks one (html[data-theme], set from Settings or the menu). */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e0e10;
-    --surface: #1a1a1d;
-    --bubble: #232327;
-    --user-bubble: #f2f2f4;
-    --user-text: #111113;
-    --text: #f2f2f4;
-    --muted: #9a9aa3;
-    --line: rgba(255, 255, 255, 0.08);
-    --glass: rgba(30, 30, 34, 0.72);
-    --glass-line: rgba(255, 255, 255, 0.08);
+  :root:not([data-theme="light"]) {
+    --bg: #060c14;
+    --surface: #0c1622;
+    --bubble: #0e1c2c;
+    --user-bubble: linear-gradient(135deg, #1a9bff, #0064e0);
+    --user-text: #ffffff;
+    --text: #f2f3f7;
+    --muted: #a3a9bd;
+    --line: rgba(92, 200, 255, 0.12);
+    --glass: rgba(12, 22, 34, 0.72);
+    --glass-line: rgba(92, 200, 255, 0.14);
+    --accent: #5cc8ff;
+    --accent-bg: #0d1d33;
     --confirmed-bg: #12301f;
     --confirmed-fg: #6fe0a8;
-    --inferred-bg: #2a2a2f;
+    --inferred-bg: #13233a;
     --inferred-fg: #c3c3ca;
     --pending-bg: #3a2414;
     --pending-fg: #ffb27f;
     --shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-    --series-1: #3987e5;
+    --series-1: #2a9bff;
     --series-2: #d95926;
     --series-3: #199e70;
-    --series-muted: #4a4a52;
+    --series-muted: #24405e;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #060c14;
+  --surface: #0c1622;
+  --bubble: #0e1c2c;
+  --user-bubble: linear-gradient(135deg, #1a9bff, #0064e0);
+  --user-text: #ffffff;
+  --text: #f2f3f7;
+  --muted: #a3a9bd;
+  --line: rgba(92, 200, 255, 0.12);
+  --glass: rgba(12, 22, 34, 0.72);
+  --glass-line: rgba(92, 200, 255, 0.14);
+  --accent: #5cc8ff;
+  --accent-bg: #0d1d33;
+  --confirmed-bg: #12301f;
+  --confirmed-fg: #6fe0a8;
+  --inferred-bg: #13233a;
+  --inferred-fg: #c3c3ca;
+  --pending-bg: #3a2414;
+  --pending-fg: #ffb27f;
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  --series-1: #2a9bff;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-muted: #24405e;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
-body { font: 17px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+body { font: 17px/1.45 "Geist", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
 button { font: inherit; color: inherit; cursor: pointer; }
 svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .hidden { display: none !important; }
@@ -308,7 +340,7 @@ h1.big { font-size: 34px; letter-spacing: -0.02em; margin: 56px 4px 16px; }
 .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
 .cat-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; border: 0; background: var(--surface); border-radius: 22px; padding: 16px; text-align: left; box-shadow: 0 1px 0 var(--line); transition: transform .15s; }
 .cat-tile:active { transform: scale(.97); }
-.cat-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--pending-bg); color: var(--accent); display: grid; place-items: center; margin-bottom: 6px; }
+.cat-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--accent-bg); color: var(--accent); display: grid; place-items: center; margin-bottom: 6px; }
 .cat-icon svg { width: 24px; height: 24px; }
 .cat-icon.big { width: 54px; height: 54px; border-radius: 17px; margin: 0; }
 .cat-icon.big svg { width: 30px; height: 30px; }
@@ -411,3 +443,56 @@ svg.line path.s3 { stroke: var(--series-3); }
 /* Placeholder mascot: zoom into the star, past the busy ring */
 .avatar { overflow: hidden; }
 .avatar img { transform: scale(1.45) translateY(3%); }
+
+/* ---------- Déjà Vu shell: wordmark, three tabs, memory-first sidebar ---------- */
+.brand { display: flex; align-items: center; gap: 7px; height: 48px; padding: 0 4px; font-size: 20px; font-weight: 650; letter-spacing: -0.02em; }
+.brand svg, .drawer-brand svg { color: var(--accent); stroke-width: 2.1; }
+.brand svg { width: 24px; height: 24px; }
+.brand b, .drawer-brand b { color: var(--accent); font-weight: 700; }
+.view { padding-top: 76px; }
+
+/* No tab bar: the host chat keeps the plain layout any chatbot has; memory opens from the menu. */
+.composer { bottom: 18px; }
+.view { padding-bottom: 100px; }
+
+.drawer-brand { display: flex; align-items: center; gap: 12px; margin: 0 0 22px; }
+.drawer-brand svg { width: 34px; height: 34px; flex: none; }
+.drawer-brand h1 { margin: 0; font-size: 26px; }
+.drawer-brand p { margin: 0; color: var(--muted); font-size: 14px; }
+.drow.active { background: var(--accent-bg); color: var(--accent); }
+.learned-row { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: transparent; text-align: left; padding: 8px 6px; border-radius: 14px; font-size: 15px; line-height: 1.3; }
+.learned-row .cat-icon { width: 30px; height: 30px; border-radius: 10px; margin: 0; flex: none; }
+.learned-row .cat-icon svg { width: 17px; height: 17px; }
+.layer { border-radius: 20px; background: var(--accent-bg); padding: 12px 8px 8px; margin: 0 -8px; }
+.layer .label { padding: 0 6px; color: var(--accent); }
+.layer .sub-label { margin-top: 12px; }
+.layer .drow.active, .layer .drow:hover { background: var(--surface); }
+.layer .hint-line { padding: 0 6px; margin: 0; }
+
+/* ---------- Deck look: navy glow, cyan→blue gradient, mono eyebrows ---------- */
+.app { background: radial-gradient(ellipse 120% 60% at 15% 0%, #e3eefc 0%, var(--bg) 60%); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .app { background: radial-gradient(ellipse 120% 60% at 15% 0%, #0b2747 0%, var(--bg) 62%), var(--bg); }
+  :root:not([data-theme="light"]) .drawer { background: linear-gradient(180deg, #0b1a2c, var(--surface)); }
+  :root:not([data-theme="light"]) .sheet, :root:not([data-theme="light"]) .page { background: radial-gradient(ellipse 120% 50% at 20% 0%, #0a2340 0%, var(--bg) 60%), var(--bg); }
+}
+:root[data-theme="dark"] .app { background: radial-gradient(ellipse 120% 60% at 15% 0%, #0b2747 0%, var(--bg) 62%), var(--bg); }
+:root[data-theme="dark"] .drawer { background: linear-gradient(180deg, #0b1a2c, var(--surface)); }
+:root[data-theme="dark"] .sheet, :root[data-theme="dark"] .page { background: radial-gradient(ellipse 120% 50% at 20% 0%, #0a2340 0%, var(--bg) 60%), var(--bg); }
+.topbar::before { background: linear-gradient(var(--bg) 40%, transparent); opacity: .85; }
+.brand b, .drawer-brand b { background: var(--grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.msg.user { background: var(--user-bubble); }
+.suggestions .play-demo, .primary { background: var(--grad-strong); color: #fff; border-color: transparent; box-shadow: 0 6px 24px rgba(0, 130, 251, .28); }
+.drow .count, .srow .new, .profile-btn span, .badge-dot { background: var(--grad-strong); }
+.drawer .label, .swipe-card .cat, .sub-head { font-family: "Geist Mono", ui-monospace, monospace; letter-spacing: .12em; }
+.layer { border: 1px solid var(--line); }
+.cat-icon { color: var(--accent); }
+.drawer-foot .spacer { flex: 1; }
+.theme-btn .sun { display: none; }
+:root[data-theme="dark"] .theme-btn .sun { display: block; }
+:root[data-theme="dark"] .theme-btn .moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-btn .sun { display: block; }
+  :root:not([data-theme="light"]) .theme-btn .moon { display: none; }
+}
+.srow .seg { margin-left: auto; }

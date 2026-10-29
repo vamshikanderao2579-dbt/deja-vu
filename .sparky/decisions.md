@@ -33,6 +33,7 @@
 | Open weights host | Prefer Baseten hosted Spark Open or Glimmer on one Modal GPU over self-hosting the 816B Spark Open | $100 Modal won't run a multi-GPU node for long |
 | Prompts | One `.md` file per prompt in `src/engine/prompts/`, loaded by `prompt(name, vars)`; writing rules in `engine-quality.md` + `prompt-quality.md` | Readable, reviewable, one place to change; moved word for word so replays and eval numbers hold |
 | Learning never blocks chat | Writer + grader run in the background; the answer doesn't wait; new cards merge into memory as it is when they're ready (swipes made meanwhile are kept). Only scripted demos wait, for exact replay | UX first: the grader screens proposals, it never sits between the user and an answer |
+| Shell | Plain chat home (header wordmark + menu), no tab bar; Déjà Vu lives in a separate "Memory · by Déjà Vu" section of the menu plus quick checks and ⓘ in chat. Deck palette (navy #060c14, cyan→blue gradient #5CC8FF→#0082FB, Geist + Geist Mono), theme follows the system with a menu sun/moon toggle and Settings → Appearance (System / Light / Dark, saved per browser), profile shown as an initial circle, rewind-clock mark, no mascot in the header | Déjà Vu is a plug-in layer any agent (Muse, Claude, ChatGPT) can adopt without changing how it works; and the UI was first built from Muse screenshots, so the copied tabs, sidebar hints and placeholder Settings rows are gone |
 
 ## Rejected (and why)
 - **Repo-onboarding / dev-productivity idea**: Claude/OpenAI own that space; less exciting to Meta.
@@ -47,5 +48,7 @@
 - **Fireworks credits**: a third provider adds risk for $25.
 - **Eval vs raw full history only**: straw man; added the summary baseline.
 - **Bracketed "[applied: …]" notes in answers and "Sparky here" intros**: removed via prompt.
+- **Memory as the home screen / a Memory tab**: would make it look like a memory app; it's a layer on top of any agent's chat.
+- **Muse's navigation** (Feed / Ideas / Goals / Library tabs, "TABS" and "SIDE CHATS" sidebar, Connectors/Devices/Wallet rows): copied from screenshots, dead in the prototype.
 - **Cards about the agent itself** (avatar, Pikachu → Sparky): settings, not user facts; filtered.
 - **Emoji in the closing slide**; text that was too bold.

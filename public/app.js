@@ -135,10 +135,6 @@ const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insig
 
 function open(id) {
   if (id === 'chat') return closeAll();
-  if (['feed', 'ideas', 'goals', 'library'].includes(id)) {
-    closeAll();
-    return toast('Not part of this prototype. Memory lives in the menu.');
-  }
   if (id !== 'drawer') $('#drawer').classList.remove('open');
   $(`#${id}`).classList.add('open');
   $('#scrim').classList.toggle('on', id === 'drawer');
@@ -146,15 +142,25 @@ function open(id) {
   if (id === 'insights') renderInsights();
   if (id === 'settings') renderSettings();
   if (id === 'profiles') renderProfiles();
+  if (id === 'drawer') renderDrawer();
+  syncChrome();
 }
 function close(id) {
   $(`#${id}`).classList.remove('open');
   if (id === 'drawer') $('#scrim').classList.remove('on');
   if (id === 'category' && $('#memory').classList.contains('open')) renderMemory();
+  syncChrome();
 }
 function closeAll() {
   OVERLAYS.forEach((id) => $(`#${id}`).classList.remove('open'));
   $('#scrim').classList.remove('on');
+  syncChrome();
+}
+// The topmost open screen lights its row in the menu.
+function syncChrome() {
+  const top = [...OVERLAYS].reverse().find((id) => $(`#${id}`).classList.contains('open')) ?? 'chat';
+  app.dataset.view = top;
+  $$('.drow').forEach((d) => d.classList.toggle('active', d.dataset.go === top));
 }
 
 $('#menuBtn').addEventListener('click', () => open('drawer'));
@@ -163,8 +169,7 @@ $('#openSettings').addEventListener('click', () => open('settings'));
 $('#openProfiles').addEventListener('click', () => open('profiles'));
 $$('[data-go]').forEach((b) => b.addEventListener('click', () => open(b.dataset.go)));
 $$('[data-close]').forEach((b) => b.addEventListener('click', () => close(b.dataset.close)));
-$$('[data-soon]').forEach((b) => b.addEventListener('click', () => toast('Not part of this prototype.')));
-$$('.tab').forEach((t) => t.addEventListener('click', () => open(t.dataset.tab)));
+
 
 // ---------------- state ----------------
 async function refresh(next) {
@@ -173,6 +178,15 @@ async function refresh(next) {
   $('#menuDot').classList.toggle('hidden', !toCheck);
   $('#drawerCount').classList.toggle('hidden', !toCheck);
   $('#drawerCount').textContent = toCheck;
+}
+
+// Sidebar: the newest cards learned from chat, newest first.
+function renderDrawer() {
+  const recent = (data.learned ?? []).slice(-3).reverse();
+  $('#drawerLearned').innerHTML = recent.length
+    ? recent.map((l) => `<button class="learned-row" data-cat="${esc(l.category)}"><span class="cat-icon">${catIcon(l.category)}</span><span>${esc(l.text)}</span></button>`).join('')
+    : `<p class="hint-line">New cards from your chats show up here.</p>`;
+  $$('#drawerLearned .learned-row').forEach((b) => b.addEventListener('click', () => { closeAll(); open('memory'); openCategory(b.dataset.cat); }));
 }
 
 // ---------------- chat ----------------
@@ -981,6 +995,21 @@ function applyProfileChrome() {
   $('#profileInitial').textContent = (data.profile?.name ?? '?')[0];
 }
 
+// ---------------- appearance ----------------
+// System by default; Light or Dark when picked. Kept in this browser only.
+function currentTheme() {
+  return document.documentElement.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+}
+function setTheme(t) {
+  if (t === 'system') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = t;
+  try { t === 'system' ? localStorage.removeItem('dv-theme') : localStorage.setItem('dv-theme', t); } catch {}
+  $$('#themeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.t === (document.documentElement.dataset.theme ?? 'system')));
+}
+$('#themeBtn').addEventListener('click', () => setTheme(currentTheme() === 'dark' ? 'light' : 'dark'));
+$$('#themeSeg button').forEach((b) => b.addEventListener('click', () => setTheme(b.dataset.t)));
+setTheme(document.documentElement.dataset.theme ?? 'system');
+
 // ---------------- settings ----------------
 function renderSettings() {
   const b = data.budget.limits;
@@ -1016,8 +1045,5 @@ $('#resetBtn').addEventListener('click', async () => {
   await refresh();
   learnedSeen = data.learned?.at(-1)?.at ?? '';
   applyProfileChrome();
-  $('#agentName').textContent = data.agent.name;
-  $('#drawerTitle').textContent = data.agent.name;
-  if (data.agent.avatar) $('.avatar').innerHTML = `<img src="/${encodeURI(data.agent.avatar)}" alt="" />`;
   renderWelcome();
 })();

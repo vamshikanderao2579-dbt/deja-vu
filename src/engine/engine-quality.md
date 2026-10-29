@@ -1,6 +1,6 @@
 # Engine quality: six writing principles
 
-Everything the engine says, to a model or to a person, follows these six. That covers prompts (`prompts/`), card text, quick-check questions, UI copy, `.sparky/` notes and code comments. Prompt-specific rules build on them in [`prompts/prompt-quality.md`](prompts/prompt-quality.md).
+Everything the engine says, to a model or to a person, follows these six. That covers prompts (`prompts/`), card text, quick-check questions, UI copy, `.sparky/` notes and code comments. Prompt-specific rules build on them in [`prompts/prompt-quality.md`](prompts/prompt-quality.md); the same six applied to card text are in [Card wording](#card-wording-the-six-principles-applied-to-cards) below.
 
 ## 1. Build up in layers
 Open with the job in one plain sentence, then add the detail. When a task has several stages, number them so each step can be read and checked by itself.
@@ -37,3 +37,49 @@ Use headings and leading labels so the reader can tell instructions from backgro
 > "`sensitive`: true for health, money, immigration or visa status, where they live, relationships or religion."
 >
 > In data framing, label each block in capitals: `EXISTING cards:`, `NEW conversation:`, `PROPOSED cards:`.
+
+---
+
+# Card wording: the six principles applied to cards
+
+A card is read three ways: by the person in a quick check ("Still true?"), by the answer model, and by the person again in the Memory deck. Every card has to read the same way all three times.
+
+**The ✓ / ✕ test.** Read the card as "Still true: *<card>*?". If ✕ could mean two different things, rewrite the card.
+
+> "No non-veg on Tuesdays" fails: ✕ could mean "meat is back on Tuesdays" or "vegetarian every day now".
+> "Vegetarian on Tuesdays" passes: ✕ has one meaning.
+
+## 1. Fact first, condition after
+Lead with what the person does or likes, then when or for whom. One card holds one fact; split a card that joins two.
+
+> "Vegetarian on Tuesdays", not "On Tuesdays, for family reasons, avoids eating meat".
+> "Books direct flights with the kids" and "Prefers aisle seats" as two cards, not "Books direct flights with kids and likes aisle seats".
+
+## 2. Say what they do
+Write the habit or preference itself. When the fact is a real limit (an allergy, something they avoid), name it plainly and add what they do instead. Keep the meaning exact: a rewrite that changes the fact is worse than a double negative.
+
+> "Drinks tea; avoids coffee", not "Doesn't drink coffee anymore".
+> "Allergic to peanuts" stays as it is: the limit is the fact.
+> "Vegetarian on Tuesdays" keeps the day; "Vegetarian on Mondays" would be a different card.
+
+## 3. The verb sets the strength
+Match the verb to how firm the person was, and keep it. **Prefers** / **Likes** = a soft preference. **Always** / **Only** = a rule they stated. **Avoids** = steers clear. **Allergic to** = never, for safety. Don't turn a preference into a rule. Name people the same way on every card ("Sam", not "Sam" here and "partner" there).
+
+> "Prefers hotels near the beach" (said once, loosely) vs "Only books refundable hotels" (stated as a rule).
+
+## 4. Concrete details
+Use the number, day, place or name from the chat, so the card can shape an answer. A lesson card carries its fix.
+
+> "Hotels under $200 a night", not "Likes affordable hotels".
+> "Summit had no stores; pack water and snacks", not "Hiking trip went badly".
+
+## 5. Short and plain
+At most 12 words. No hedges ("tends to", "sometimes seems to"); the card's status (inferred or confirmed) already says how sure we are.
+
+> "Walks the dog at 7 am", not "Seems to usually tend to walk the dog fairly early in the morning".
+
+## 6. Let the topic carry the context
+The topic and sub-topic are the card's heading, so the text skips what they already say. When a card is about someone else, lead with their name.
+
+> Under *Seasonal / Thanksgiving*: "Hosts 8 people; one vegetarian", not "For Thanksgiving every year, hosts 8 people".
+> "Sam: eats chicken and fish now", not "Partner's diet changed to include chicken and fish".
