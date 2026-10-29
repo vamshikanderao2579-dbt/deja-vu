@@ -29,6 +29,8 @@
 | Demo realism | One ✕ + Chat about it, two unanswered checks, across three "days" | All-✓ demos feel fake |
 | Next: answer first, check after | One call; card above the answer; continuing = implicit yes; ✕ → chat → optional redo; deferred check after the task | Blocking checks were boring and cost a second call (user idea, agreed) |
 | Next: Seasonal topic | Occasion sub-topics with recurring windows | Cards that matter every year, dormant otherwise (user idea, agreed) |
+| Card gate | Writer proposes, code rules + a **different** grader model approve; uncertain → reject; grader failure → rules only | A wrong card gets acted on; a missing one is learned later. Same model shouldn't approve its own work |
+| Open weights host | Prefer Baseten hosted Spark Open or Glimmer on one Modal GPU over self-hosting the 816B Spark Open | $100 Modal won't run a multi-GPU node for long |
 
 ## Rejected (and why)
 - **Repo-onboarding / dev-productivity idea**: Claude/OpenAI own that space; less exciting to Meta.

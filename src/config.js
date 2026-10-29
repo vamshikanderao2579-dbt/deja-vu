@@ -26,6 +26,12 @@ const bgKey = env('BG_API_KEY');
 const bg = bgKey
   ? { baseUrl: env('BG_BASE_URL', 'https://inference.baseten.co/v1'), apiKey: bgKey, model: env('BG_MODEL', 'meta-models/muse-spark-open-1026') }
   : main;
+// "grader" checks every card bg proposes before it enters memory: a second model,
+// so the one that writes a card isn't the one that approves it. Defaults to main.
+const graderKey = env('GRADER_API_KEY');
+const grader = graderKey
+  ? { baseUrl: env('GRADER_BASE_URL', main.baseUrl), apiKey: graderKey, model: env('GRADER_MODEL', main.model) }
+  : { ...main, model: env('GRADER_MODEL', main.model) };
 
 export const config = {
   port: Number(env('PORT', '3000')),
@@ -35,7 +41,9 @@ export const config = {
   // When live, reuse a saved answer for an identical request (recorded demos are
   // instant); anything new goes to Muse. The eval sets REPLAY=off to stay fresh.
   replayFirst: env('REPLAY', 'auto') !== 'off',
-  providers: { main, bg },
+  providers: { main, bg, grader },
+  // GRADER=off keeps only the code rules (for the eval's with/without comparison).
+  graderEnabled: env('GRADER', 'on').toLowerCase() !== 'off',
   userName: env('USER_NAME', 'Alex'),
   // The agent's name and avatar. AGENT_AVATAR is a file inside public/.
   agent: { name: env('AGENT_NAME', 'Pip'), avatar: env('AGENT_AVATAR') },

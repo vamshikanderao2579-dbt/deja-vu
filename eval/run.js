@@ -45,6 +45,8 @@ process.env.HISTORY_FILE = P.history;
 process.env.USER_NAME = key.userName ?? historyJson.user?.name ?? 'the user';
 process.env.DEMO_TODAY = key.today; // answers must agree on what "today" is
 process.env.REPLAY = 'off'; // every eval run asks Muse fresh
+// --grader off: keep only the code rules, to measure what the grader model adds.
+if (arg('grader')) process.env.GRADER = arg('grader');
 
 const { config } = await import('../src/config.js');
 const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/agent.js');
@@ -65,6 +67,11 @@ let t0 = Date.now();
 const built = await distill([], []);
 const inferredCards = built.cards;
 log(`Built ${inferredCards.length} cards in ${((Date.now() - t0) / 1000).toFixed(1)}s (${built.calls} model calls)`);
+const rv = built.review;
+if (rv) {
+  const fmt = (o) => Object.entries(o).map(([k, n]) => `${k} ${n}`).join(', ') || 'none';
+  log(`Review gate (grader: ${config.graderEnabled ? config.providers.grader.model : 'off'}): ${rv.proposed} proposed → ${rv.kept} kept (${rv.locked} locked) · rules dropped: ${fmt(rv.byRules)} · grader dropped: ${fmt(rv.byGrader)}${rv.graderErrors ? ` · grader errors ${rv.graderErrors}` : ''}`);
+}
 
 // ---------- 2. Simulated review pass ----------
 // Each card is matched to the planted fact it came from (by shared source
@@ -243,7 +250,7 @@ const result = {
   today: key.today,
   questions: key.questions.length,
   checks: key.questions.reduce((a, q) => a + q.checks.length, 0),
-  cards: { built: inferredCards.length, afterReview: confirmedCards.length, allCardsTokens, swipes },
+  cards: { built: inferredCards.length, afterReview: confirmedCards.length, allCardsTokens, swipes, gate: { grader: config.graderEnabled ? config.providers.grader.model : null, ...built.review } },
   memorySummary: { tokens: estimateTokens(memorySummary), text: memorySummary },
   summary,
   projection: { assumptions: { conversationsPerDay: CONV_PER_DAY, tokensPerConversation: Math.round(tokensPerConversation) }, points: projection },

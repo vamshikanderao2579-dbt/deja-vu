@@ -1,5 +1,8 @@
 # Next (priority order)
-See also `to-do.md` (one focus per day).
+The prioritized backlog now lives in `to-do.md` (14 items). Specs for its items 2 and 6 are below.
+
+## Done Oct 28: writer → grader gate
+`src/review.js`: code rules (≤14 words, cites a user message, no traits, nothing about the agent, sensitive always locked), then `GRADER_MODEL` (default Muse Spark 1.3) accepts / locks / rejects against the cited messages. Wired into `distill` and `learnFrom`; stats in state (`review`, `screened`), shown in Insights. Falls back to rules if the grader fails (including replay misses). Eval prints the gate line; `--grader off` for the A/B.
 
 ## UX review: Oct 28, through the real personas' eyes
 Fixed: sensitive (🔒) cards no longer raised as quick checks in chat (Vamshi was asked about his wife while booking flights); no "noticed" toast for sensitive learnings; demo day separators no longer disappear.

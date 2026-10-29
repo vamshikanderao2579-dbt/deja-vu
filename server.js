@@ -9,6 +9,7 @@ import { decideCue, checkReason, applyFeedback } from './src/cue.js';
 import { transcribe, interpret } from './src/voice.js';
 import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState } from './src/cards.js';
 import { todayMs } from './src/config.js';
+import { addReviewStats, emptyReviewStats } from './src/review.js';
 
 const PUBLIC = join(ROOT, 'public');
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
@@ -27,8 +28,11 @@ route('GET', '/api/state', () => statePayload());
 
 route('POST', '/api/distill', async () => {
   const s = getState();
-  const { cards, calls, usage } = await distill(s.cards, s.rejected);
+  const { cards, calls, usage, review, dropped } = await distill(s.cards, s.rejected);
   s.cards = cards;
+  // A rebuild starts the review log over: it describes how this memory was made.
+  s.review = review;
+  s.screened = dropped.slice(-30);
   save();
   saveSeed();
   return { ...statePayload(), distill: { calls, usage } };
@@ -88,8 +92,10 @@ function learnInBackground(conv) {
     try {
       const s = getState();
       const recent = { ...conv, messages: conv.messages.slice(-6) };
-      const { cards, added } = await learnFrom(recent, s.cards, s.rejected);
-      if (!added.length) return;
+      const { cards, added, review, dropped } = await learnFrom(recent, s.cards, s.rejected);
+      s.review = addReviewStats(s.review, review);
+      s.screened = [...(s.screened ?? []), ...dropped].slice(-30);
+      if (!added.length) { save(); return; }
       s.cards = cards;
       const at = new Date().toISOString();
       // Locked (sensitive) learnings are saved quietly, never announced.
@@ -191,7 +197,7 @@ function statePayload() {
   const s = getState();
   return {
     mock: config.mock,
-    models: { main: config.providers.main.model, bg: config.providers.bg.model },
+    models: { main: config.providers.main.model, bg: config.providers.bg.model, grader: config.graderEnabled ? config.providers.grader.model : null },
     userName: config.userName,
     profile: { id: store.profile.id, name: store.profile.name, about: store.profile.about, suggestions: store.profile.suggestions ?? [], script: store.profile.script ?? [] },
     museEnabled: config.museEnabled,
@@ -201,6 +207,9 @@ function statePayload() {
     fullHistoryTokens: fullHistoryTokens(),
     cuesShown: s.cueLog.length,
     learned: s.learned ?? [],
+    // How the writer → grader gate has screened cards (counts only; dropped texts in `screened`).
+    review: s.review ?? emptyReviewStats(),
+    screened: s.screened ?? [],
   };
 }
 

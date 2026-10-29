@@ -1,41 +1,39 @@
-# To-do: one focus per day (Oct 29 → Nov 4)
+# To-do: Oct 29 → Nov 4
 
-Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Claude does the build; your time per day is noted. Daily spend cap: `SPEND_CAP_USD` (check `data/spend.json`). Specs for each item are in `next.md`.
+Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Claude does the build; your time per day is noted. Daily spend cap: `SPEND_CAP_USD` (check `data/spend.json`). Specs: `next.md`.
 
-## Wed Oct 29: re-run the evals (queued first)
-- [ ] Claude: `npm run eval -- --persona alex|maria|nidhi|vamshi` on the latest code (tree-first relevance, key-card checks, agent identity, recent turns, seasonal sleeping cards). ~$3–4 total; say the cost before starting.
-- [ ] Claude: diagnose misses (see skills/run-eval.md), update `docs/eval.md` and deck slide 10, honest caveats kept.
-- [ ] You (10 min): skim the new numbers.
-- [ ] Claude: **re-record all 4 demos** (`node scripts/record-demo.js <profile>`, ~$0.40 total; wait a minute between profiles). The agent was renamed **Sparky**, so the old recordings (made as "Charmander") no longer replay.
-- [ ] You (2 min): **generate Sparky with Muse Image**. Run:
-  `python3 scripts/generate_mascot.py` → 4 options in `public/sparky-option-1..4.png`, each resized to 1024×765 like the placeholder. Pick one: `cp public/sparky-option-N.png public/sparky.png`, set `AGENT_AVATAR=sparky.png` in `.env`, restart the app. (`--n 2` for fewer; each option is a paid call.) Then delete the Gemini placeholder `public/sparky.jpeg` and use the line "Muse Image designed our agent" in the deck/video.
-  Prompt (also in the script; edit with `--prompt "…"`):
-  > Cute friendly cartoon mascot named Sparky: a glossy golden-yellow five-pointed star with a soft amber outline, big shiny blue eyes, small happy open smile, tiny eyebrows, short rounded arms open wide in a welcoming pose, two short legs, standing. Soft warm glow, a little trail of tiny golden stars curving behind it. Centered inside a pale sky-blue circular badge with a thin gold ring and a few small sparkles. Clean modern cartoon style, smooth shading, original character, not resembling any existing brand or franchise mascot. Off-white background, no text, no logos.
+**Framing for everything below:** Déjà Vu is an *agentic memory layer*: the agent whose job is memory. Every item either uses more of Meta's models where they fit, or makes the agent's work visible to a judge.
 
-## Thu Oct 30: answer first, check after (next.md item 0)
-- [ ] Claude: one-call flow; the slim "Going with: …" line above the answer; continuing = implicit yes; ✕ → chat → optional "Redo with that?"; deferred check after the task. 🔒 cards still never used before a yes.
-- [ ] Claude: update demo scripts (`onCheck`), `record-demo.js`, tests; re-record all 4 demos (wait a minute between profiles for the rate limit).
-- [ ] You (15 min): play Vamshi's and Alex's demos; flag anything that feels off.
+## Done Oct 28
+- [x] **Writer → grader gate** (`src/review.js`). Every card the background model proposes passes code rules (≤14 words, cites a message the *user* wrote, no personality labels, nothing about the agent, sensitive topics always locked), then a second model (`GRADER_MODEL`, default Muse Spark 1.3) accepts, locks or rejects it against the cited messages. A failing grader never blocks learning. `GRADER=off` / `npm run eval -- --grader off` for the comparison. Tests: `test/review.test.js`.
+- [x] **First piece of the agent trace:** Insights → "What I kept, and what I didn't" (proposed / kept / locked / dropped by reason, recently dropped; sensitive texts never shown).
 
-## Fri Oct 31: the 1-minute experience (next.md items 1–2)
-- [ ] Claude: Memory on/off toggle + explainer; "fast-forward 5 weeks" onboarding into Vamshi's San Diego demo; Memory tour (Why?, swipe, end summary); per-profile "How lean is my memory?".
-- [ ] You (20 min): dry-run the 1-minute flow; Vamshi practices narration over the pauses.
+## Backlog, in suggested priority order (reorder together)
 
-## Sat Nov 1: ship it (flying home)
-- [ ] You: review + commit (`git status`: nothing from `data/private/`, `.env`), push. Make the repo public.
-- [ ] Claude: deploy (Render/Railway); only Alex + Maria public; spend cap on. README live URL.
-- [ ] Claude: retake slide 6–7 screenshots with the **Pip** avatar; fill `[repo link]`, `[live demo URL]`, `[your name]` in the deck.
+| # | Item | Why it scores | Blocked on | Size |
+|---|---|---|---|---|
+| 1 | **Eval rerun + grader A/B** on alex + maria (with and without the grader), then nidhi + vamshi | Tech depth: a hard number for "the grader stops wrong cards" | nothing (~$3–4) | ½ day |
+| 2 | **Answer first, check after** (next.md item 0) | Demo: no blocking; one call instead of two | nothing | 1 day |
+| 3 | **A real action the confirmation gates.** Muse Spark tool calls `draft_hotel_booking` / `draft_grocery_order` return a structured draft card in chat (dates, room type, items). ✕ on the "Going with: 2 queens" line visibly changes the draft. **Not built yet**: today the answer prompt says "don't claim you booked anything" and there are no tools. Pairs with #2 (same flow). | Impact + Best Agentic ($5K): wrong memory → wrong action, shown | nothing | 1 day |
+| 4 | **Agent trace, full version.** Extend Insights + a quiet per-answer ⓘ line with what the loop decided: cards picked, checks *asked vs suppressed* (low stakes, cooldown, once-per-chat, sleeping seasonal), cards learned, cards screened out | Tech depth: makes the invisible loop visible | nothing | ½ day |
+| 5 | **Autonomy moment in the demo:** a later chat updates a card on its own, no swipe ("Sam eats chicken and fish now" → card changes, confirmed). Live learning already does it; script it and show it | Demo: proves it's an agent, not a settings page | nothing | 1–2 h |
+| 6 | **Memory on/off + "fast-forward 5 weeks" onboarding** (next.md item 1) | Demo: the 1-minute full experience | nothing | ½–1 day |
+| 7 | **Open weights for background work.** Writer on an open model, grader on hosted Muse Spark (two different models). Muse Spark Open is 816B MoE: self-hosting it on Modal needs a multi-GPU node, which $100 covers for a few hours at most, so prefer **Baseten's hosted Spark Open** (per token) or **Muse Glimmer (~30B) on one Modal GPU** via vLLM. Config is ready (`BG_BASE_URL`, `BG_API_KEY`, `BG_MODEL`) | Tooling (25%) + open-weights bonus ($10K) | **credits**: Modal (requested Oct 27, no reply), Baseten (apply) | ½ day once credits land |
+| 8 | **Photo → cards.** Snap a boarding pass, receipt or menu → cards with provenance "from your photo". SAM 3.1 crops the object ("the boarding pass") → Spark Open or Glimmer reads it → the grader checks it like any card. First check whether hosted Muse Spark 1.3 accepts images (`check-api`, cents): if yes, build it now on Spark and swap in the open model later | Tooling: multimodal + SAM; fixes "one-off purchases never become cards" | best on #7; maybe not | 1 day |
+| 9 | **Sensitive vault on Glimmer:** locked cards are extracted and reviewed only by the self-hosted model, never sent to a cloud API | Impact + tooling: privacy story | #7 (Glimmer) | ½ day |
+| 10 | **README and submission lead with the engine:** loop diagram (chat → writer → rules → grader → me.json → relevance → don't-nag rule → answer/action) and eval numbers first, screenshots second | Stage 1 + skimming judges | nothing | 2 h |
+| 11 | **Muse Wonder as independent eval judge** (today Spark answers *and* judges); later a monthly memory audit and seasonal refresh | Tech depth: removes the self-judging objection | nothing (~$1–2) | 2 h |
+| 12 | **Muse Image:** Sparky mascot (`scripts/generate_mascot.py`, replaces the Gemini placeholder) and a shareable "Memory Wrapped" image for the X post | Tooling (small) + Most Viral | nothing | 1 h + your pick |
+| 13 | **SAM 3.1 in the video:** masks to spotlight the ✕ card and the draft changing | Demo polish | recorded video | stretch |
+| 14 | ✅ **IP tidy-up:** README no longer says "Muse-style" (done Oct 28). Never use Meta/Muse logos or say it's a Meta product; model names are fine | Avoids any "looks like Meta's product" question | nothing | 10 min |
 
-## Sun Nov 2: record
-- [ ] You: record the 1-minute experience (Vamshi presenting) and the 3-minute submission video (deck + demo). `MUSE_ENABLED=false` for instant replay; answer cards as scripted.
-- [ ] You: 20-second X clip (✕ → chat about it → the answer changes) for Most Viral.
+## Fixed dates
+- **Sat Nov 1:** review + commit (nothing from `data/private/`, `.env`), push, repo public. Deploy (Render/Railway; only Alex + Maria public; spend cap on). Retake deck slides 6–7 with the new flow.
+- **Sun Nov 2:** record the 1-minute experience (Vamshi) and the 3-minute submission video; 20-second X clip (✕ → the draft changes).
+- **Mon Nov 3:** confirm a 2-person team is OK in the Indie track (#questions); submit; check links in a private window.
+- **Tue Nov 4:** buffer only (deadline 9 PM ET).
 
-## Mon Nov 3: submit (last full support day)
-- [ ] You: confirm in #questions that a 2-person team is OK in the Indie track.
-- [ ] You: submit on the CV platform; both listed; check the repo and video links in a private window.
-
-## Tue Nov 4: buffer only (deadline 9 PM ET)
-- [ ] Fix anything the submission check found. Share the gallery link for the community vote.
-
-## Parking lot (only if time allows)
-Muse Spark Open via Modal (open-weights bonus) · Muse Image (photo → card) · seasonal cards updated from last year's pattern · eval with 2–3 runs per persona.
+## You, this week
+- Ping Modal in the hackathon Discord about the credit request; apply for Baseten ($100 + 2M TPM).
+- 2 min: run the mascot script and pick one.
+- 15 min after #2–#3: play Vamshi's and Alex's demos and flag anything off.

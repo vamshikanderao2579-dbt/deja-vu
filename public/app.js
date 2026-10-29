@@ -793,6 +793,7 @@ function renderInsights() {
     <div class="stat"><div class="n">~${data.fullHistoryTokens.toLocaleString()}</div><div class="l">tokens for full history</div></div>
     <div class="stat"><div class="n">${data.cuesShown}</div><div class="l">quick checks asked</div></div>`;
 
+  renderGate();
   renderEval();
   const box = $('#sessionLog');
   if (!sessionLog.length) return;
@@ -801,6 +802,25 @@ function renderInsights() {
     <div class="bar"><span class="lbl">Full history</span><span class="track"><span class="fill" style="width:100%;background:var(--series-2)"></span></span><span class="val">${full.toLocaleString()}</span></div>
     <div class="bar"><span class="lbl">Your cards (avg)</span><span class="track"><span class="fill" style="width:${Math.max(1, (avg / full) * 100)}%;background:var(--series-1)"></span></span><span class="val">${avg}</span></div>
     ${sessionLog.map((l) => `<div class="log-row"><span>${esc(l.question)}</span><span>${l.mode === 'cards' ? `${l.cards} cards · ${l.tokens} tok` : l.mode === 'full' ? `full · ${l.tokens.toLocaleString()} tok` : 'no memory'}</span></div>`).join('')}`;
+}
+
+// What the memory agent did: one model writes cards, rules and a second model screen them.
+const REASONS = { too_long: 'too long', about_agent: 'about me, not you', trait: 'a label, not a preference', no_user_source: 'not in your words', unsupported: 'not backed by the chat', one_off: 'a one-off', duplicate: 'already known', empty: 'empty' };
+function renderGate() {
+  const box = $('#gateBox');
+  const r = data.review;
+  if (!r?.proposed) { box.hidden = true; return; }
+  const dropped = Object.entries({ ...r.byRules }).concat(Object.entries(r.byGrader));
+  const totals = {};
+  for (const [k, n] of dropped) totals[k] = (totals[k] ?? 0) + n;
+  const writer = data.models.bg, grader = data.models.grader;
+  box.hidden = false;
+  box.innerHTML = `<h3>What I kept, and what I didn't</h3>
+    <p class="fine">${esc(writer)} writes cards from your chats. ${grader ? `Code rules and ${esc(grader)} check each one against your own words` : 'Code rules check each one'} before it's saved.</p>
+    <div class="log-row"><span>Proposed</span><span>${r.proposed}</span></div>
+    <div class="log-row"><span>Kept</span><span>${r.kept}${r.locked ? ` (${r.locked} 🔒 locked)` : ''}</span></div>
+    ${Object.entries(totals).map(([k, n]) => `<div class="log-row"><span>Dropped: ${esc(REASONS[k] ?? k)}</span><span>${n}</span></div>`).join('')}
+    ${data.screened?.length ? `<details class="table-view"><summary>Recently dropped</summary>${data.screened.slice(-8).reverse().map((d) => `<div class="log-row"><span>${esc(d.text)}</span><span>${esc(REASONS[d.reason] ?? d.reason)}</span></div>`).join('')}</details>` : ''}`;
 }
 
 // ---------------- eval charts ----------------

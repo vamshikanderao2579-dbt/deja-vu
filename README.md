@@ -14,6 +14,7 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
 - **Cards, not a black box.** Chat history becomes short cards ("Partner is vegetarian", "Book the dog sitter 2 weeks before trips"), grouped by topic. Each is marked *guessed* or *confirmed*, dated, and linked to the exact conversation it came from.
 - **Asks once, only when it matters.** When a guessed, changed or year-old card is about to shape a booking, order or plan, the agent asks in chat. Swipe → still true, ← not anymore, ↑ fix it. A strict rule keeps it from nagging.
 - **Bounded and scoped.** At most 10 topics × 8 cards × 14 words. Each question only sees the cards relevant to it, so context stays small however long the history gets.
+- **Checked before it's saved.** One model writes each card; code rules and a second model check it against your own words before it enters memory. No personality labels, nothing you didn't say.
 - **Sensitive stays locked.** Health or money cards are visible but unused until you say yes.
 - **Portable.** Export everything as `me.json`.
 
@@ -23,6 +24,7 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
 |---|---|
 | Answers the user sees, eval judge | Muse Spark (Meta Model API) |
 | Background memory work: extract cards, merge, pick relevant cards | Muse Spark (default) or Muse Spark Open via an OpenAI-compatible host |
+| Grader: checks every proposed card against the messages it cites | Muse Spark (`GRADER_MODEL`; `GRADER=off` for code rules only) |
 
 ## Quick start
 
@@ -50,11 +52,12 @@ src/
   agent.js                card extraction, relevance + stakes, answers
   cards.js                merge, budgets, swipe actions, rendering
   cue.js                  the don't-nag rule: when to ask a quick check
+  review.js               the writer → grader gate for new cards
   llm.js                  OpenAI-compatible client, spend cap
   prompts.js              all model prompts
   store.js                me.json (source of truth) and chat history
   config.js               .env loading and settings
-public/                   Muse-style mobile web app (chat, Memory, insights)
+public/                   mobile web app (chat, Memory, insights)
 data/
   test-history.json       synthetic chat history, Jun 2023 to Oct 2026
   answer-key.json         planted facts and eval checklist questions

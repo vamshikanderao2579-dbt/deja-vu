@@ -24,7 +24,7 @@ Agents are really good at inferring context from chats. But confirmed memory is 
 - **Demo player:** "▶ Play a demo conversation" types each profile's script; pauses on quick checks. **Replay cache** makes recorded demos answer in ~1–1.5 s.
 
 ## Meta models in use
-Muse Spark **1.3** (answers, judge, card extraction; reasoning `minimal`/`low` per job; thinking counts against max_tokens), Muse Voice Transcribe 1.0 (voice). Available but not yet used: Muse Spark Open (Baseten/Modal), Muse Image, SAM 3.1, Muse Wonder.
+Muse Spark **1.3** (answers, judge, card extraction, card grader; reasoning `minimal`/`low` per job; thinking counts against max_tokens), Muse Voice Transcribe 1.0 (voice). Available but not yet used: Muse Spark Open (Baseten/Modal), Muse Image, SAM 3.1, Muse Wonder.
 
 ## Eval (docs/eval.md)
 Three setups × 4 people (2 real, 2 synthetic), 42 questions, 76 checks, judged by Muse Spark:
@@ -39,4 +39,4 @@ Real data: 5 weeks of Vamshi's Muse chats (~113,600 tokens) → ~44 cards (~400 
 - Private (git-ignored): `data/private/` (real histories, answer keys, real eval results, replay cache, profiles), `.env`, `data/spend.json`, `EYI Package*` exports.
 
 ## Key files
-`server.js` routes · `src/agent.js` extraction, relevance (+key cards), answers, live learning, card rewrite · `src/cards.js` merge/budgets/actions · `src/cue.js` don't-nag rule · `src/llm.js` client + spend cap + replay cache · `src/store.js` profiles, state, live history · `src/voice.js` · `src/prompts.js` · `public/` app · `eval/run.js` · `scripts/` (check-api, import-muse-export, make-demo-memory, record-demo) · `test/` · `docs/eval.md`, `docs/plan.md`, `docs/status.md`.
+`server.js` routes · `src/agent.js` extraction, relevance (+key cards), answers, live learning, card rewrite · `src/cards.js` merge/budgets/actions · `src/cue.js` don't-nag rule · `src/review.js` writer → grader card gate · `src/llm.js` client + spend cap + replay cache · `src/store.js` profiles, state, live history · `src/voice.js` · `src/prompts.js` · `public/` app · `eval/run.js` · `scripts/` (check-api, import-muse-export, make-demo-memory, record-demo) · `test/` · `docs/eval.md`, `docs/plan.md`, `docs/status.md`.
