@@ -1,0 +1,209 @@
+{
+  "_label": "Synthetic persona Maria: her memory as first built from data/personas/maria-history.json.",
+  "cards": [
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Prefers high-protein low-carb meals that reheat well",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "q001",
+        "q027"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2025-02-09T10:10:00",
+      "last_confirmed": null,
+      "first_seen": "2024-02-11T10:20:00"
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Is pre-diabetic, needs low-sugar meals factored in",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.9,
+      "sources": [
+        "q037",
+        "q052"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2026-09-12T10:30:00",
+      "last_confirmed": null,
+      "first_seen": "2025-08-19T17:10:00"
+    },
+    {
+      "id": "health-2",
+      "category": "health",
+      "type": "preference",
+      "text": "Prefers appointments only after 3pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "q006"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2024-04-18T16:05:00",
+      "last_confirmed": null,
+      "first_seen": "2024-04-18T16:05:00"
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Works nights Wed-Fri 7pm-7am, asleep until 3pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "q004"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2024-03-05T15:40:00",
+      "last_confirmed": null,
+      "first_seen": "2024-03-05T15:40:00"
+    },
+    {
+      "id": "travel-2",
+      "category": "travel",
+      "type": "lesson",
+      "text": "Prefers nonstop or one short layover max",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "q025",
+        "q043",
+        "q045"
+      ],
+      "changed_from": "Preferred cheapest flights regardless of layovers",
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2025-12-01T21:30:00",
+      "last_confirmed": null,
+      "first_seen": "2024-12-28T13:00:00"
+    },
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "lesson",
+      "text": "For summer hikes starts before 6:30 with 3L water",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "q013",
+        "q050"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2026-06-21T05:00:00",
+      "last_confirmed": null,
+      "first_seen": "2024-06-16T11:00:00"
+    },
+    {
+      "id": "car-1",
+      "category": "car",
+      "type": "preference",
+      "text": "Prefers independent auto shops over dealerships for service",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "q015",
+        "q048"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2026-04-03T16:00:00",
+      "last_confirmed": null,
+      "first_seen": "2024-07-22T17:45:00"
+    },
+    {
+      "id": "shopping-1",
+      "category": "shopping",
+      "type": "preference",
+      "text": "Buys bulk at Costco, checks coupon book first",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "q018",
+        "q052"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2026-09-12T10:30:00",
+      "last_confirmed": null,
+      "first_seen": "2024-09-08T09:30:00"
+    },
+    {
+      "id": "people-1",
+      "category": "people",
+      "type": "preference",
+      "text": "Mom prefers Spanish-language telenovelas, limited English",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "q020",
+        "q046"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2026-02-14T11:00:00",
+      "last_confirmed": null,
+      "first_seen": "2024-10-03T20:15:00"
+    },
+    {
+      "id": "people-2",
+      "category": "people",
+      "type": "preference",
+      "text": "Sister Ana lives in Guadalajara, visits for Christmas",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.85,
+      "sources": [
+        "q022",
+        "q043"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2025-12-01T21:30:00",
+      "last_confirmed": null,
+      "first_seen": "2024-11-12T21:00:00"
+    },
+    {
+      "id": "people-3",
+      "category": "people",
+      "type": "preference",
+      "text": "Son Leo is into robotics club battle bots",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.8,
+      "sources": [
+        "q008",
+        "q039"
+      ],
+      "changed_from": "Son Leo was all about basketball",
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2025-09-05T20:40:00",
+      "last_confirmed": null,
+      "first_seen": "2024-05-20T18:30:00"
+    },
+    {
+      "id": "home-1",
+      "category": "home",
+      "type": "preference",
+      "text": "Crochets blankets with soft acrylic yarn on sale",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "q032"
+      ],
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2025-04-27T14:00:00",
+      "last_confirmed": null,
+      "first_seen": "2025-04-27T14:00:00"
+    }
+  ]
+}

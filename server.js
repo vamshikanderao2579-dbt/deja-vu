@@ -2,8 +2,9 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 import { config, ROOT } from './src/platform/config.js';
-import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed, chatTitle } from './src/platform/store.js';
-import * as store from './src/platform/store.js';
+import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, saveSeed, loadSeed, chatTitle, current, runIn, getProfile, getHistory, userName } from './src/platform/store.js';
+import { sessionFor, viewFor, profilesFor, choose, saveImport, countBuild, endSession, clearCookie, buildsRunning } from './src/platform/sessions.js';
+import { importHistory } from './src/platform/importers.js';
 import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/engine/agent.js';
 import { cueDecision, checkReason, applyFeedback, implicitYes } from './src/engine/cue.js';
 import { transcribe, interpret } from './src/platform/voice.js';
@@ -14,11 +15,12 @@ import { buildMemory, applyBuild } from './src/engine/build.js';
 
 const PUBLIC = join(ROOT, 'src', 'ui');
 const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
-// Full-history size per profile, for the "x% less than full history" comparison.
-const historyTokens = new Map();
+// Full-history size per view, for the "x% less than full history" comparison.
+const historyTokens = new WeakMap();
 const fullHistoryTokens = () => {
-  if (!historyTokens.has(store.profile.id)) historyTokens.set(store.profile.id, estimateTokens(historyAsText()));
-  return historyTokens.get(store.profile.id);
+  const v = current();
+  if (!historyTokens.has(v)) historyTokens.set(v, estimateTokens(historyAsText()));
+  return historyTokens.get(v);
 };
 
 // ---------- tiny router ----------
@@ -28,8 +30,8 @@ const route = (method, path, fn) => routes.push({ method, re: new RegExp(`^${pat
 route('GET', '/api/state', () => statePayload());
 
 // Building memory from the whole history runs as a background job: the page polls
-// GET /api/build for progress and tells the user in chat when it's done.
-let buildJob = null;
+// GET /api/build for progress and tells the user in chat when it's done. Each view
+// (one person's memory, for one visitor) has its own job.
 
 // One full rebuild per month per person. Sooner only once the history has grown, and
 // then it reads just the new chats. When every card is confirmed, a rebuild starts
@@ -53,15 +55,16 @@ function rebuildPlan() {
 }
 
 function startBuild(plan = { mode: 'full', since: null }) {
-  if (buildJob?.running) return buildJob;
+  const view = current();
+  if (view.buildJob?.running) return view.buildJob;
   const s = getState();
-  const profileId = store.profile.id;
+  const profileId = getProfile().id;
   const job = { running: true, profileId, pct: 0, stage: 'guard', label: 'Starting', startedAt: new Date().toISOString() };
-  buildJob = job;
-  job.promise = buildMemory({ conversations: store.history.conversations, existing: s.cards, rejected: s.rejected, profileId, since: plan.since, onProgress: (p) => Object.assign(job, p) })
+  view.buildJob = job;
+  // The job keeps the view it started in (runIn carries it through every await), so a
+  // visitor switching people meanwhile can't send these cards to the wrong memory.
+  job.promise = buildMemory({ conversations: getHistory().conversations, existing: s.cards, rejected: s.rejected, profileId: view.buildKey, since: plan.since, onProgress: (p) => Object.assign(job, p) })
     .then(({ cards, report }) => {
-      // Only into the profile it was built for: someone may have switched meanwhile.
-      if (store.profile.id !== profileId) throw new Error('Switched profiles during the build; run it again.');
       const st = getState();
       st.cards = applyBuild(st.cards, cards, st.rejected, { partial: plan.mode === 'new' || !!plan.since });
       st.build = { ...report, mode: plan.mode, historyTokens: historyTokensNow() };
@@ -91,17 +94,27 @@ route('GET', '/api/chats/:id', (_, { id }) => {
 });
 
 route('GET', '/api/build/plan', () => rebuildPlan());
-route('POST', '/api/build', (body) => {
-  if (buildJob?.running) return jobView(buildJob);
+route('POST', '/api/build', (body, _, { session }) => {
+  if (current().buildJob?.running) return jobView(current().buildJob);
   if (!body?.confirm) throw httpError(400, 'Confirm the rebuild first.');
   const plan = rebuildPlan();
   if (!plan.allowed) throw httpError(429, `You refreshed your memory recently. Try again on ${new Date(plan.nextAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}.`);
+  canBuild(session);
   return jobView(startBuild(plan));
 });
-route('GET', '/api/build', () => jobView(buildJob));
+route('GET', '/api/build', () => jobView(current().buildJob));
 
-// The same build, waited on, without the monthly limit (tests and scripts).
+// Builds cost API credits: on the public link each visitor gets a few, and only a few run at once.
+function canBuild(session) {
+  if (!config.publicDemo) return;
+  if ((session.builds ?? 0) >= config.sessionBuilds) throw httpError(429, 'This demo allows a couple of memory builds per visitor, and you’ve used them.');
+  if (buildsRunning() >= config.buildsAtOnce) throw httpError(503, 'A few people are building their memory right now. Try again in a couple of minutes.');
+  countBuild(session);
+}
+
+// The same build, waited on, without the monthly limit (tests and scripts; not on the public link).
 route('POST', '/api/distill', async () => {
+  if (config.publicDemo) throw httpError(404, 'not found');
   const job = startBuild();
   await job.promise;
   if (job.error) throw httpError(500, job.error);
@@ -114,7 +127,7 @@ route('POST', '/api/chat', async (body) => {
   // Learning (writer + grader) runs in the background and never delays an answer:
   // new cards join memory when they're ready. Only a scripted demo waits for it,
   // so a replay sees exactly the memory the recorded run saw.
-  if (demo) await learning;
+  if (demo) await current().learning;
   const s = getState();
   // Memory switched off: answer like an agent with no memory, ask nothing, learn nothing.
   const mode = s.memoryOff ? 'none' : (body.mode ?? 'cards');
@@ -224,16 +237,14 @@ route('POST', '/api/memory/switch', (body) => {
   return statePayload();
 });
 
-let learning = Promise.resolve();
 function learnInBackground(conv) {
-  // One at a time, so two quick messages don't overwrite each other's cards.
-  learning = learning.then(async () => {
+  // One at a time per memory, so two quick messages don't overwrite each other's cards.
+  // It runs in the view it was started from, even if the visitor switches people meanwhile.
+  const view = current();
+  view.learning = view.learning.then(async () => {
     try {
       const recent = { ...conv, messages: conv.messages.slice(-6) };
-      const who = store.profile.id;
       const { kept, review, dropped } = await proposeFrom(recent, getState().cards);
-      // Switched profiles meanwhile: these cards belong to someone else's memory.
-      if (store.profile.id !== who) return;
       // Merge into memory as it is now: chat and swipes kept going while the writer and grader worked.
       const s = getState();
       const before = new Map(s.cards.map((c) => [c.id, c.text]));
@@ -331,13 +342,31 @@ route('POST', '/api/demo/load', async () => {
   return statePayload();
 });
 
-route('GET', '/api/profiles', () => ({ active: store.profile.id, profiles: listProfiles().map(({ id, name, about }) => ({ id, name, about })) }));
+route('GET', '/api/profiles', (_, __, { session }) => ({ active: viewFor(session)?.profile.id ?? null, profiles: profilesFor(session), importMaxMb: config.importMaxMb }));
 
-route('POST', '/api/profile', async ({ id }) => {
-  await learning;
-  if (!listProfiles().some((p) => p.id === id)) throw httpError(404, 'unknown profile');
-  useProfile(id);
-  return statePayload();
+route('POST', '/api/profile', async ({ id }, _, { session }) => {
+  if (!choose(session, id)) throw httpError(404, 'unknown profile');
+  return runIn(viewFor(session), statePayload);
+});
+
+// Your own memory: upload a chat export (raw file in the body). It becomes this visitor's
+// profile and a build starts right away; the page shows its progress.
+async function importRoute(req, url, session) {
+  if (current()?.buildJob?.running) throw httpError(409, 'A memory build is already running. Wait for it to finish.');
+  const raw = (await readRaw(req, config.importMaxMb * 1024 * 1024, `That file is over ${config.importMaxMb} MB. Export a shorter stretch, or keep just the last few months.`)).toString('utf8');
+  let parsed;
+  try { parsed = importHistory(raw, { name: url.searchParams.get('name') ?? '' }); } catch (err) { throw httpError(400, err.message); }
+  canBuild(session);
+  saveImport(session, parsed);
+  const view = viewFor(session);
+  return runIn(view, () => ({ imported: { format: parsed.label, turns: parsed.turns, conversations: parsed.history.conversations.length }, job: jobView(startBuild()), ...statePayload() }));
+}
+
+// End the visit: delete everything uploaded or built in it.
+route('POST', '/api/session/end', (_, __, { session, res }) => {
+  endSession(session);
+  clearCookie(res);
+  return { ended: true };
 });
 
 route('POST', '/api/cue-cooldown/reset', () => {
@@ -351,8 +380,9 @@ function statePayload() {
   return {
     mock: config.mock,
     models: { main: config.providers.main.model, bg: config.providers.bg.model, grader: config.graderEnabled ? config.providers.grader.model : null },
-    userName: config.userName,
-    profile: { id: store.profile.id, name: store.profile.name, about: store.profile.about, suggestions: store.profile.suggestions ?? [], script: store.profile.script ?? [] },
+    userName: userName(),
+    profile: { id: getProfile().id, name: getProfile().name, about: getProfile().about, suggestions: getProfile().suggestions ?? [], script: getProfile().script ?? [], mine: getProfile().id === 'mine' },
+    publicDemo: config.publicDemo,
     museEnabled: config.museEnabled,
     agent: config.agent,
     cards: s.cards.map((c) => ({ ...publicCard(c), checkReason: seasonState(c, todayMs())?.active === false ? null : checkReason(c), seasonState: seasonState(c, todayMs()) })),
@@ -373,11 +403,11 @@ function statePayload() {
 async function serveExport(req, res) {
   const s = getState();
   if (req.url === '/export/me.json') {
-    const body = JSON.stringify({ version: 1, user: config.userName, exported: new Date().toISOString(), cards: s.cards.map(publicCard) }, null, 2);
+    const body = JSON.stringify({ version: 1, user: userName(), exported: new Date().toISOString(), cards: s.cards.map(publicCard) }, null, 2);
     return send(res, 200, body, 'application/json', { 'Content-Disposition': 'attachment; filename="me.json"' });
   }
   if (req.url === '/export/me.md') {
-    return send(res, 200, renderMarkdown(s.cards, config.userName), 'text/markdown', { 'Content-Disposition': 'attachment; filename="me.md"' });
+    return send(res, 200, renderMarkdown(s.cards, userName()), 'text/markdown', { 'Content-Disposition': 'attachment; filename="me.md"' });
   }
   return false;
 }
@@ -401,11 +431,20 @@ function send(res, status, body, type = 'application/json', headers = {}) {
   res.end(body);
 }
 
+// Routes that work before a visitor has picked someone (public link: the welcome screen).
+const NO_VIEW = new Set(['/api/state', '/api/profiles', '/api/profile', '/api/session/end', '/api/eval']);
+// Before a choice, the page shows the welcome screen: demo personas or "Import your memory".
+const choicePayload = (session) => ({ needsChoice: true, publicDemo: config.publicDemo, mock: config.mock, agent: config.agent, profiles: profilesFor(session), active: session.chosen ? session.profileId : null, importMaxMb: config.importMaxMb });
+
 createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
+    const isApi = url.pathname.startsWith('/api/') || url.pathname.startsWith('/export/');
+    const session = isApi ? sessionFor(req, res) : null;
+    const view = session && viewFor(session);
+    if (isApi && !view && !NO_VIEW.has(url.pathname) && url.pathname !== '/api/import') return send(res, 409, JSON.stringify({ error: 'Pick a demo or import your memory first.' }));
     if (url.pathname.startsWith('/export/')) {
-      if ((await serveExport(req, res)) !== false) return;
+      if ((await runIn(view, () => serveExport(req, res))) !== false) return;
     }
     // Voice: raw PCM16 mono 24 kHz in, transcript and its meaning out.
     if (url.pathname === '/api/voice' && req.method === 'POST') {
@@ -414,13 +453,20 @@ createServer(async (req, res) => {
       const transcript = await transcribe(pcm);
       return send(res, 200, JSON.stringify({ transcript, ...interpret(transcript) }));
     }
+    if (url.pathname === '/api/import' && req.method === 'POST') {
+      if (rateLimited(req)) return send(res, 429, JSON.stringify({ error: 'Slow down a little and try again in a minute.' }));
+      return send(res, 200, JSON.stringify(await runIn(view, () => importRoute(req, url, session))));
+    }
     if (url.pathname.startsWith('/api/')) {
       if (req.method === 'POST' && rateLimited(req)) return send(res, 429, JSON.stringify({ error: 'Slow down a little and try again in a minute.' }));
+      if (url.pathname === '/api/state' && !view) return send(res, 200, JSON.stringify(choicePayload(session)));
       for (const r of routes) {
         const m = r.method === req.method && url.pathname.match(r.re);
         if (!m) continue;
         const body = req.method === 'POST' ? await readBody(req) : {};
-        const out = await r.fn(body, m.groups ?? {});
+        let out = await runIn(view, () => r.fn(body, m.groups ?? {}, { session, req, res }));
+        // A browser that hasn't picked who it is yet lands on the Select user page.
+        if (url.pathname === '/api/state' && !session.chosen) out = { ...out, ...choicePayload(session) };
         return send(res, 200, JSON.stringify(out));
       }
       return send(res, 404, JSON.stringify({ error: 'not found' }));
@@ -448,12 +494,12 @@ createServer(async (req, res) => {
   console.log(config.mock ? '  Mock mode: no MAIN_API_KEY set, using fixtures.\n' : `  Live: main=${config.providers.main.model}, bg=${config.providers.bg.model}\n`);
 });
 
-async function readRaw(req, limit) {
+async function readRaw(req, limit, tooBig = 'audio too long') {
   const parts = [];
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > limit) throw httpError(413, 'audio too long');
+    if (size > limit) throw httpError(413, tooBig);
     parts.push(chunk);
   }
   return Buffer.concat(parts);

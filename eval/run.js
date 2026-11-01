@@ -54,7 +54,8 @@ const { distill, selectRelevant, answer, summarizeHistory } = await import('../s
 const { applyCardAction, estimateTokens, renderContext } = await import('../src/engine/cards.js');
 const { complete, parseJson } = await import('../src/platform/llm.js');
 const { prompt } = await import('../src/prompts/index.js');
-const { history, historyAsText } = await import('../src/platform/store.js');
+const { getHistory, historyAsText } = await import('../src/platform/store.js');
+const history = getHistory();
 
 const CONCURRENCY = Number(arg('concurrency', 3));
 const MODES = arg('modes', 'full,summary,confirmed').split(',');

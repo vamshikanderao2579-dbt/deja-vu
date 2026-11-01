@@ -116,7 +116,7 @@ Requires Node 18+. No dependencies.
 cp .env.example .env     # add MAIN_API_KEY from dev.meta.ai
 npm run check-api        # lists your models, makes one test call
 npm run dev              # http://localhost:3000
-npm test                 # 50 tests, mock mode, no cost
+npm test                 # 60 tests, mock mode, no cost
 ```
 
 Without an API key the app runs in **mock mode** on a hand-written fixture, so the UI works offline. Recorded demos replay instantly with `MUSE_ENABLED=false`. A daily spend cap (`SPEND_CAP_USD`) stops model calls once reached; today's spend is in `data/spend.json`.
@@ -141,12 +141,27 @@ src/
     actions.js            draft_booking / draft_order tools
     engine-quality.md     six writing principles for prompts, cards and copy
   prompts/                every model prompt, one .md file each (+ prompt-quality.md)
-  platform/               config, model client (spend cap, replay cache), storage, voice
+  platform/               config, model client (spend cap, replay cache), storage, sessions, importers, voice
   ui/                     the app (chat, Memory, Insights): phone, iPad and laptop layouts
 data/                     synthetic histories, answer keys, demo memory
 eval/run.js               the eval
 scripts/                  check-api, import-muse-export, record-demo
+deploy/modal_app.py       the public link on Modal
 .agents/                  project context for any coding agent picking this up
+```
+
+## The public link
+
+Every new browser lands on **Select user**: no sign-in, a dropdown of demo people (Alex, Maria; on your own machine your private profiles too) and **New user**, which asks for a name and imports their chats. The avatar in the menu comes back to it. `PUBLIC_DEMO=true` turns the app into a shared link: only the synthetic demos are listed and every visitor gets their own copy. Each browser gets its own session, so one visitor's swipes, chats and switches never show up for anyone else.
+
+- **Import:** ChatGPT or Claude `conversations.json` (preferred), a Muse export `manifest.json`, or any .json, .md or .txt chat log. The upload becomes the visitor's profile and the staged build starts at once, with live progress; the newest 500 messages are read.
+- **Guardrails:** files up to `IMPORT_MAX_MB` (30); `SESSION_BUILDS` builds per visitor (2); `BUILDS_AT_ONCE` across everyone (3); the per-IP rate limit; `SPEND_CAP_USD` per day and `SPEND_TOTAL_CAP_USD` in total (the deploy sets $15 and $60, keeping $40+ of the credit for the demo).
+- **Deleted:** "End session" in Settings removes the upload and cards; so does `SESSION_IDLE_HOURS` (24) without a visit.
+- **Hosting:** [`deploy/modal_app.py`](deploy/modal_app.py) runs it on Modal (Starter plan's included compute covers one small always-on container). Real profiles under `data/private/` are never listed or uploaded.
+
+```bash
+modal secret create deja-vu MAIN_API_KEY=<key> SPEND_CAP_USD=10
+modal deploy deploy/modal_app.py
 ```
 
 ## Using your own Muse history

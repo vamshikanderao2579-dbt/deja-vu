@@ -13,6 +13,13 @@ const SUGGESTIONS = [
   'Gift ideas for Maya’s birthday',
   'Find us a place to stay in Miami for spring break',
 ];
+// For someone's own imported memory: everyday asks where remembering them matters.
+const MINE_SUGGESTIONS = [
+  'Plan dinner for this week',
+  'Find me a place to stay for a weekend away',
+  'Gift ideas for someone close to me',
+  'What do you remember about me?',
+];
 const REASON_LABEL = {
   changed: 'You said something different recently',
   guessed: 'I guessed this from our chats',
@@ -79,6 +86,14 @@ const ICON = {
   entertainment: '<rect x="3" y="5" width="18" height="12" rx="2.5"/><path d="M8.5 21h7M10.5 8.8v4.4l3.8-2.2z"/>',
   shopping: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
   fitness: '<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/>',
+  finance: '<rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M16 14.5h2"/>',
+  immigration: '<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3.2"/><path d="M8.8 10h6.4M12 6.8c-1 .9-1.4 2-1.4 3.2s.4 2.3 1.4 3.2c1-.9 1.4-2 1.4-3.2s-.4-2.3-1.4-3.2zM9 17h6"/>',
+  style: '<path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4 4v-4h0A2 2 0 0 1 4 14z"/><path d="M8 8.5h8M8 11.5h5"/>',
+  privacy: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5M12 14.5v2"/>',
+  assistant: '<rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.5 16h5"/>',
+  education: '<path d="M2.5 9L12 4.5 21.5 9 12 13.5zM6.5 11v5c1.6 1.6 3.4 2.4 5.5 2.4s3.9-.8 5.5-2.4v-5M21.5 9v5"/>',
+  pets: '<circle cx="7" cy="9.5" r="1.8"/><circle cx="17" cy="9.5" r="1.8"/><circle cx="10" cy="5.8" r="1.8"/><circle cx="14" cy="5.8" r="1.8"/><path d="M12 12c-2.8 0-5 3.2-5 5.3 0 1.6 1.2 2.2 2.5 2.2 1 0 1.6-.5 2.5-.5s1.5.5 2.5.5c1.3 0 2.5-.6 2.5-2.2 0-2.1-2.2-5.3-5-5.3z"/>',
+  review: '<path d="M20 12a8 8 0 1 1-4.7-7.3"/><path d="M8.5 11.5l3 3L20 6"/>',
   other: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM18.5 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',
 };
 const catIcon = (cat) => `<svg viewBox="0 0 24 24">${ICON[cat] ?? ICON.other}</svg>`;
@@ -134,7 +149,7 @@ function el(html) {
 }
 
 // ---------------- navigation: drawer, sheet, pages ----------------
-const OVERLAYS = ['drawer', 'settings', 'profiles', 'memory', 'category', 'insights', 'memoryIntro', 'rebuildSheet'];
+const OVERLAYS = ['importSheet', 'drawer', 'settings', 'memory', 'category', 'insights', 'memoryIntro', 'rebuildSheet'];
 
 function open(id) {
   if (id === 'chat') return closeAll();
@@ -144,7 +159,6 @@ function open(id) {
   if (id === 'memory') { renderMemory(); renderMemSwitch(); }
   if (id === 'insights') renderInsights();
   if (id === 'settings') renderSettings();
-  if (id === 'profiles') renderProfiles();
   if (id === 'drawer') renderDrawer();
   syncChrome();
 }
@@ -173,7 +187,7 @@ try { $('.app').classList.toggle('side-closed', localStorage.getItem(SIDE_KEY) =
 $('#menuBtn').addEventListener('click', () => (wide.matches ? setSide(!$('.app').classList.contains('side-closed')) : open('drawer')));
 $('#scrim').addEventListener('click', () => close('drawer'));
 $('#openSettings').addEventListener('click', () => open('settings'));
-$('#openProfiles').addEventListener('click', () => open('profiles'));
+$('#openProfiles').addEventListener('click', openUserPicker);
 $$('[data-go]').forEach((b) => b.addEventListener('click', () => open(b.dataset.go)));
 $$('[data-close]').forEach((b) => b.addEventListener('click', () => close(b.dataset.close)));
 
@@ -238,6 +252,10 @@ function scrollDown() {
 
 function renderWelcome() {
   thread.innerHTML = '';
+  if (!data.cards.length && building) {
+    thread.append(el(`<div class="msg assistant"><p>${esc(`Hi ${data.userName}! I’m reading your chats now and turning them into short cards. I’ll tell you here when they’re ready.`)}</p></div>`));
+    return;
+  }
   if (!data.cards.length) {
     const box = el(`<div class="msg assistant"><p>Hi ${esc(data.userName)}! I haven't organized what I know about you yet. Want me to turn our past chats into a few short cards you can check?</p><div class="suggestions"><button>Build my memory from our chats</button></div></div>`);
     box.querySelector('button').addEventListener('click', askRebuild);
@@ -246,10 +264,12 @@ function renderWelcome() {
   }
   thread.append(el(`<p class="welcome">Try one of these, or just chat</p>`));
   const s = el(`<div class="suggestions"></div>`);
-  const demo = el(`<button class="play-demo">▶ Play a demo conversation</button>`);
-  demo.addEventListener('click', playDemo);
-  s.append(demo);
-  for (const q of data.profile?.suggestions?.length ? data.profile.suggestions : SUGGESTIONS) {
+  if (data.profile?.script?.length) {
+    const demo = el(`<button class="play-demo">▶ Play a demo conversation</button>`);
+    demo.addEventListener('click', playDemo);
+    s.append(demo);
+  }
+  for (const q of data.profile?.suggestions?.length ? data.profile.suggestions : data.profile?.mine ? MINE_SUGGESTIONS : SUGGESTIONS) {
     const b = el(`<button>${esc(q)}</button>`);
     b.addEventListener('click', () => send(q));
     s.append(b);
@@ -744,24 +764,45 @@ async function askRebuild() {
 $('#rebuildGo').addEventListener('click', () => { close('rebuildSheet'); startBuild(); });
 async function startBuild() {
   try { showBuild(await api('/api/build', { confirm: true })); } catch (err) { return toast(err.message); }
+  pollBuild();
+}
+function pollBuild() {
   clearInterval(buildPoll);
   buildPoll = setInterval(async () => {
     const job = await fetch('/api/build').then((r) => r.json()).catch(() => null);
-    if (!job) return;
+    if (!job || job.error === 'Pick a demo or import your memory first.') return;
     showBuild(job);
     if (job.done) { clearInterval(buildPoll); await buildDone(job); }
   }, 700);
 }
+let building = false;
 function showBuild(job) {
+  building = !!job.running;
   $('#buildBox').hidden = !job.running;
   $('#buildLabel').textContent = job.label ?? 'Working';
   $('#buildPct').textContent = `${job.pct ?? 0}%`;
   $('#buildFill').style.width = `${job.pct ?? 0}%`;
   $('#redistillBtn').disabled = $('#distillBtn').disabled = !!job.running;
+  // The import sheet shows the same progress, big.
+  if (job.running || job.done) {
+    $('#impPct').textContent = `${job.pct ?? 0}%`;
+    $('#impFill').style.width = `${job.pct ?? 0}%`;
+    if (job.label && !$('#importProgress').hidden && job.stage !== 'guard') $('#impLabel').textContent = job.label;
+  }
 }
 async function buildDone(job) {
+  // From an import: close the progress sheet and land in the new memory.
+  const fromImport = $('#importSheet').classList.contains('open') && !$('#importProgress').hidden;
+  if (fromImport) close('importSheet');
+  if (job.error) {
+    if (!data.cards.length) thread.innerHTML = '';
+    return addMsg('assistant', `<p>${esc(`I couldn’t finish building your memory: ${job.error}`)}</p>`);
+  }
+  if (fromImport || (data.profile?.mine && !data.cards.length)) {
+    await refresh(await api('/api/state'));
+    renderWelcome();
+  }
   if (job.report && !job.report.turns) return addMsg('assistant', '<p>No new chats to read since your last rebuild. Your memory is up to date.</p>');
-  if (job.error) return addMsg('assistant', `<p>${esc(`I couldn’t finish rebuilding your memory: ${job.error}`)}</p>`);
   await refresh(await api('/api/state'));
   renderMemory();
   const r = job.report;
@@ -771,7 +812,8 @@ async function buildDone(job) {
     r.instructionsSkipped ? `skipped ${r.instructionsSkipped} message${r.instructionsSkipped === 1 ? '' : 's'} that read like instructions to me` : '',
     r.secretsRemoved ? `left out ${r.secretsRemoved} password${r.secretsRemoved === 1 ? '' : 's'} or code${r.secretsRemoved === 1 ? '' : 's'}` : '',
   ].filter(Boolean);
-  const m = addMsg('assistant', `<p>${esc(`Your memory is rebuilt from ${r.turns} turns: ${data.cards.length} cards, ${confirmed ? `${confirmed} you confirmed kept as they are, ` : ''}${toCheck} for you to check.`)}${notes.length ? ` ${esc(`I ${notes.join(' and ')}.`)}` : ''}</p>
+  const lead = fromImport ? `Your memory is ready: ${data.cards.length} cards from ${r.turns} of your messages, ${toCheck} for you to check. Swipe through them in Memory, then ask me anything.` : `Your memory is rebuilt from ${r.turns} turns: ${data.cards.length} cards, ${confirmed ? `${confirmed} you confirmed kept as they are, ` : ''}${toCheck} for you to check.`;
+  const m = addMsg('assistant', `<p>${esc(lead)}${notes.length ? ` ${esc(`I ${notes.join(' and ')}.`)}` : ''}</p>
     <div class="inline-actions"><button class="ilink open-mem">Open Memory</button></div>`);
   m.querySelector('.open-mem').addEventListener('click', () => { renderMemory(); open('memory'); });
 }
@@ -783,34 +825,74 @@ const subsOf = (cards) => [...new Set(cards.map((c) => c.sub).filter(Boolean))];
 function groups() {
   const g = {};
   for (const c of data.cards) (g[c.category] ??= []).push(c);
-  return Object.entries(g).sort((a, b) => b[1].length - a[1].length);
+  // Biggest topics first; "other" always last.
+  return Object.entries(g).sort((a, b) => (a[0] === 'other') - (b[0] === 'other') || b[1].length - a[1].length);
 }
+let topicFilter = 'all';
 
 function renderMemory() {
   const empty = !data.cards.length;
   $('#memoryEmpty').classList.toggle('hidden', !empty);
   $('#memoryLinks').classList.toggle('hidden', empty);
+  $('#topicHead').hidden = empty;
   const confirmed = data.cards.filter((c) => c.status === 'confirmed').length;
   const toCheck = data.cards.filter((c) => c.checkReason).length;
-  $('#memorySummary').innerHTML = empty
-    ? ''
-    : `<div class="summary"><div><b>${data.cards.length}</b> things I know</div><div><b>${confirmed}</b> confirmed by you</div><div><b>${toCheck}</b> to check</div></div>`;
+  const locked = data.cards.filter((c) => c.status === 'pending').length;
+  const pct = empty ? 0 : Math.round((confirmed / data.cards.length) * 100);
   // When memory started (the earliest thing a card was learned from) and when you last approved a card.
   const starts = data.cards.map((c) => c.first_seen ?? c.created).filter(Boolean).sort();
   const verified = data.cards.map((c) => c.last_confirmed).filter(Boolean).sort();
   const day = (d) => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  $('#memDates').innerHTML = empty ? '' : `<span>Memory since <b>${starts.length ? day(starts[0]) : '—'}</b></span><span>Last verified <b>${verified.length ? day(verified.at(-1)) : 'not yet'}</b></span>`;
+  $('#memDates').innerHTML = '';
+  // The overview: how much of memory you've confirmed, and one button to check the rest.
+  $('#memorySummary').innerHTML = empty ? '' : `<div class="mem-hero">
+      <div class="ring" style="--p:${pct}" role="img" aria-label="${pct}% confirmed by you"><div><b>${pct}%</b><span>confirmed</span></div></div>
+      <div class="hero-text">
+        <h2>${toCheck ? `${toCheck} card${toCheck === 1 ? '' : 's'} to check` : 'All caught up'}</h2>
+        <p class="hero-stats"><span><b>${data.cards.length}</b> things I know</span><span><b>${confirmed}</b> confirmed by you</span>${locked ? `<span><b>${locked}</b> private, locked</span>` : ''}</p>
+        <p class="mem-dates"><span>Since <b>${starts.length ? day(starts[0]) : '—'}</b></span><span>Last verified <b>${verified.length ? day(verified.at(-1)) : 'not yet'}</b></span></p>
+        ${toCheck ? `<button class="primary review-btn" id="reviewBtn">Review now<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>` : ''}
+      </div>
+    </div>`;
+  $('#reviewBtn')?.addEventListener('click', openReview);
+  $$('#topicSeg button').forEach((b) => b.classList.toggle('on', b.dataset.f === topicFilter));
   const grid = $('#catGrid');
   grid.innerHTML = '';
   for (const [cat, cards] of groups()) {
     const check = cards.filter((c) => c.checkReason).length;
-    const tile = el(`<button class="cat-tile"><span class="cat-icon">${catIcon(cat)}</span>
-      <span class="cat-name">${esc(catLabel(cat))}</span>
-      <span class="fine">${cards.length} card${cards.length === 1 ? '' : 's'}${check ? ` · <b class="to-check">${check} to check</b>` : ''}</span>
+    if (topicFilter === 'check' && !check) continue;
+    const ok = cards.filter((c) => c.status === 'confirmed').length;
+    // A peek at what's inside, never a private card's text.
+    const shown = cards.filter((c) => !c.sensitive && c.status !== 'pending')
+      .sort((a, b) => (b.checkReason ? 1 : 0) - (a.checkReason ? 1 : 0) || (b.status === 'confirmed') - (a.status === 'confirmed')).slice(0, 2);
+    const hidden = cards.length - cards.filter((c) => !c.sensitive && c.status !== 'pending').length;
+    const peek = shown.map((c) => `<li class="${c.status === 'confirmed' ? 'ok' : 'guess'}">${esc(c.text)}</li>`).join('') +
+      (!shown.length && hidden ? `<li class="lock">Private. Only shown when you open it.</li>` : '');
+    const tile = el(`<button class="cat-tile" aria-label="${esc(catLabel(cat))}: ${cards.length} cards${check ? `, ${check} to check` : ''}">
+      <span class="ct-top"><span class="cat-icon">${catIcon(cat)}</span>
+        <span class="ct-name"><b>${esc(catLabel(cat))}</b><span class="fine">${cards.length} card${cards.length === 1 ? '' : 's'} · ${ok} confirmed</span></span>
+        ${check ? `<span class="ct-pill">${check} to check</span>` : `<span class="ct-pill done" title="All confirmed or fine">✓</span>`}</span>
+      <span class="ct-bar" aria-hidden="true"><i style="width:${Math.round((ok / cards.length) * 100)}%"></i></span>
+      ${peek ? `<ul class="ct-peek">${peek}</ul>` : ''}
       ${subsOf(cards).length ? `<span class="fine subs">${subsOf(cards).map(esc).join(' · ')}</span>` : ''}</button>`);
     tile.addEventListener('click', () => openCategory(cat));
     grid.append(tile);
   }
+  if (!grid.children.length && !empty) grid.append(el(`<p class="fine all-done">Nothing to check. Every topic is up to date.</p>`));
+}
+$$('#topicSeg button').forEach((b) => b.addEventListener('click', () => { topicFilter = b.dataset.f; renderMemory(); }));
+
+// Every card that needs a look, across topics, in one deck: changed first, then private ones.
+const REVIEW_ORDER = { changed: 0, sensitive: 1, guessed: 2, stale: 3, old: 4 };
+function openReview() {
+  const cards = data.cards.filter((c) => c.checkReason).sort((a, b) => (REVIEW_ORDER[a.checkReason] ?? 9) - (REVIEW_ORDER[b.checkReason] ?? 9));
+  deck = { cat: null, review: true, sub: null, ids: cards.map((c) => c.id), i: 0, removed: [] };
+  $('#catSubs').innerHTML = '';
+  $('#catIcon').innerHTML = catIcon('review');
+  $('#catName').textContent = 'To check';
+  setSeg('deck');
+  open('category');
+  renderDeck();
 }
 
 // ---------------- memory: one category ----------------
@@ -865,12 +947,12 @@ function renderDeck() {
   $('#catProgress').textContent = card ? `${Math.min(deck.i + 1, total)} of ${total}` : `${total} reviewed`;
   $('#deckButtons').classList.toggle('hidden', !card);
   if (!card) {
-    const done = el(`<div class="deck-done"><p>That’s everything I know about your ${esc(deck.cat)}.</p><button class="ghost" type="button">See as list</button></div>`);
+    const done = el(`<div class="deck-done"><p>${deck.review ? 'All caught up. Everything you checked is saved.' : `That’s everything I know about your ${esc(deck.cat)}.`}</p><button class="ghost" type="button">See as list</button></div>`);
     done.querySelector('button').addEventListener('click', () => setSeg('list'));
     // One question at the end, not one per swipe.
     if (deck.removed.length) {
       const n = deck.removed.length;
-      const box = el(`<div class="after-no"><p>You removed ${n} ${esc(deck.cat)} card${n > 1 ? 's' : ''}. Want to tell ${esc(data.agent.name)} what changed?</p>
+      const box = el(`<div class="after-no"><p>You removed ${n} ${deck.review ? '' : `${esc(deck.cat)} `}card${n > 1 ? 's' : ''}. Want to tell ${esc(data.agent.name)} what changed?</p>
         <div class="after-actions"><button class="skip">Skip for now</button><button class="chat">💬 Chat about ${n > 1 ? 'them' : 'it'}</button></div></div>`);
       box.querySelector('.skip').addEventListener('click', () => { deck.removed = []; box.remove(); });
       box.querySelector('.chat').addEventListener('click', () => {
@@ -922,10 +1004,14 @@ $('#deckButtons').addEventListener('click', (e) => {
 function renderCatList() {
   const root = $('#catList');
   root.innerHTML = '';
-  const cards = data.cards.filter((c) => c.category === deck.cat && (!deck.sub || c.sub === deck.sub));
+  const cards = deck.review
+    ? deck.ids.map((id) => data.cards.find((c) => c.id === id)).filter((c) => c?.checkReason)
+    : data.cards.filter((c) => c.category === deck.cat && (!deck.sub || c.sub === deck.sub));
   const max = data.budget.limits.maxCardsPerCategory;
   const tokens = data.budget.categories[deck.cat]?.tokens ?? 0;
-  const sec = el(`<section class="category"><header><h2>${esc(catLabel(deck.cat))}</h2><span class="budget">${cards.length}/${max} cards · ~${tokens} tokens</span></header><div class="meter"><i style="width:${Math.min(100, (cards.length / max) * 100)}%"></i></div></section>`);
+  const sec = deck.review
+    ? el(`<section class="category"><header><h2>To check</h2><span class="budget">${cards.length} left</span></header></section>`)
+    : el(`<section class="category"><header><h2>${esc(catLabel(deck.cat))}</h2><span class="budget">${cards.length}/${max} cards · ~${tokens} tokens</span></header><div class="meter"><i style="width:${Math.min(100, (cards.length / max) * 100)}%"></i></div></section>`);
   let lastSub;
   // Awake seasons first, then the rest by sub-topic.
   const asleep = (c) => (c.seasonState?.active === false ? 1 : 0);
@@ -1152,28 +1238,6 @@ $('#playDemoBtn').addEventListener('click', playDemo);
 
 // ---------------- profiles ----------------
 const PROFILE_COLORS = ['#0082FB', '#E5484D', '#1FA36A', '#B5541C', '#6250D6', '#0F7B8A'];
-async function renderProfiles() {
-  const { profiles, active } = await api('/api/profiles');
-  const list = $('#profileList');
-  list.innerHTML = '';
-  profiles.forEach((p, i) => {
-    const row = el(`<button class="prow"><span class="pav" style="background:${PROFILE_COLORS[i % PROFILE_COLORS.length]}">${esc(p.name[0])}</span>
-      <span><span class="pname">${esc(p.name)}</span><br><span class="pabout">${esc(p.about)}</span></span>${p.id === active ? '<span class="pcheck">✓</span>' : ''}</button>`);
-    row.addEventListener('click', () => switchProfile(p.id));
-    list.append(row);
-  });
-}
-async function switchProfile(id) {
-  demoRunning = false;
-  await refresh(await api('/api/profile', { id }));
-  applyProfileChrome();
-  learnedSeen = data.learned?.at(-1)?.at ?? '';
-  sessionLog.length = 0;
-  conversationId = newId();
-  renderWelcome();
-  closeAll();
-  toast(`Switched to ${data.profile.name}`);
-}
 function applyProfileChrome() {
   $('#profileInitial').textContent = (data.profile?.name ?? '?')[0];
   renderMemSwitch();
@@ -1262,7 +1326,17 @@ function renderSettings() {
     <div class="srow static">Answers<span class="fine right">${esc(data.models.main)}</span></div>
     <div class="srow static">Memory upkeep<span class="fine right">${esc(data.models.bg)}</span></div>
     <div class="srow static">Limits<span class="fine right">${b.maxCategories} topics · ${b.maxCardsPerCategory} cards · ${b.maxWordsPerCard} words</span></div>`;
+  $('#sessionGroup').hidden = !data.publicDemo;
+  $('#aboutLine').textContent = data.profile?.mine
+    ? 'Déjà Vu · prototype for the Meta Global AI Developer Hackathon. Your imported chats stay in this session only.'
+    : 'Déjà Vu · prototype for the Meta Global AI Developer Hackathon. Demo chat history is made up.';
 }
+$('#endSessionBtn').addEventListener('click', async () => {
+  if (!confirm('End this session? Your upload, cards and chats here are deleted.')) return;
+  await api('/api/session/end', {}).catch(() => {});
+  try { Object.keys(localStorage).filter((k) => k.startsWith('dv-chat-')).forEach((k) => localStorage.removeItem(k)); } catch {}
+  location.reload();
+});
 $('#demoBtn').addEventListener('click', async () => {
   try { await refresh(await api('/api/demo/load', {})); } catch (err) { return toast(err.message); }
   conversationId = newId();
@@ -1280,14 +1354,130 @@ $('#resetBtn').addEventListener('click', async () => {
   closeAll();
 });
 
-// ---------------- boot ----------------
-(async () => {
-  await refresh();
+// ---------------- select user: the first page ----------------
+// No accounts: a visitor picks a demo person, their own imported memory, or "New user"
+// (import your chats). Each browser's choice and memory are its own (a session cookie).
+const NEW_USER = '__new';
+function showLanding(choice, { canGoBack = false } = {}) {
+  closeAll();
+  app.classList.add('landing-on');
+  $('#landing').hidden = false;
+  $('#landing').scrollTop = 0;
+  $('#landBack').hidden = !canGoBack;
+  $('#importLimit').textContent = `or drop it here · up to ${choice.importMaxMb ?? 30} MB`;
+  const opt = (p) => `<option value="${esc(p.id)}">${esc(p.name)}${p.demo ? ' (demo)' : ''}</option>`;
+  const mine = choice.profiles.filter((p) => !p.demo && !p.real);
+  const real = choice.profiles.filter((p) => p.real);
+  const demos = choice.profiles.filter((p) => p.demo);
+  const sel = $('#userSelect');
+  sel.innerHTML = (mine.length ? `<optgroup label="You">${mine.map(opt).join('')}</optgroup>` : '') +
+    `<optgroup label="Demo users">${demos.map(opt).join('')}</optgroup>` +
+    (real.length ? `<optgroup label="On this computer">${real.map(opt).join('')}</optgroup>` : '') +
+    `<optgroup label="Your own chats"><option value="${NEW_USER}">+ New user: import my chats</option></optgroup>`;
+  sel.value = choice.profiles.some((p) => p.id === choice.active) ? choice.active : (mine[0] ?? demos[0] ?? real[0])?.id ?? NEW_USER;
+  landingProfiles = choice.profiles;
+  describeUser();
+}
+let landingProfiles = [];
+const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+function describeUser() {
+  const id = $('#userSelect').value;
+  const p = landingProfiles.find((x) => x.id === id);
+  $('#userAbout').textContent = id === NEW_USER
+    ? 'Bring your ChatGPT, Claude or Muse chats. I’ll ask your name, then build your cards (a few minutes).'
+    : p?.demo ? `${cap(p.about.replace(/^Synthetic · /, ''))}. Made-up chats and memory, ready to try.` : p?.about ?? '';
+  $('#userGo').textContent = id === NEW_USER ? 'Continue: import my chats' : `Continue as ${p?.name ?? 'this user'}`;
+}
+function hideLanding() {
+  $('#landing').hidden = true;
+  app.classList.remove('landing-on');
+}
+$('#userSelect').addEventListener('change', describeUser);
+$('#userGo').addEventListener('click', async () => {
+  const id = $('#userSelect').value;
+  if (id === NEW_USER) return openImport();
+  try {
+    await enterApp(await api('/api/profile', { id }));
+    toast(`You’re in as ${data.profile.name}.`);
+  } catch (err) { toast(err.message); }
+});
+$('#landBack').addEventListener('click', hideLanding);
+// The avatar at the bottom of the menu: back to Select user, to switch.
+async function openUserPicker() {
+  try { showLanding(await api('/api/profiles'), { canGoBack: true }); } catch (err) { toast(err.message); }
+}
+
+// Open the app on a person's memory: their last chat, or a fresh one.
+async function enterApp(state) {
+  hideLanding();
+  demoRunning = false;
+  await refresh(state);
   learnedSeen = data.learned?.at(-1)?.at ?? '';
+  sessionLog.length = 0;
   applyProfileChrome();
   // Come back to the chat you were in.
   let last = null;
   try { last = localStorage.getItem(chatKey()); } catch {}
-  if (last) await openChat(last); else renderWelcome();
+  if (last) await openChat(last); else { conversationId = newId(); renderWelcome(); }
   renderChats();
+  // A build still running (a reload mid-import): keep showing its progress.
+  const job = await api('/api/build').catch(() => null);
+  if (job?.running) pollBuild();
+}
+
+// ---------------- import your memory ----------------
+let importFile = null;
+function openImport() {
+  $('#importForm').hidden = false;
+  $('#importProgress').hidden = true;
+  $('#importError').hidden = true;
+  syncImportGo();
+  open('importSheet');
+  setTimeout(() => $('#importName').focus(), 350);
+}
+function pickFile(f) {
+  importFile = f ?? null;
+  $('#importFileName').textContent = f ? f.name : 'Choose a file';
+  $('#importDrop').classList.toggle('has', !!f);
+  syncImportGo();
+  $('#importError').hidden = true;
+}
+const syncImportGo = () => { $('#importGo').disabled = !importFile || !$('#importName').value.trim(); };
+$('#importName').addEventListener('input', syncImportGo);
+$('#importFile').addEventListener('change', (e) => pickFile(e.target.files[0]));
+const drop = $('#importDrop');
+drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); pickFile(e.dataTransfer.files[0]); });
+$('#importGo').addEventListener('click', async () => {
+  if (!importFile) return;
+  const go = $('#importGo');
+  go.disabled = true;
+  go.textContent = 'Uploading…';
+  const name = $('#importName').value.trim();
+  try {
+    const res = await fetch(`/api/import?name=${encodeURIComponent(name)}`, { method: 'POST', headers: { 'Content-Type': 'application/octet-stream' }, body: importFile });
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || `Upload failed (${res.status})`);
+    $('#importForm').hidden = true;
+    $('#importProgress').hidden = false;
+    $('#impLabel').textContent = `Read ${out.imported.conversations} chats from your ${out.imported.format} export`;
+    try { localStorage.removeItem('dv-chat-mine'); } catch {}
+    showBuild(out.job);
+    await enterApp(out);
+    pollBuild(); // until it's done, even if it finished already
+  } catch (err) {
+    $('#importError').textContent = err.message;
+    $('#importError').hidden = false;
+  } finally {
+    go.textContent = 'Build my memory';
+    syncImportGo();
+  }
+});
+
+// ---------------- boot ----------------
+// The app always opens on Select user, with whoever this browser used last picked.
+(async () => {
+  const state = await api('/api/state');
+  showLanding(state.needsChoice ? state : await api('/api/profiles'));
 })();

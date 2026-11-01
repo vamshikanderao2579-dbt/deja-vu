@@ -2,7 +2,7 @@
   {
     "id": "alex",
     "name": "Alex",
-    "about": "Synthetic · parent in Chicago, partner Sam, kid Maya, dog Biscuit",
+    "about": "Synthetic \u00b7 parent in Chicago, partner Sam, kid Maya, dog Biscuit",
     "history": "data/test-history.json",
     "state": "data/me.json",
     "demoMemory": "data/demo-memory.json",
@@ -18,7 +18,7 @@
         "onCue": "ignore"
       },
       {
-        "newChat": "A week later · landing in San Diego"
+        "newChat": "A week later \u00b7 landing in San Diego"
       },
       {
         "text": "landing tomorrow! find us a hotel near sunset cliffs",
@@ -39,7 +39,7 @@
   {
     "id": "maria",
     "name": "Maria",
-    "about": "Synthetic · night-shift nurse in Phoenix, teen son Leo",
+    "about": "Synthetic \u00b7 night-shift nurse in Phoenix, teen son Leo",
     "history": "data/personas/maria-history.json",
     "state": "data/profiles/maria.json",
     "suggestions": [
@@ -54,6 +54,7 @@
       "btw my mom moved in with us last month",
       "plan my meals for this week",
       "my car needs an oil change, find me a place"
-    ]
+    ],
+    "demoMemory": "data/personas/maria-memory.json"
   }
 ]

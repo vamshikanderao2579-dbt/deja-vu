@@ -6,7 +6,7 @@ import { prompt } from '../prompts/index.js';
 import { ACTION_TOOLS, toDraft } from './actions.js';
 import { mergeCards, renderContext, estimateTokens, usable, seasonState } from './cards.js';
 import { todayMs } from '../platform/config.js';
-import { history, historyAsText, messageTime } from '../platform/store.js';
+import { getHistory, historyAsText, messageTime, userName } from '../platform/store.js';
 import { reviewCards, addReviewStats, emptyReviewStats } from './review.js';
 import { guardHistory } from './guard.js';
 
@@ -51,7 +51,7 @@ export async function distill(existing, rejected = []) {
   let review = emptyReviewStats();
   const dropped = [];
   const usage = { prompt_tokens: 0, completion_tokens: 0 };
-  for (const batch of batches(history.conversations)) {
+  for (const batch of batches(getHistory().conversations)) {
     const existingText = (cards.length ? `TREE: ${treeLine(cards)}\n` : '') + (cards.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)');
     const convText = batch.texts.join('\n\n');
     const res = await complete(
@@ -265,7 +265,7 @@ export async function answer(message, mode, relevantCards, { summary, recent = [
     return { text: mockAnswer(message, mode, relevantCards.filter(usable)), draft, contextTokens, usage: null };
   }
   const messages = [
-    { role: 'system', content: prompt('answer.system', { userName: config.userName, today, agentName: config.agent.name }) + (actions ? `\n\n${prompt('answer.tools-addendum')}` : '') + (context ? `\n\n${context}` : '') },
+    { role: 'system', content: prompt('answer.system', { userName: userName(), today, agentName: config.agent.name }) + (actions ? `\n\n${prompt('answer.tools-addendum')}` : '') + (context ? `\n\n${context}` : '') },
     // Earlier turns of this conversation, so "near the hotel" knows which hotel.
     ...recent.slice(-6).map((m) => ({ role: m.role, content: m.text })),
     { role: 'user', content: message },

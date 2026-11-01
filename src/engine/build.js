@@ -27,7 +27,7 @@ const QUOTE_CHARS = 220;
 const CALL_TRIES = 3;
 const RUN_TRIES = 2;
 
-const dirFor = (profileId) => join(process.env.BUILD_DIR ?? join(ROOT, 'data', 'private', 'build'), profileId);
+const dirFor = (profileId) => profileId.startsWith('/') ? profileId : join(process.env.BUILD_DIR ?? join(ROOT, 'data', 'private', 'build'), profileId);
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const writeJson = (p, v) => writeFileSync(p, JSON.stringify(v, null, 2));
 const rules = () => prompt('build.rules');
@@ -42,7 +42,7 @@ async function call(role, messages, opts, check) {
       if (check(out)) return out;
       last = new Error(`${role} returned JSON outside the contract`);
     } catch (err) {
-      if (/spend cap/i.test(err.message)) throw err;
+      if (/spend cap|model budget/i.test(err.message)) throw err;
       last = err;
     }
     await new Promise((r) => setTimeout(r, 800 * (i + 1)));
@@ -100,7 +100,7 @@ export async function buildMemory({ conversations, existing = [], rejected = [],
       return await buildOnce({ conversations, existing, rejected, profileId, since, onProgress, fresh: run > 0 });
     } catch (err) {
       lastErr = err;
-      if (/spend cap/i.test(err.message)) break;
+      if (/spend cap|model budget/i.test(err.message)) break;
       console.warn(`[build] run ${run + 1} failed: ${err.message}${run + 1 < RUN_TRIES ? '; running again from scratch' : ''}`);
     }
   }

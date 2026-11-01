@@ -6,7 +6,7 @@ import { config, ROOT } from './config.js';
 // ---------- spend guard ----------
 // Every call adds its token cost to today's total in data/spend.json. Once the
 // total reaches SPEND_CAP_USD, further calls are refused before they are sent.
-const SPEND_PATH = join(ROOT, 'data', 'spend.json');
+const SPEND_PATH = process.env.SPEND_FILE ?? join(ROOT, 'data', 'spend.json');
 const PRICE_IN = Number(process.env.PRICE_IN_PER_M ?? 1.25); // USD per 1M input tokens
 const PRICE_OUT = Number(process.env.PRICE_OUT_PER_M ?? 4.25); // USD per 1M output tokens
 // Models priced differently from the default above, as [in, out] USD per 1M tokens.
@@ -15,6 +15,8 @@ const priceOf = (model) => MODEL_PRICES[model] ?? [PRICE_IN, PRICE_OUT];
 // Days recorded before per-model pricing have no token_usd; price them at the default.
 const tokenUsd = (day) => day.token_usd ?? (day.in * PRICE_IN + day.out * PRICE_OUT) / 1e6;
 const CAP = Number(process.env.SPEND_CAP_USD ?? 3);
+// All days together, for this spend file (the public link has its own). Off unless set.
+const TOTAL_CAP = Number(process.env.SPEND_TOTAL_CAP_USD ?? Infinity);
 
 const today = () => new Date().toISOString().slice(0, 10);
 function readSpend() {
@@ -24,6 +26,7 @@ function readSpend() {
 export function spentToday() {
   return readSpend().day;
 }
+export const spentTotal = () => Object.values(readSpend().all).reduce((a, d) => a + (d.usd ?? 0), 0);
 function recordSpend(inTok, outTok, model) {
   const { all, day } = readSpend();
   const [pin, pout] = priceOf(model);
@@ -97,8 +100,13 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
   async function liveCall() {
   // Only live calls count against the daily cap; replays are free.
   const spent = spentToday();
+  // On the public link visitors see a plain message; the numbers are for whoever runs it.
+  const busy = 'The demo has used its model budget for now. You can still browse the demo memory; please try chatting again later.';
   if (spent.usd >= CAP) {
-    throw new Error(`Daily spend cap reached ($${spent.usd.toFixed(2)} of $${CAP}). Raise SPEND_CAP_USD in .env to continue.`);
+    throw new Error(config.publicDemo ? busy : `Daily spend cap reached ($${spent.usd.toFixed(2)} of $${CAP}). Raise SPEND_CAP_USD in .env to continue.`);
+  }
+  if (spentTotal() >= TOTAL_CAP) {
+    throw new Error(config.publicDemo ? busy : `Total spend cap reached ($${spentTotal().toFixed(2)} of $${TOTAL_CAP}). Raise SPEND_TOTAL_CAP_USD to continue.`);
   }
 
   let res = await post(p, body);

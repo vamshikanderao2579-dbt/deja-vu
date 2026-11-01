@@ -63,3 +63,6 @@
 - **Muse's navigation** (Feed / Ideas / Goals / Library tabs, "TABS" and "SIDE CHATS" sidebar, Connectors/Devices/Wallet rows): copied from screenshots, dead in the prototype.
 - **Cards about the agent itself** (avatar, Pikachu → Sparky): settings, not user facts; filtered.
 - **Emoji in the closing slide**; text that was too bold.
+| Public link | Session per browser (cookie); each request runs in that visitor's view (AsyncLocalStorage); personas copied per visitor on `PUBLIC_DEMO=true`; import = own profile | One shared active profile meant one panelist's switch changed everyone's screen |
+| Hosting | Modal (`deploy/modal_app.py`), one always-on container on the Starter plan's included compute | Hackathon guide names no host; Modal costs nothing out of pocket at this size |
+| Email when cards are ready | Not built: the import sheet shows live progress and the chat says when it's done | Builds take minutes; email needs a verified sending domain and collecting addresses |

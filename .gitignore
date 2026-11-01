@@ -21,3 +21,8 @@ data/active-profile.txt
 data/profiles/
 data/*.seed.json
 public/charmander*.png
+
+# Deploy: the API key file and the Modal venv
+deploy/deploy.env
+.venv-deploy/
+deploy/.modal.toml

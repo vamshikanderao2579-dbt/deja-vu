@@ -51,6 +51,16 @@ export const config = {
   today: env('DEMO_TODAY'), // optional fixed date for a repeatable demo, e.g. 2026-10-27
   cueCooldownHours: Number(env('CUE_COOLDOWN_HOURS', '24')),
   rateLimitPerMinute: Number(env('RATE_LIMIT_PER_MINUTE', '30')),
+  // PUBLIC_DEMO=true: a shared link. Every visitor gets their own copy of a demo persona or
+  // their own imported memory, kept in SESSION_DIR and deleted after SESSION_IDLE_HOURS idle.
+  // Real (private) profiles are never listed.
+  publicDemo: env('PUBLIC_DEMO', 'false').toLowerCase() === 'true',
+  sessionDir: env('SESSION_DIR', join(ROOT, 'data', 'private', 'sessions')),
+  sessionIdleHours: Number(env('SESSION_IDLE_HOURS', '24')),
+  // Memory builds a visitor may start (an import counts as one), and builds running at once.
+  sessionBuilds: Number(env('SESSION_BUILDS', '2')),
+  buildsAtOnce: Number(env('BUILDS_AT_ONCE', '3')),
+  importMaxMb: Number(env('IMPORT_MAX_MB', '30')),
   budget: {
     maxCategories: 10,
     maxCardsPerCategory: 8,
@@ -59,8 +69,12 @@ export const config = {
 };
 
 // "Now" for staleness checks: the fixed demo date if set, otherwise the real clock.
+// An imported (real) history always uses the real clock: the store sets the source.
+let todaySource = () => config.today;
+export const setTodaySource = (fn) => { todaySource = fn; };
 export function todayMs() {
-  return config.today ? Date.parse(config.today + 'T12:00:00') : Date.now();
+  const t = todaySource();
+  return t ? Date.parse(t + 'T12:00:00') : Date.now();
 }
 
 export function todayString() {
