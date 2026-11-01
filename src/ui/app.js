@@ -193,12 +193,40 @@ wide.addEventListener('change', () => { if (wide.matches) { renderDrawer(); $('#
 
 // Sidebar: the newest cards learned from chat, newest first.
 function renderDrawer() {
+  renderChats();
   const recent = (data.learned ?? []).slice(-3).reverse();
   $('#drawerLearned').innerHTML = recent.length
     ? recent.map((l) => `<button class="learned-row" data-cat="${esc(l.category)}"><span class="cat-icon">${catIcon(l.category)}</span><span>${esc(l.text)}</span></button>`).join('')
     : `<p class="hint-line">New cards from your chats show up here.</p>`;
   $$('#drawerLearned .learned-row').forEach((b) => b.addEventListener('click', () => { closeAll(); open('memory'); openCategory(b.dataset.cat); }));
 }
+
+// Saved chats, newest first, under the memory section. The open one is highlighted.
+const chatKey = () => `dv-chat-${data?.profile?.id ?? ''}`;
+async function renderChats() {
+  const { chats } = await api('/api/chats').catch(() => ({ chats: [] }));
+  const box = $('#drawerChats');
+  box.innerHTML = chats.length
+    ? chats.slice(0, 30).map((c) => `<button class="chat-row${c.id === conversationId ? ' active' : ''}" data-id="${esc(c.id)}" title="${esc(c.title)}">${esc(c.title)}</button>`).join('')
+    : `<p class="hint-line">Your chats show up here.</p>`;
+  $$('#drawerChats .chat-row').forEach((b) => b.addEventListener('click', () => openChat(b.dataset.id)));
+}
+
+// Reopen a saved chat: its messages and any pick, as they were. Keep chatting in it.
+async function openChat(id) {
+  let chat;
+  try { chat = await api(`/api/chats/${encodeURIComponent(id)}`); } catch { try { localStorage.removeItem(chatKey()); } catch {} return renderWelcome(); }
+  demoRunning = false;
+  conversationId = id;
+  thread.innerHTML = '';
+  chat.messages.forEach((m, i) => addMsg(m.role, m.role === 'user' ? esc(m.text) : md(m.text) + (m.draft ? pickHtml(m.draft, `saved-${id}-${i}`) : '')));
+  closeAll();
+  rememberChat();
+  renderChats();
+  const v = $('#view-chat');
+  requestAnimationFrame(() => { v.scrollTop = v.scrollHeight; });
+}
+const rememberChat = () => { try { localStorage.setItem(chatKey(), conversationId); } catch {} };
 
 // ---------------- chat ----------------
 const thread = $('#thread');
@@ -252,6 +280,8 @@ async function sendInner(message, { skipCue = false } = {}) {
   try {
     const res = await api('/api/chat', { message, mode, conversationId, skipCue, demo: demoRunning });
     t.remove();
+    rememberChat();
+    renderChats();
     if (res.trace?.quietYes?.confirmed) toast(`Confirmed “${res.trace.quietYes.text}”: you went with it twice.`);
     renderAnswer(res, message);
   } catch (err) {
@@ -665,7 +695,7 @@ $('#composer').addEventListener('submit', (e) => {
 });
 $('#plusBtn').addEventListener('click', () => { if (!thread.querySelector('.suggestions')) renderWelcome(); });
 voiceButton($('#micBtn'), (v) => { if (v.transcript) { $('#input').value = v.transcript; $('#input').focus(); } else toast('Didn’t catch that.'); }, $('#micBtn').innerHTML);
-const newChat = () => { demoRunning = false; conversationId = newId(); renderWelcome(); closeAll(); $('#view-chat').scrollTop = 0; $('#input').value = ''; growInput(); if (wide.matches) $('#input').focus(); };
+const newChat = () => { demoRunning = false; conversationId = newId(); try { localStorage.removeItem(chatKey()); } catch {} renderWelcome(); renderChats(); closeAll(); $('#view-chat').scrollTop = 0; $('#input').value = ''; growInput(); if (wide.matches) $('#input').focus(); };
 $('#newChatBtn').addEventListener('click', newChat);
 $('#drawerNewChat').addEventListener('click', newChat);
 
@@ -1255,5 +1285,9 @@ $('#resetBtn').addEventListener('click', async () => {
   await refresh();
   learnedSeen = data.learned?.at(-1)?.at ?? '';
   applyProfileChrome();
-  renderWelcome();
+  // Come back to the chat you were in.
+  let last = null;
+  try { last = localStorage.getItem(chatKey()); } catch {}
+  if (last) await openChat(last); else renderWelcome();
+  renderChats();
 })();

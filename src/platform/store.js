@@ -81,23 +81,31 @@ export function loadSeed() {
   const file = profile.demoMemory ? join(ROOT, profile.demoMemory) : seedPath();
   if (!existsSync(file)) return null;
   const { cards } = JSON.parse(readFileSync(file, 'utf8'));
-  Object.assign(state, { cards: structuredClone(cards), rejected: [], cueLog: [], live: [], learned: [] });
+  // Saved chats stay: loading the demo memory resets what's remembered, not what was said.
+  Object.assign(state, { cards: structuredClone(cards), rejected: [], cueLog: [], learned: [] });
   save();
   return state;
 }
 
 // ---------- live chat (typed in the app) ----------
+// A chat's title is its first message, cut at a word near 40 characters.
+export function chatTitle(text) {
+  const t = String(text).replace(/\s+/g, ' ').trim();
+  const cut = t.length > 40 ? t.slice(0, 40).replace(/\s+\S*$/, '') + '…' : t;
+  return cut.charAt(0).toUpperCase() + cut.slice(1);
+}
 const pad = (n) => String(n).padStart(2, '0');
-export function addLiveMessage(conversationId, role, text) {
+export function addLiveMessage(conversationId, role, text, extra = {}) {
   const now = new Date();
   const id = `live-${conversationId}`;
   let conv = state.live.find((c) => c.id === id);
   if (!conv) {
-    conv = { id, date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`, time: `${pad(now.getHours())}:${pad(now.getMinutes())}`, title: text.slice(0, 48), messages: [] };
+    conv = { id, date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`, time: `${pad(now.getHours())}:${pad(now.getMinutes())}`, title: chatTitle(text), messages: [] };
     state.live.push(conv);
   }
-  const msg = { id: `${id}-${conv.messages.length + 1}`, role, text };
+  const msg = { id: `${id}-${conv.messages.length + 1}`, role, text, ...extra };
   conv.messages.push(msg);
+  conv.updated = now.toISOString();
   return { conv, msg };
 }
 

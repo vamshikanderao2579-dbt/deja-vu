@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { join, extname, normalize } from 'node:path';
 import { config, ROOT } from './src/platform/config.js';
-import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed } from './src/platform/store.js';
+import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, listProfiles, useProfile, saveSeed, loadSeed, chatTitle } from './src/platform/store.js';
 import * as store from './src/platform/store.js';
 import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/engine/agent.js';
 import { cueDecision, checkReason, applyFeedback, implicitYes } from './src/engine/cue.js';
@@ -74,6 +74,21 @@ function startBuild(plan = { mode: 'full', since: null }) {
   return job;
 }
 const jobView = (j) => (j ? { running: j.running, done: !!j.done, pct: j.pct, stage: j.stage, label: j.label, report: j.report ?? null, error: j.error ?? null, profileId: j.profileId } : { running: false });
+
+// Saved chats, newest first, for the sidebar; and one chat's messages, to reopen it.
+const chatId = (c) => c.id.replace(/^live-/, '');
+route('GET', '/api/chats', () => ({
+  chats: getState().live
+    .map((c, i) => ({ c, i, at: c.updated ?? `${c.date}T${c.time}` }))
+    .filter(({ c }) => c.messages.some((m) => m.role === 'user'))
+    .sort((a, b) => b.at.localeCompare(a.at) || b.i - a.i)
+    .map(({ c }) => ({ id: chatId(c), title: chatTitle(c.messages.find((m) => m.role === 'user').text), date: c.date, updated: c.updated ?? null, messages: c.messages.length })),
+}));
+route('GET', '/api/chats/:id', (_, { id }) => {
+  const c = getState().live.find((x) => x.id === `live-${id}`);
+  if (!c) throw httpError(404, 'chat not found');
+  return { id, title: chatTitle(c.messages.find((m) => m.role === 'user')?.text ?? c.title), messages: c.messages.map(({ role, text, draft }) => ({ role, text, ...(draft ? { draft } : {}) })) };
+});
 
 route('GET', '/api/build/plan', () => rebuildPlan());
 route('POST', '/api/build', (body) => {
@@ -148,7 +163,7 @@ route('POST', '/api/chat', async (body) => {
   s.trace = countTrace(s.trace, trace, !!res.draft);
   // Keep the exchange, then learn from it in the background (never blocks the answer).
   const { conv } = addLiveMessage(conversationId, 'user', message);
-  addLiveMessage(conversationId, 'assistant', res.text);
+  addLiveMessage(conversationId, 'assistant', res.text, res.draft ? { draft: res.draft } : {});
   save();
   if (!s.memoryOff) learnInBackground(conv);
   return {

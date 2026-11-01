@@ -32,6 +32,7 @@ before(async () => {
 after(() => {
   server?.kill();
   rmSync(join(ROOT, STATE), { force: true });
+  rmSync(join(ROOT, STATE.replace(/\.json$/, '.seed.json')), { force: true });
   rmSync(TEST_BUILD, { recursive: true, force: true });
 });
 
@@ -198,4 +199,20 @@ test('profiles: list and switch, each with its own name', async () => {
   const back = await post('/api/profile', { id: 'alex' });
   assert.equal(back.userName, 'Alex');
   assert.equal((await post('/api/profile', { id: 'nobody' })).status, 404);
+});
+
+test('every chat is saved with a title and can be reopened, pick included', async () => {
+  await post('/api/chat', { message: 'find us a hotel near the beach for the weekend, somewhere quiet please', conversationId: 'saved-1' });
+  await post('/api/chat', { message: 'thanks!', conversationId: 'saved-1' });
+  await post('/api/chat', { message: 'dinner ideas for tonight', conversationId: 'saved-2' });
+  const { chats } = await get('/api/chats');
+  const one = chats.find((c) => c.id === 'saved-1');
+  assert.equal(chats[0].id, 'saved-2', 'newest first');
+  assert.match(one.title, /^Find us a hotel near the beach/);
+  assert.ok(one.title.length <= 41, 'short title');
+  const chat = await get('/api/chats/saved-1');
+  assert.deepEqual(chat.messages.map((m) => m.role), ['user', 'assistant', 'user', 'assistant']);
+  assert.equal((await fetch(BASE + '/api/chats/nope')).status, 404);
+  await post('/api/demo/load');
+  assert.ok((await get('/api/chats')).chats.some((c) => c.id === 'saved-1'), 'loading the demo memory keeps chats');
 });

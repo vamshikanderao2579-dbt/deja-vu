@@ -20,6 +20,7 @@ Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Cla
 - [x] **Rebuild rules:** confirm sheet; once a month, sooner only for new chats; confirmed cards passed as trusted; grader checks each card at its exact chat spot; "Go to this point in the chat ↗" on every card's sources; steering caught in any wording (live test: 5/5).
 - [x] **Fits the screen:** phone as before; iPad full width; laptop sidebar that opens/closes (remembered); pencil = fresh chat.
 - [x] **Fixed:** "Chat about it" could confirm an unrelated card (fallback to the last card); a rebuild overwrote the demo's starting memory.
+- [x] **Saved chats:** every chat kept with a short title in a CHATS section under Memory ("Main chat" on top); reopen any, picks included; reload returns to the open chat; loading the demo memory no longer clears chats.
 - [x] **Repo layout:** `src/engine`, `src/prompts`, `src/platform`, `src/ui`.
 - [x] **Plug-in API** (`/api/recall`, `/api/remember`, `/api/cards/:id`) and README that leads with the engine. Demos re-recorded: Vamshi, Alex.
 

@@ -3,7 +3,7 @@
 ```bash
 cd ~/Desktop/personal-context-hackathon/deja-vu
 npm run dev                                   # app at http://localhost:3000 (reloads on change)
-npm test                                      # 49 tests, mock mode, $0, own state file
+npm test                                      # 50 tests, mock mode, $0, own state file
 npm run check-api                             # key + model IDs + one test call
 npm run eval -- --persona alex                # alex | maria | nidhi | vamshi; default setups: full,summary,confirmed
 npm run eval -- --persona maria --modes full,summary,inferred,confirmed,none

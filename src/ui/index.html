@@ -46,7 +46,7 @@
     <aside class="drawer" id="drawer" aria-label="Menu">
       <div class="drawer-brand"><svg viewBox="0 0 24 24"><use href="#i-logo"/></svg><div><h1>Déjà <b>Vu</b></h1><p>Memory you can see and confirm</p></div></div>
       <nav class="drawer-list">
-        <button class="drow" data-go="chat"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>Chat</button>
+        <button class="drow" data-go="chat"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg>Main chat</button>
       </nav>
       <hr />
       <!-- The memory layer: what Déjà Vu adds to any agent, kept apart from the agent's own menu. -->
@@ -58,6 +58,11 @@
         </nav>
         <p class="label sub-label">RECENTLY LEARNED</p>
         <div id="drawerLearned"></div>
+      </section>
+      <!-- Every chat is kept: reopen any of them. -->
+      <section class="chats">
+        <p class="label">CHATS</p>
+        <div id="drawerChats"></div>
       </section>
       <div class="drawer-foot">
         <button class="circle line" id="openSettings" aria-label="Settings"><svg viewBox="0 0 24 24"><use href="#i-gear"/></svg></button>

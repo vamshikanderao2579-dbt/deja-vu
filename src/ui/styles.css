@@ -607,3 +607,12 @@ svg.line path.s3 { stroke: var(--series-3); }
   .sheet.open { transform: none; opacity: 1; pointer-events: auto; }
   .toast { left: calc(50% + var(--side) / 2); }
 }
+
+/* ---------- Saved chats in the sidebar ---------- */
+.drawer { overflow-y: auto; }
+.chats { margin-top: 14px; }
+.chats .label { padding: 0 6px; }
+.chat-row { display: block; width: 100%; border: 0; background: transparent; text-align: left; padding: 9px 12px; border-radius: 14px; font-size: 15px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-row:hover { background: rgba(127,127,127,.1); }
+.chat-row.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+.chats .hint-line { padding: 0 6px; }

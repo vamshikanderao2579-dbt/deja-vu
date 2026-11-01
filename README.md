@@ -116,7 +116,7 @@ Requires Node 18+. No dependencies.
 cp .env.example .env     # add MAIN_API_KEY from dev.meta.ai
 npm run check-api        # lists your models, makes one test call
 npm run dev              # http://localhost:3000
-npm test                 # 49 tests, mock mode, no cost
+npm test                 # 50 tests, mock mode, no cost
 ```
 
 Without an API key the app runs in **mock mode** on a hand-written fixture, so the UI works offline. Recorded demos replay instantly with `MUSE_ENABLED=false`. A daily spend cap (`SPEND_CAP_USD`) stops model calls once reached; today's spend is in `data/spend.json`.
