@@ -28,7 +28,7 @@ Decks are edited only in `docs/decks/` (sources, then rebuild). The old claude.a
    - `deploy/deploy.env`: the public link's key and spend caps.
    - `data/private/`: the two real chat histories and their answer keys, eval builds and caches (~5 MB). The eval needs it for the two real people. The app runs without it.
    - `~/.modal.toml`: the Modal login. Or run `modal token new` after step 3.
-3. To deploy: `python3 -m venv .venv-deploy && .venv-deploy/bin/pip install modal`.
+3. To deploy: `/opt/homebrew/opt/python@3.12/bin/python3.12 -m venv .venv-deploy && .venv-deploy/bin/pip install modal` (needs Python 3.10+: the Mac's own 3.9 caps Modal at 1.2.6, which the workspace rejects), then `.venv-deploy/bin/modal token new` once.
 4. Check it: `npm test` (65 pass, mock mode, $0), then `npm start` → http://localhost:3000.
 
 ## Commands
@@ -71,7 +71,7 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 
 ## Open items, in order
 
-1. **Deploy** (`.venv-deploy/bin/modal deploy deploy/modal_app.py`). Both tours were re-recorded on Nov 3 and replay with 0 misses; narration clips (Ava) are in `src/ui/narration/`. Rerun `node scripts/make-narration.js` after any caption edit, and re-record the tours after any answer, learn or build prompt edit.
+1. **Deployed Nov 3** (`.venv-deploy/bin/modal deploy deploy/modal_app.py`); Maria's tour checked on the live link. Both tours were re-recorded on Nov 3 and replay with 0 misses; narration clips (Ava) are in `src/ui/narration/`. Rerun `node scripts/make-narration.js` after any caption edit, and re-record the tours after any answer, learn or build prompt edit.
 2. **Persona tours (optional):** only Alex and Maria have guided tours. The other 10 are listed under "Personas: chat with their memory" and answer live (costs model calls). A tour each means a `script` in `data/profiles.json`, recording (~$0.30 each) and clips.
 3. **Test the live chat** on the Modal link after deploying: memory off in a **new** chat (same-chat context still applies by design), a run question (the knee card should read as a guess, with no booking offer), End session (now tap twice).
 4. **Live answers are slow** (~1–2 minutes in the Nov 3 review). Worth a look before the video: time `selectRelevant` vs the answer call.
