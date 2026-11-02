@@ -435,7 +435,7 @@ function renderAnswer(res, question) {
       const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
       const conf = used.filter((c) => c.status === 'confirmed').length;
       line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
-    } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory off';
+    } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory cards off — current chat still applies';
     const u = res.tokens.usage;
     if (u?.prompt_tokens) line += `<div class="tok-row"><span>⬆ ${u.prompt_tokens.toLocaleString()} tokens in</span><span>⬇ ${(u.completion_tokens ?? 0).toLocaleString()} out</span>${res.model ? `<span>${esc(modelName(res.model))}</span>` : ''}</div>`;
     detail.innerHTML = `<div>${line}</div>${res.trace ? `<div class="trace-line">${traceLine(res.trace)}</div>` : ''}`;
@@ -537,7 +537,7 @@ const QUIET = {
   redo: 'redone with your change',
 };
 function traceLine(t) {
-  if (t.mode !== 'cards') return t.mode === 'none' ? 'Memory off: no cards used, asked or learned (this chat’s own messages still count)' : 'Full history, no checks';
+  if (t.mode !== 'cards') return t.mode === 'none' ? 'Memory cards off — current chat still applies: no cards used, asked or learned' : 'Full history, no checks';
   const parts = [`${t.stakes} stakes`];
   parts.push(t.check ? `checked “${esc(t.check)}”` : esc(QUIET[t.quiet] ?? 'no check'));
   if (t.quietYes) parts.push(`you carried on, so “${esc(t.quietYes.text)}” counts as a quiet yes (still a guess)`);
@@ -867,7 +867,7 @@ $('#memMenu').addEventListener('click', (e) => {
   try { localStorage.setItem('dv-chat-modes', JSON.stringify(chatModes)); } catch {}
   $('#memMenu').hidden = true;
   renderMemChip();
-  toast({ cards: 'Memory on for this chat.', none: 'Memory off for this chat: nothing used or learned here.', full: 'This chat reads your whole history, to compare.' }[id]);
+  toast({ cards: 'Memory on for this chat.', none: 'Memory cards off for this chat. What you say here still applies here; nothing is learned.', full: 'This chat reads your whole history, to compare.' }[id]);
 });
 document.addEventListener('click', () => { $('#memMenu').hidden = true; });
 
@@ -1763,14 +1763,14 @@ function applyProfileChrome() {
 function renderMemSwitch() {
   const on = !data.memoryOff;
   $('#memToggle').setAttribute('aria-checked', String(on));
-  $('#memSwitchSub').textContent = on ? 'On: I remember what matters to you.' : 'Off: I don’t remember anything.';
+  $('#memSwitchSub').textContent = on ? 'On: I remember what matters to you.' : 'Off: no cards used or learned. Each chat still follows what you say in it.';
   renderMemChip();
 }
 $('#memToggle').addEventListener('click', async () => {
   if (!data.memoryOff) {
     await refresh(await api('/api/memory/switch', { on: false }));
     renderMemSwitch();
-    return toast('Memory is off. Your cards are kept; I just won’t use them.');
+    return toast('Memory cards off — current chat still applies. Your cards are kept; I just won’t use them.');
   }
   open('memoryIntro');
 });
@@ -1897,15 +1897,19 @@ function showLanding(choice, { canGoBack = false } = {}) {
   $('#landing').scrollTop = 0;
   $('#landBack').hidden = !canGoBack;
   importMaxMb = choice.importMaxMb ?? 30;
-  const opt = (p) => `<option value="${esc(p.id)}">${esc(p.name)}${p.demo ? ' (demo)' : ''}</option>`;
+  const opt = (p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`;
   const mine = choice.profiles.filter((p) => !p.demo && !p.real);
   const real = choice.profiles.filter((p) => p.real);
   const demos = choice.profiles.filter((p) => p.demo);
+  // Demos have a guided tour; personas are made-up people to chat with (live answers).
+  const tours = demos.filter((p) => p.tour);
+  const personas = demos.filter((p) => !p.tour);
   const sel = $('#userSelect');
   // Bring your own chats first, then the demo people, then anyone already here.
   sel.innerHTML = `<option value="${NEW_USER}">+ Import my memory (new user)</option>` +
     (mine.length ? `<optgroup label="You">${mine.map(opt).join('')}</optgroup>` : '') +
-    `<optgroup label="Demo personas">${demos.map(opt).join('')}</optgroup>` +
+    (tours.length ? `<optgroup label="Demos: guided tour">${tours.map(opt).join('')}</optgroup>` : '') +
+    (personas.length ? `<optgroup label="Personas: chat with their memory">${personas.map(opt).join('')}</optgroup>` : '') +
     (real.length ? `<optgroup label="On this computer">${real.map(opt).join('')}</optgroup>` : '');
   sel.value = choice.profiles.some((p) => p.id === choice.active) ? choice.active : (mine[0] ?? demos[0] ?? real[0])?.id ?? NEW_USER;
   landingProfiles = choice.profiles;
@@ -1919,7 +1923,7 @@ function describeUser() {
   const p = landingProfiles.find((x) => x.id === id);
   $('#userAbout').textContent = id === NEW_USER
     ? 'Bring your ChatGPT, Claude or Muse chats. I’ll ask your name, then build your cards (a few minutes).'
-    : p?.demo ? `${cap(p.about.replace(/^Synthetic · /, ''))}. Made-up chats and memory, ready to try.` : p?.about ?? '';
+    : p?.demo ? `${cap(p.about.replace(/^Synthetic · /, ''))}. Made-up chats and memory, ${p.tour ? 'with a guided tour.' : 'ready to chat (live answers, no tour).'}` : p?.about ?? '';
   $('#userGo').textContent = id === NEW_USER ? 'Continue: import my chats' : `Continue as ${p?.name ?? 'this user'}`;
 }
 function hideLanding() {

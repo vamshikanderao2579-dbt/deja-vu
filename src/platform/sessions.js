@@ -54,7 +54,7 @@ export function sessionFor(req, res) {
 
 // What a visitor can pick: demo personas, plus their import once they have one.
 export function profilesFor(s) {
-  const demos = listProfiles().map(({ id, name, about, real }) => ({ id, name, about, demo: !real, real: !!real }));
+  const demos = listProfiles().map(({ id, name, about, real, script }) => ({ id, name, about, demo: !real, real: !!real, tour: !!script?.length }));
   return s.imported ? [{ id: MINE, name: s.imported.name, about: `Your ${s.imported.label} history · ${s.imported.turns} messages`, demo: false }, ...demos] : demos;
 }
 

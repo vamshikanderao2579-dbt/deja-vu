@@ -71,9 +71,9 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 
 ## Open items, in order
 
-1. **Re-record both tours (Alex and Maria)** before deploying. The answer prompts changed on Nov 3 (no booking offers, private guesses labelled), so every recorded answer misses the cache, and Maria's script is shorter. Needs `.env`; about $0.60. Steps: `.agents/skills/record-demo.md`; `replay-check` must show only `[replay hit]`.
-2. **Narration clips:** install "Ava (Premium)" (System Settings → Accessibility → Spoken Content → System voice → Manage Voices), then `node scripts/make-narration.js`. Rerun after any caption edit.
-3. **Test the live chat** on the Modal link after deploying: a memory-off chat, a run question (the knee card should read as a guess, with no booking offer), End session (now tap twice).
+1. **Deploy** (`.venv-deploy/bin/modal deploy deploy/modal_app.py`). Both tours were re-recorded on Nov 3 and replay with 0 misses; narration clips (Ava) are in `src/ui/narration/`. Rerun `node scripts/make-narration.js` after any caption edit, and re-record the tours after any answer, learn or build prompt edit.
+2. **Persona tours (optional):** only Alex and Maria have guided tours. The other 10 are listed under "Personas: chat with their memory" and answer live (costs model calls). A tour each means a `script` in `data/profiles.json`, recording (~$0.30 each) and clips.
+3. **Test the live chat** on the Modal link after deploying: memory off in a **new** chat (same-chat context still applies by design), a run question (the knee card should read as a guess, with no booking offer), End session (now tap twice).
 4. **Live answers are slow** (~1–2 minutes in the Nov 3 review). Worth a look before the video: time `selectRelevant` vs the answer call.
 5. **First 30 seconds:** the review found no wow before import plus five messages. Lead the video and landing with the ↻ Memory updated flip and the token trace.
 6. **Record the video and the 1-minute demo.** Say "Confirmed memory for any agent. Not a chatbot." before the demo. In the submission, **quote the pooled 14-person figure only** (81.7% vs 71.8% vs 70.5%); the two separate blocks moved between runs.
@@ -81,7 +81,7 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 8. **Submit** (Indie track). Confirm a 2-person team is OK. Check every link in a private window.
 9. Optional: look at why Tom loses. A live correction's provenance reads "Learned from" two chats, not "you told me" like the tour card.
 
-**Decided Nov 3:** memory off means no cards used, asked or learned, and nothing carried to other chats; the chat's own messages still count (that's what any agent does). A quiet yes raises confidence but never confirms a card. Insights leads with "answers that needed no correction".
+**Decided Nov 3:** memory off means no cards used, asked or learned, and nothing carried to other chats; the chat's own messages still count (that's what any agent does). The UI says "Memory cards off — current chat still applies". The submission should say the saving is across chats: a new chat gets ~150 tokens of cards instead of re-reading ~39K of history. A quiet yes raises confidence but never confirms a card. Insights leads with "answers that needed no correction".
 
 ## Rules that must hold (full list: `.agents/rules.md`)
 
