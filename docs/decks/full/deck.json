@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-10-27T21:05:00Z" },
+  "lists": "css",
+  "title": "Déjà Vu",
+  "order": ["cover", "problem", "today", "insight", "demo", "how", "engine", "nonag", "short", "gate", "trust", "results", "meta", "light", "closer"],
+  "sections": {
+    "s1": { "description": "The problem: personal agents remember you invisibly and never ask", "start": "cover" },
+    "s2": { "description": "The idea, then the live Alex demo", "start": "insight" },
+    "s3": { "description": "How it works: the engine, the don’t-nag rule, short-term memory, the grader, receipts", "start": "how" },
+    "s4": { "description": "Proof and platform: eval results and how each Meta model is used, and why", "start": "results" },
+    "s5": { "description": "The close: don't change what works; confirmed beats inferred", "start": "light" }
+  },
+  "faces": {
+    "geist": { "family": "Geist", "href": "https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap" },
+    "geist-mono": { "family": "Geist Mono", "href": "https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap" }
+  },
+  "designSystems": []
+}

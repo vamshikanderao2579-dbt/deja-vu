@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Déjà Vu · short pitch</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#03070c;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center}
+#stage>section{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:none!important}
+#stage>section.on{display:flex!important}
+section aside{display:none}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:#0c1621ee;color:#dfe3ee;font:16px/1.5 Geist,Arial,sans-serif;padding:16px 24px;border-top:1px solid #1c2b3a;display:none}
+body.notes #notes{display:block}
+#count{position:fixed;right:14px;top:10px;color:#5b6178;font:13px Geist Mono,monospace}
+@media print{
+  @page{size:1920px 1080px;margin:0}
+  html,body{overflow:visible;height:auto}
+  #stage{position:static;transform:none!important}
+  #stage>section{display:flex!important;position:relative;page-break-after:always}
+  #notes,#count{display:none!important}
+}
+</style></head><body>
+<div id="stage">
+<section id="cover" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:36px">
+<div style="position:absolute;right:0;bottom:0;width:1100px;height:760px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.9"></div>
+<div style="position:absolute;left:0;top:0;width:320px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<div style="position:absolute;left:1060px;top:128px;width:732px;display:flex;flex-direction:column;align-items:center;gap:22px">
+<div style="display:flex;gap:14px;width:732px;justify-content:space-between">
+<p style="flex:1;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px solid #22344A;border-radius:999px;padding:12px 8px">Muse</p>
+<p style="flex:1;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px solid #22344A;border-radius:999px;padding:12px 8px">ChatGPT</p>
+<p style="flex:1;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px solid #22344A;border-radius:999px;padding:12px 8px">Claude</p>
+<p style="flex:1.3;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px dashed #2B4560;border-radius:999px;padding:12px 8px">Your agent</p>
+</div>
+<x-shape kind="arrow-down" style="width:44px;height:56px;background:#0082FB"></x-shape>
+<div style="width:732px;display:flex;align-items:center;gap:28px;background:#0D1D33;border:1px solid #0064E0;border-radius:32px;padding:36px 40px;box-shadow:0 0 90px rgba(0,130,251,0.35)">
+<div style="width:96px;height:96px;display:flex;align-items:center;justify-content:center;background:#0A2440;border:1px solid #1E4B7A;border-radius:26px">
+<svg aria-label="Déjà Vu logo, a clock turning back" width="24" height="24" viewBox="0 0 24 24" style="width:60px;height:60px"><defs><linearGradient id="cvLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" fill="none" stroke="url(#cvLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 2.5V6H2.5" fill="none" stroke="url(#cvLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7.5V12l3 2" fill="none" stroke="url(#cvLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<h3 style="font-size:44px;font-weight:800;letter-spacing:-1px">Déjà Vu memory</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8FD3FF">plugs into any agent · 3 calls</p>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;width:732px">
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Chat icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M12 4c4.97 0 9 3.36 9 7.5S16.97 19 12 19c-1.1 0-2.15-.16-3.12-.46L4 20l1.4-3.6C4.5 15.1 3 13.4 3 11.5 3 7.36 7.03 4 12 4z" fill="none" stroke="url(#cvA)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Learns from chats</p>
+</div>
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Cards icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><rect x="7" y="4" width="12" height="15" rx="2.5" fill="none" stroke="url(#cvB)" stroke-width="1.7"/><path d="M5 7.5v10A2.5 2.5 0 0 0 7.5 20H15M10 9h6M10 12.5h4" fill="none" stroke="url(#cvB)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Short cards you can see</p>
+</div>
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Swipe icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M4 8h9M10 5l3 3-3 3M20 16h-9M14 13l-3 3 3 3" fill="none" stroke="url(#cvC)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Checks once, one swipe</p>
+</div>
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Hourglass icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9" fill="none" stroke="url(#cvD)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Lets go on time</p>
+</div>
+</div>
+</div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase;width:860px">— Meta Global AI Hackathon</p>
+<div style="display:flex;flex-direction:column;width:860px">
+<h1 style="font-size:190px;font-weight:800;letter-spacing:-8px;line-height:1.0">Déjà</h1>
+<h1 style="font-size:190px;font-weight:800;letter-spacing:-8px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Vu.</h1>
+</div>
+<p style="font-size:48px;font-weight:700;width:860px;line-height:1.2">Confirmed memory for any agent.</p>
+<p style="font-size:30px;color:#A3A9BD;width:860px;line-height:1.35;background:#0D1D33;border:1px solid #1E4B7A;border-radius:20px;padding:20px 26px"><b style="color:#F2F3F7">Not a chatbot.</b> A memory layer any personal agent can add, so it feels like it knows you.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1000px;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:3px;color:#5B6178;text-transform:uppercase">Built on Meta · Muse Spark · Muse Wonder · Voice Transcribe</p>
+<aside>Hi, I’m [your name]. First, what Déjà Vu is not: it’s not another chatbot. It’s an infer-then-confirm, user-owned, bounded memory layer for everyday personal agents. It’s a memory layer that any personal agent can add, Muse, ChatGPT, Claude, or your own, so it remembers you the way a good assistant would. It learns short cards from your chats, uses only the ones that fit each request, checks with you once when a guess really matters, and lets short-term things go on their own date. Confirmed memory for any agent. The chat you’ll see in the demo is just a host to show it.</aside>
+</section>
+<section id="problem" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="position:absolute;left:0;top:0;width:640px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— The problem</p>
+<div style="display:flex;flex-direction:column">
+<h2 style="font-size:104px;font-weight:800;letter-spacing:-3px;line-height:1.05">Your agent remembers you.</h2>
+<h2 style="font-size:104px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">It never checks if it’s still true.</h2>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">invisible</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.2">You can’t see what it inferred</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">stale</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.2">A guess from 2 years ago still books your hotel</h3>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">costly</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.2">It re-reads years of chat every time</h3>
+</div>
+</div>
+<p style="font-size:30px;color:#8FA3B8">Muse, ChatGPT and Claude all show some memory. None of them ever asks you to confirm it.</p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">02 / 06</p>
+<aside>Every personal agent today learns about you from your chats. That’s great, until something changes. You can’t see most of what it inferred. A guess from a chat two years ago carries the same weight as what you said yesterday, so it books the hotel you stopped liking. And it keeps re-reading years of history to work out who you are. I checked Muse, ChatGPT and Claude: all of them show you some memory, and none of them ever asks you to confirm it.</aside>
+</section>
+<section id="idea" data-transition="fade" style="background:radial-gradient(ellipse at 50% 50%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:56px">
+<div style="position:absolute;left:0;top:0;width:960px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase;text-align:center">— The idea</p>
+<div style="display:flex;align-items:center;gap:56px">
+<h1 style="font-size:150px;font-weight:800;letter-spacing:-5px;color:#4A5068">Inferred</h1>
+<x-shape kind="arrow-right" style="width:150px;height:76px;background:#0082FB"></x-shape>
+<h1 style="font-size:150px;font-weight:800;letter-spacing:-5px;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Confirmed</h1>
+</div>
+<div style="display:flex;gap:28px;width:1664px">
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<h3 style="font-size:40px;font-weight:700">Uses every card</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Guesses included. Confirming is never a gate.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:36px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<h3 style="font-size:40px;font-weight:700">Asks once</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Only when a guess shapes a booking or plan.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<h3 style="font-size:40px;font-weight:700">Shows receipts</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Every card links to the chat it came from.</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">03 / 06</p>
+<aside>So the idea is one line: inferred versus confirmed. Déjà Vu keeps learning and keeps using everything it learned, guesses included: confirming is never a gate in front of memory. What changes is that every card is marked as a guess or as confirmed, and when a guess is about to shape something that matters, like a booking, it asks once, in one line, and the answer still comes first. And every card shows where it came from. Let me show you.</aside>
+</section>
+<section id="demo" data-transition="fade" style="background:radial-gradient(ellipse at 50% 45%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:30px">
+<div style="position:absolute;left:0;top:0;width:1280px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— Live demo · Alex, a parent planning a trip</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 28px;align-items:baseline">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.02">Let’s watch it.</h1>
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.02;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">60 seconds.</h1>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">01</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">One card is wrong</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Alex’s memory is out of date</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">02</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">Hotel from memory</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">A few cards, not the whole history</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:36px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#8FD3FF">03</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">Your tap: ✕</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Then one tap says what changed</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">04</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">The pick changes</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Hotel → Airbnb with a kitchen</p>
+</div>
+</div>
+<p style="font-size:32px;color:#A3A9BD;background:#0D1D33;border:1px solid #1E4B7A;border-radius:18px;padding:16px 24px"><b style="color:#F2F3F7">Not a chatbot.</b> The chat is just a host: Déjà Vu is the memory layer inside it.</p>
+<p style="font-size:32px;color:#8FA3B8">Try it yourself: <span style="color:#F2F3F7;font-weight:600">vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run</span></p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">04 / 06</p>
+<aside>One reminder before the demo: this isn’t a chatbot. The chat is just a host agent called Pip; Déjà Vu is the memory layer inside it. Switch to the live link and press Watch the 1-minute demo on the first page; choose Captions only and talk over it, or let the voice narrate. Beat 1: one thing Déjà Vu remembers about Alex is out of date. Beat 2: Alex asks for a hotel near Sunset Cliffs; the answer is built from a few cards, about 150 tokens instead of the whole history, and one line checks the guess that shaped it: hotels, not Airbnbs. Tap the card and it opens the June chat it came from, when an Airbnb cancelled. Beat 3: that changed, so tap ✕ yourself, then one tap says what changed: an Airbnb with a kitchen is fine now. Beat 4: the pick switches to an Airbnb, with what’s new and what’s gone marked, and nothing booked without Alex. It ends on Memory and three buttons: try it yourself, open Memory, see the numbers. Then come back to the slides.</aside>
+</section>
+<section id="proof" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="position:absolute;left:0;top:0;width:1600px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Eval · 14 people · 312 checks</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05">More accurate.</h2>
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">A fraction of the reading.</h2>
+</div>
+<div style="display:flex;gap:28px;flex:1;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.0;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">88%</h1>
+<p style="font-size:32px;font-weight:600;line-height:1.25">Answers right with Déjà Vu memory</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">vs 79% summary · 74% full history</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.0;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">92%</h1>
+<p style="font-size:32px;font-weight:600;line-height:1.25">Right when life changed outside chat</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">vs 58% summary · 42% full history</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.0;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">~150</h1>
+<p style="font-size:32px;font-weight:600;line-height:1.25">Memory tokens read per message</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">vs ~490 summary · ~39K full history</p>
+</div>
+</div>
+<div style="display:flex;gap:20px">
+<div style="flex:1;display:flex;align-items:center;gap:16px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:20px 26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">Muse Spark</p>
+<p style="font-size:26px;font-weight:600">answers, picks cards, writes them</p>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:16px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:20px 26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">Muse Wonder</p>
+<p style="font-size:26px;font-weight:600">grades every card before it’s kept</p>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:16px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:20px 26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">Voice Transcribe</p>
+<p style="font-size:26px;font-weight:600">answer a check by talking</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:110px;width:1664px;font-size:26px;color:#A3A9BD">10 more synthetic people: <b style="color:#F2F3F7">79.7%</b> vs 69.5% · changed outside chat <b style="color:#F2F3F7">81%</b> vs 49% · best or tied for 13 of 14</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">Judge: Muse Spark 1.3 · real histories from 2 team members, kept private</p>
+<p style="position:absolute;right:128px;bottom:64px;width:200px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">05 / 06</p>
+<aside>Does it work? We tested three ways an agent can remember you. The main set is four people: two of us, with our own real chat history, and two synthetic people, 76 checks judged by Muse Spark. Re-reading the full history got 74 percent right, a memory summary 79, and Déjà Vu memory 88. When life changed in ways that never came up in chat, Déjà Vu got 92 percent; the others, 42 and 58. It reads about 150 tokens of memory per message. Then ten more synthetic people, each a week of chats, 236 checks. Their first run showed thin builds on two of them, so we fixed the builder: a second pass for missed facts, and a grader that rewords instead of rejecting. Now Déjà Vu gets 80 percent against 69.5, and 81 against 49 on changes outside chat, best or tied for 13 of 14 people. Since that fix came after reading two of their builds, we don't call them fully held out.</aside>
+</section>
+<section id="closer" data-transition="fade" style="background:radial-gradient(ellipse at 72% 42%, #0a3f7a 0%, #060c14 64%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 176px;display:flex;flex-direction:column;justify-content:center;gap:44px">
+<x-icon name="CheckCircle" style="position:absolute;left:1120px;top:150px;width:720px;height:720px;color:#0082FB;opacity:0.12"></x-icon>
+<div style="position:absolute;left:0;top:0;width:1920px;height:6px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— The takeaway</p>
+<p style="font-size:46px;color:#8FA3B8;width:1500px;line-height:1.3">Agents are really good at inferring context from chats.</p>
+<div style="display:flex;flex-direction:column;width:1664px">
+<h1 style="font-size:98px;font-weight:700;letter-spacing:-3px;line-height:1.02">But confirmed memory</h1>
+<h1 style="font-size:98px;font-weight:700;letter-spacing:-3px;line-height:1.06;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">is always better</h1>
+<h1 style="font-size:98px;font-weight:700;letter-spacing:-3px;line-height:1.06">than <span style="color:#3E5873">inferred</span> memory.</h1>
+</div>
+<div style="position:absolute;left:128px;bottom:72px;width:1664px;height:64px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1C2B3A">
+<p style="font-size:40px;font-weight:800;letter-spacing:-1px">Déjà Vu</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">github.com/vamshikanderao2579-dbt/deja-vu · live link in the README</p>
+</div>
+<aside>So to close. Agents are really good at inferring context from chats, and they should keep doing that. But confirmed memory is always better than inferred memory. Use everything, ask once at the right moment, show the receipts, and you get an agent people trust, that stays right as life changes, and that’s cheap enough to run for everyone. The live link is in the README: try it with your own ChatGPT or Claude export. I’m [your name], this is Déjà Vu. Thank you.</aside>
+</section>
+</div>
+<div id="notes"></div><div id="count"></div>
+<script>
+const S=[...document.querySelectorAll('#stage>section')],stage=document.getElementById('stage');
+let i=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`}
+function show(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classList.toggle('on',j===i));
+  document.getElementById('notes').textContent=S[i].querySelector('aside')?.textContent||'(no notes)';
+  document.getElementById('count').textContent=`${i+1} / ${S.length} · N notes · F full screen · P print`;history.replaceState(null,'','#'+(i+1))}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);else if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);
+  else if(e.key==='n'||e.key==='N')document.body.classList.toggle('notes');else if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();
+  else if(e.key==='p'||e.key==='P')print();else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1)});
+addEventListener('click',e=>{if(!e.target.closest('#notes'))show(e.clientX<innerWidth/3?i-1:i+1)});
+addEventListener('resize',fit);fit();show(i);
+</script></body></html>

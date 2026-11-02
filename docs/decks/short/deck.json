@@ -1,0 +1,17 @@
+{
+  "v": 4,
+  "createdOnFiles": { "v": 1, "at": "2026-11-02T08:30:00Z" },
+  "lists": "css",
+  "title": "Déjà Vu · short pitch",
+  "order": ["cover", "problem", "idea", "demo", "proof", "closer"],
+  "sections": {
+    "s1": { "description": "The problem: agents remember you invisibly and never ask", "start": "cover" },
+    "s2": { "description": "The idea, then the live Alex demo", "start": "idea" },
+    "s3": { "description": "Proof on four people, built on Meta models, and the close", "start": "proof" }
+  },
+  "faces": {
+    "geist": { "family": "Geist", "href": "https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap" },
+    "geist-mono": { "family": "Geist Mono", "href": "https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap" }
+  },
+  "designSystems": []
+}

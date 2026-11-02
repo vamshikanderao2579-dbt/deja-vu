@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Déjà Vu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#03070c;overflow:hidden}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center}
+#stage>section{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:none!important}
+#stage>section.on{display:flex!important}
+section aside{display:none}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:#0c1621ee;color:#dfe3ee;font:16px/1.5 Geist,Arial,sans-serif;padding:16px 24px;border-top:1px solid #1c2b3a;display:none}
+body.notes #notes{display:block}
+#count{position:fixed;right:14px;top:10px;color:#5b6178;font:13px Geist Mono,monospace}
+@media print{
+  @page{size:1920px 1080px;margin:0}
+  html,body{overflow:visible;height:auto}
+  #stage{position:static;transform:none!important}
+  #stage>section{display:flex!important;position:relative;page-break-after:always}
+  #notes,#count{display:none!important}
+}
+</style></head><body>
+<div id="stage">
+<section id="cover" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;gap:36px">
+<div style="position:absolute;right:0;bottom:0;width:1100px;height:760px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.9"></div>
+<div style="position:absolute;left:0;top:0;width:320px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<div style="position:absolute;left:1060px;top:128px;width:732px;display:flex;flex-direction:column;align-items:center;gap:22px">
+<div style="display:flex;gap:14px;width:732px;justify-content:space-between">
+<p style="flex:1;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px solid #22344A;border-radius:999px;padding:12px 8px">Muse</p>
+<p style="flex:1;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px solid #22344A;border-radius:999px;padding:12px 8px">ChatGPT</p>
+<p style="flex:1;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px solid #22344A;border-radius:999px;padding:12px 8px">Claude</p>
+<p style="flex:1.3;text-align:center;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#C9CDE0;background:#0C1621;border:1px dashed #2B4560;border-radius:999px;padding:12px 8px">Your agent</p>
+</div>
+<x-shape kind="arrow-down" style="width:44px;height:56px;background:#0082FB"></x-shape>
+<div style="width:732px;display:flex;align-items:center;gap:28px;background:#0D1D33;border:1px solid #0064E0;border-radius:32px;padding:36px 40px;box-shadow:0 0 90px rgba(0,130,251,0.35)">
+<div style="width:96px;height:96px;display:flex;align-items:center;justify-content:center;background:#0A2440;border:1px solid #1E4B7A;border-radius:26px">
+<svg aria-label="Déjà Vu logo, a clock turning back" width="24" height="24" viewBox="0 0 24 24" style="width:60px;height:60px"><defs><linearGradient id="cvLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" fill="none" stroke="url(#cvLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 2.5V6H2.5" fill="none" stroke="url(#cvLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7.5V12l3 2" fill="none" stroke="url(#cvLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+<h3 style="font-size:44px;font-weight:800;letter-spacing:-1px">Déjà Vu memory</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8FD3FF">plugs into any agent · 3 calls</p>
+</div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;width:732px">
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Chat icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M12 4c4.97 0 9 3.36 9 7.5S16.97 19 12 19c-1.1 0-2.15-.16-3.12-.46L4 20l1.4-3.6C4.5 15.1 3 13.4 3 11.5 3 7.36 7.03 4 12 4z" fill="none" stroke="url(#cvA)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Learns from chats</p>
+</div>
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Cards icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><rect x="7" y="4" width="12" height="15" rx="2.5" fill="none" stroke="url(#cvB)" stroke-width="1.7"/><path d="M5 7.5v10A2.5 2.5 0 0 0 7.5 20H15M10 9h6M10 12.5h4" fill="none" stroke="url(#cvB)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Short cards you can see</p>
+</div>
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Swipe icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvC" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M4 8h9M10 5l3 3-3 3M20 16h-9M14 13l-3 3 3 3" fill="none" stroke="url(#cvC)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Checks once, one swipe</p>
+</div>
+<div style="display:flex;align-items:center;gap:18px;background:#0C1621;border:1px solid #1C2B3A;border-radius:22px;padding:20px">
+<div style="width:68px;height:68px;display:flex;align-items:center;justify-content:center;background:#0B1C2E;border:1px solid #1E3A58;border-radius:18px"><svg aria-label="Hourglass icon" width="24" height="24" viewBox="0 0 24 24" style="width:38px;height:38px"><defs><linearGradient id="cvD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9s10 4 10 9" fill="none" stroke="url(#cvD)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+<p style="font-size:28px;font-weight:600;line-height:1.2">Lets go on time</p>
+</div>
+</div>
+</div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase;width:860px">— Meta Global AI Hackathon</p>
+<div style="display:flex;flex-direction:column;width:860px">
+<h1 style="font-size:190px;font-weight:800;letter-spacing:-8px;line-height:1.0">Déjà</h1>
+<h1 style="font-size:190px;font-weight:800;letter-spacing:-8px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Vu.</h1>
+</div>
+<p style="font-size:48px;font-weight:700;width:860px;line-height:1.2">Confirmed memory for any agent.</p>
+<p style="font-size:30px;color:#A3A9BD;width:860px;line-height:1.35;background:#0D1D33;border:1px solid #1E4B7A;border-radius:20px;padding:20px 26px"><b style="color:#F2F3F7">Not a chatbot.</b> A memory layer any personal agent can add, so it feels like it knows you.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1000px;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:3px;color:#5B6178;text-transform:uppercase">Built on Meta · Muse Spark · Muse Wonder · Voice Transcribe</p>
+<aside>Hi, I’m [your name]. First, what Déjà Vu is not: it’s not another chatbot. It’s an infer-then-confirm, user-owned, bounded memory layer for everyday personal agents. It’s a memory layer that any personal agent can add, Muse, ChatGPT, Claude, or your own, so it remembers you the way a good assistant would. It learns short cards from your chats, uses only the ones that fit each request, checks with you once when a guess really matters, and lets short-term things go on their own date. Confirmed memory for any agent. The chat you’ll see in the demo is just a host to show it.</aside>
+</section>
+<section id="problem" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="position:absolute;left:0;top:0;width:320px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— The problem</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 28px;align-items:baseline">
+<h2 style="font-size:96px;font-weight:800;letter-spacing:-3px;line-height:1.05">Your agent remembers you.</h2>
+<h2 style="font-size:96px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">You can’t see what.</h2>
+</div>
+<div style="display:flex;gap:40px;align-items:stretch;flex:1">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:3px;color:#8A90A6;text-transform:uppercase">memory.md</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:44px;color:#5B6178">(empty)</p>
+</div>
+<x-connector style="width:120px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:3px;color:#8A90A6;text-transform:uppercase">Agent, a week later</p>
+<p style="font-size:40px;font-weight:600;line-height:1.25">“Same as last time? Thai Lagoon at 7?”</p>
+</div>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;background:#0C1621;border:1px solid #182634;border-radius:20px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">invisible</p>
+<p style="font-size:32px;font-weight:600">Hidden recall</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;background:#0C1621;border:1px solid #182634;border-radius:20px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">uncorrectable</p>
+<p style="font-size:32px;font-weight:600">Stale guesses stick</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;background:#0C1621;border:1px solid #182634;border-radius:20px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">costly</p>
+<p style="font-size:32px;font-weight:600">Re-reads years of chat</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">02 / 15</p>
+<aside>Here’s what made me build this. My agent’s memory file is empty. But a week later it still remembers my dinner spot. So there is a memory; I just can’t see it. That’s three problems. It’s invisible. It can’t be corrected, so old guesses stick around. And it’s expensive, because the agent keeps re-deriving who I am from years of chat.</aside>
+</section>
+<section id="today" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="position:absolute;left:0;top:0;width:480px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Personal agents today</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 28px;align-items:baseline">
+<h2 style="font-size:96px;font-weight:800;letter-spacing:-3px;line-height:1.05">Every agent guesses.</h2>
+<h2 style="font-size:96px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">None of them ask.</h2>
+</div>
+<div style="display:flex;gap:32px;flex:1;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:22px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<h3 style="font-size:48px;font-weight:700">Muse</h3>
+<p style="font-size:30px;line-height:1.3"><span style="color:#8A90A6">Shows</span> an editable memory file</p>
+<p style="font-size:30px;line-height:1.3"><span style="color:#8A90A6">Hides</span> chat recall, app data</p>
+<p style="font-size:28px;font-weight:700;color:#FF9A62;background:#2A1A14;border-radius:20px;padding:10px 20px">Never asks to confirm</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:22px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<h3 style="font-size:48px;font-weight:700">ChatGPT</h3>
+<p style="font-size:30px;line-height:1.3"><span style="color:#8A90A6">Shows</span> a saved-memories list</p>
+<p style="font-size:30px;line-height:1.3"><span style="color:#8A90A6">Hides</span> chat history reference</p>
+<p style="font-size:28px;font-weight:700;color:#FF9A62;background:#2A1A14;border-radius:20px;padding:10px 20px">Never asks to confirm</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:22px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:44px">
+<h3 style="font-size:48px;font-weight:700">Claude</h3>
+<p style="font-size:30px;line-height:1.3"><span style="color:#8A90A6">Shows</span> a memory summary</p>
+<p style="font-size:30px;line-height:1.3"><span style="color:#8A90A6">Hides</span> how it’s distilled</p>
+<p style="font-size:28px;font-weight:700;color:#FF9A62;background:#2A1A14;border-radius:20px;padding:10px 20px">Never asks to confirm</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1100px;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">Source: public help docs, Oct 2026</p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">03 / 15</p>
+<aside>I checked how the big personal agents handle memory today. All of them show you something: a file, a list, a summary. All of them also remember things you can’t see. And none of them ever asks you to confirm what they inferred. A guess from one chat two years ago carries the same weight as something you said yesterday.</aside>
+</section>
+<section id="insight" data-transition="fade" style="background:radial-gradient(ellipse at 50% 50%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:56px">
+<div style="position:absolute;left:0;top:0;width:640px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase;text-align:center">— The idea</p>
+<div style="display:flex;align-items:center;gap:56px">
+<h1 style="font-size:150px;font-weight:800;letter-spacing:-5px;color:#4A5068;text-decoration:line-through #4A5068">Inferred</h1>
+<x-shape kind="arrow-right" style="width:150px;height:76px;background:#0082FB"></x-shape>
+<h1 style="font-size:150px;font-weight:800;letter-spacing:-5px;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Confirmed</h1>
+</div>
+<p style="font-size:44px;color:#A3A9BD;text-align:center;width:1400px">It uses every guess. It asks once, when a guess shapes something that matters.</p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">04 / 15</p>
+<aside>So the idea is one line: inferred versus confirmed. The agent keeps learning from chats and keeps using everything it learned, exactly like today: confirming is never a gate. What changes is that every card is marked as a guess or as confirmed, and when a guess is about to shape something that matters, like a booking, it asks once, in one line, and the answer still comes first. What you confirm wins over what it guessed. That gives you trust, and it keeps memory small and cheap. Let me show you.</aside>
+</section>
+<section id="demo" data-transition="fade" style="background:radial-gradient(ellipse at 50% 45%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:30px">
+<div style="position:absolute;left:0;top:0;width:720px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— Live demo · Alex, a parent planning a trip</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 28px;align-items:baseline">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.02">Let’s watch it.</h1>
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.02;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">60 seconds.</h1>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">01</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">One card is wrong</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Alex’s memory is out of date</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">02</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">Hotel from memory</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">A few cards, not the whole history</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:36px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#8FD3FF">03</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">Your tap: ✕</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Then one tap says what changed</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">04</p>
+<h3 style="font-size:40px;font-weight:700;line-height:1.15">The pick changes</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Hotel → Airbnb with a kitchen</p>
+</div>
+</div>
+<p style="font-size:32px;color:#A3A9BD;background:#0D1D33;border:1px solid #1E4B7A;border-radius:18px;padding:16px 24px"><b style="color:#F2F3F7">Not a chatbot.</b> The chat is just a host: Déjà Vu is the memory layer inside it.</p>
+<p style="font-size:32px;color:#8FA3B8">Try it yourself: <span style="color:#F2F3F7;font-weight:600">vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run</span></p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">05 / 15</p>
+<aside>One reminder before the demo: this isn’t a chatbot. The chat is just a host agent called Pip; Déjà Vu is the memory layer inside it. Switch to the live link and press Watch the 1-minute demo on the first page; choose Captions only and talk over it, or let the voice narrate. Beat 1: one thing Déjà Vu remembers about Alex is out of date. Beat 2: Alex asks for a hotel near Sunset Cliffs; the answer is built from a few cards, about 150 tokens instead of the whole history, and one line checks the guess that shaped it: hotels, not Airbnbs. Tap the card and it opens the June chat it came from, when an Airbnb cancelled. Beat 3: that changed, so tap ✕ yourself, then one tap says what changed: an Airbnb with a kitchen is fine now. Beat 4: the pick switches to an Airbnb, with what’s new and what’s gone marked, and nothing booked without Alex. It ends on Memory and three buttons: try it yourself, open Memory, see the numbers. Then come back to the slides.</aside>
+</section>
+<section id="how" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="position:absolute;right:0;bottom:0;width:1000px;height:600px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.8"></div>
+<div style="position:absolute;left:0;top:0;width:800px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— How it works</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05">Chats in.</h2>
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Confirmed memory out.</h2>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:8px;background:#09121C;border:1px solid #182634;border-radius:32px;padding:40px">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px">
+<div style="width:104px;height:104px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:26px"><x-icon name="Chat" style="width:52px;height:52px;color:#C9CDE0"></x-icon></div>
+<p style="font-size:28px;font-weight:700;text-align:center">Your chats</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6;text-align:center">years of chat</p>
+</div>
+<x-connector style="width:32px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px">
+<div style="width:104px;height:104px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:26px"><x-icon name="Lightning" style="width:52px;height:52px;color:#5CC8FF"></x-icon></div>
+<p style="font-size:28px;font-weight:700;text-align:center">Spark writes</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6;text-align:center">Wonder grades</p>
+</div>
+<x-connector style="width:32px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px">
+<div style="width:120px;height:120px;display:flex;align-items:center;justify-content:center;background:#0A2440;border:2px solid #0082FB;border-radius:30px;box-shadow:0 0 70px rgba(0,130,251,0.45)"><x-icon name="Database" style="width:60px;height:60px;color:#8FD3FF"></x-icon></div>
+<p style="font-size:28px;font-weight:700;text-align:center">Your cards</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6;text-align:center">guess or confirmed</p>
+</div>
+<x-connector style="width:32px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px">
+<div style="width:104px;height:104px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:26px"><x-icon name="ThumbsUp" style="width:52px;height:52px;color:#FF9A62"></x-icon></div>
+<p style="font-size:28px;font-weight:700;text-align:center">You</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6;text-align:center">one swipe</p>
+</div>
+<x-connector style="width:32px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:16px">
+<div style="width:104px;height:104px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:26px"><x-icon name="Star" style="width:52px;height:52px;color:#5CC8FF"></x-icon></div>
+<p style="font-size:28px;font-weight:700;text-align:center">Muse Spark</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6;text-align:center">only what fits</p>
+</div>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;background:#0C1621;border:1px solid #182634;border-radius:20px;padding:26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">bounded</p>
+<p style="font-size:30px;font-weight:600">10 topics · 8 cards · 14 words</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;background:#0C1621;border:1px solid #182634;border-radius:20px;padding:26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">scoped</p>
+<p style="font-size:30px;font-weight:600">Only relevant cards per ask</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;align-items:center;background:#0C1621;border:1px solid #182634;border-radius:20px;padding:26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">owned</p>
+<p style="font-size:30px;font-weight:600">Export as me.json</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">06 / 15</p>
+<aside>Here’s the flow. Your chats go in, years of them. In the background, Muse Spark writes short cards, and Muse Wonder, a second model, grades each one against your own words before it’s saved. Each card is marked as a guess or as confirmed. You confirm with one swipe. Then when you ask something, Muse Spark answers using only the few cards that matter for that question. Three properties make this work: it’s bounded, so cost is predictable; it’s scoped, so a dinner question never sees your work cards; and it’s yours, exportable as a single file.</aside>
+</section>
+<section id="engine" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="position:absolute;right:0;bottom:0;width:1000px;height:600px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.8"></div>
+<div style="position:absolute;left:0;top:0;width:880px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— The engine, end to end</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:80px;font-weight:800;letter-spacing:-3px;line-height:1.05">One answer call.</h2>
+<h2 style="font-size:80px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Everything else rides along.</h2>
+</div>
+<div style="flex:1;display:flex;align-items:stretch;gap:8px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:24px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">01 · Muse Spark</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.15">Pick the cards</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.3">One call over a bounded index. Picks the few cards this request needs, the key ones, and the stakes.</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">~150 tokens, not 113K</p>
+</div>
+<x-connector style="width:28px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:24px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">02 · plain code</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.15">Decide: ask?</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.3">The don’t-nag rule. A key card that’s a guess, high stakes, nothing asked in this chat.</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">usually: no</p>
+</div>
+<x-connector style="width:28px;color:#2B4560"></x-connector>
+<div style="flex:1.15;display:flex;flex-direction:column;gap:12px;background:#0D1D33;border:1px solid #0064E0;border-radius:24px;padding:28px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8FD3FF">03 · Muse Spark</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.15">Answer + draft</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.3">Right away. A booking or order comes back as a draft through a tool call. The check rides above it.</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">draft_booking · draft_order</p>
+</div>
+<x-connector style="width:28px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:24px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">04 · you</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.15">✓ ✕ or carry on</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.3">Carry on and it’s a quiet yes. ✕, say what changed, and redo if you want.</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">2 quiet yeses = confirmed</p>
+</div>
+<x-connector style="width:28px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:24px;padding:28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">05 · after</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.15">Learn quietly</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.3">Spark writes cards, rules and Wonder check them, then into your memory.</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">never delays an answer</p>
+</div>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:22px 28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">visible</p>
+<p style="font-size:28px;font-weight:600">ⓘ shows what it picked and why it didn’t ask</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:22px 28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">fast</p>
+<p style="font-size:28px;font-weight:600">A similar request reuses the pick</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:22px 28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">pluggable</p>
+<p style="font-size:28px;font-weight:600">recall · remember · confirm over HTTP</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">07 / 15</p>
+<aside>Here’s the engine for one message. Step one: Muse Spark picks the few cards this request needs, which ones are key, and how high the stakes are. One call over a bounded index, about 150 tokens of memory instead of years of history. Step two is plain code, the don’t-nag rule: it only asks when a key card is a guess, the stakes are real, and nothing was asked in this chat. Usually the answer is no. Step three: the answer, right away. If it’s a booking or an order, Muse Spark calls a draft tool, so you get a real draft built from your memory, and the check line rides above it. Step four is you: tap still true, tap not anymore, or just keep chatting, which counts as a quiet yes. Step five happens after the answer: one model writes new cards, code rules and a second model, Muse Wonder, check them, and only then do they enter your memory. Every step is visible under the info button, and any agent can use the same layer over three HTTP calls.</aside>
+</section>
+<section id="nonag" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="position:absolute;left:0;top:0;width:1280px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— The don’t-nag rule</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05">It asks less</h2>
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">the more you use it.</h2>
+</div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;color:#8A90A6">A quick check only when all four are true</p>
+<div style="display:flex;gap:24px;flex:1;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">01</p>
+<h3 style="font-size:40px;font-weight:700">Relevant</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">It changes this answer</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">02</p>
+<h3 style="font-size:40px;font-weight:700">Unsure</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Guessed, changed or a year old</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">03</p>
+<h3 style="font-size:40px;font-weight:700">High stakes</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Booking, ordering, planning</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:28px;color:#5CC8FF">04</p>
+<h3 style="font-size:40px;font-weight:700">Not recent</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">One per chat, at most</p>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:20px;background:#0E1C2C;border:1px solid #24405E;border-radius:24px;padding:24px 32px">
+<x-icon name="CheckCircle" style="width:40px;height:40px;color:#5CC8FF"></x-icon>
+<p style="font-size:32px;font-weight:600">Plain code, not a model. Keep chatting and it counts as a quiet yes.</p>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">08 / 15</p>
+<aside>The risk with asking is nagging. So there’s a strict rule, and it’s plain code, not a model guess. The agent only asks when all four are true: the card actually changes this answer, it’s unsure about it, the stakes are real, and it hasn’t asked recently. Most conversations get no question at all. It’s plain code, not a model guess, so it’s predictable. And when you just keep chatting after a check, that counts as a quiet yes; two of them confirm the card. So the longer you use it, the less it asks. Insights shows it as a number: checks per hundred answers, and why it stayed quiet the rest of the time.</aside>
+</section>
+<section id="short" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="position:absolute;right:0;bottom:0;width:1000px;height:600px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.8"></div>
+<div style="position:absolute;left:0;top:0;width:1200px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Short-term memory</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05">Some things only last a while.</h2>
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Memory lets them go.</h2>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">July · in chat</p>
+<p style="font-size:36px;font-weight:600;line-height:1.25">“No takeout for the next 3 months, saving for Leo’s robotics camp”</p>
+</div>
+<x-shape kind="arrow-right" style="width:64px;height:40px;background:#2B4560"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:40px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#F5A623">⏳ short-term · until Oct 27</p>
+<p style="font-size:36px;font-weight:700;line-height:1.25">No takeout while saving for Leo’s camp</p>
+</div>
+<x-shape kind="arrow-right" style="width:64px;height:40px;background:#2B4560"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">Oct 27 · asked once</p>
+<p style="font-size:32px;font-weight:600;line-height:1.3">Keep it going? +1 month · +3 months · keep for good · let it end</p>
+</div>
+</div>
+<div style="display:flex;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:22px 28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">dated</p>
+<p style="font-size:28px;font-weight:600">The end date comes from when you said it</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:22px 28px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">quiet</p>
+<p style="font-size:28px;font-weight:600">After that day it simply stops being used</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">09 / 15</p>
+<aside>Not everything you tell an agent is forever. Maria said in July: no takeout for the next three months, she’s saving for her son’s robotics camp. A normal memory would keep that forever and keep steering her away from takeout. Déjà Vu writes it as a short-term card with an end date, counted from the day she said it. Until then it’s used like any other card. On the end date, chat asks once: keep it going for a month, three months, keep it for good, change it, or let it end. After the date passes, it simply stops being used. Long-term facts work exactly as before.</aside>
+</section>
+<section id="gate" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:36px">
+<div style="position:absolute;right:0;bottom:0;width:1000px;height:600px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.8"></div>
+<div style="position:absolute;left:0;top:0;width:1360px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Checked before it’s saved</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:80px;font-weight:800;letter-spacing:-3px;line-height:1.05">One model writes.</h2>
+<h2 style="font-size:80px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Another approves.</h2>
+</div>
+<div style="flex:1;display:flex;align-items:stretch;gap:10px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:20px"><x-icon name="Lightning" style="width:40px;height:40px;color:#5CC8FF"></x-icon></div>
+<h3 style="font-size:34px;font-weight:700">Writer</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">Muse Spark · background</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3">Proposes short cards from your chats, each citing the messages it came from</p>
+</div>
+<x-connector style="width:36px;color:#2B4560"></x-connector>
+<div style="flex:1.2;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:20px"><x-icon name="Lock" style="width:40px;height:40px;color:#FF9A62"></x-icon></div>
+<h3 style="font-size:34px;font-weight:700">Code rules</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">free · instant</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3">14 words at most · cites a message you wrote · no labels about who you are · nothing about the agent · health or money marked private</p>
+</div>
+<x-connector style="width:36px;color:#2B4560"></x-connector>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:36px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#0A2440;border:1px solid #0064E0;border-radius:20px"><x-icon name="CheckCircle" style="width:40px;height:40px;color:#8FD3FF"></x-icon></div>
+<h3 style="font-size:34px;font-weight:700">Grader</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8FD3FF">Muse Wonder · second model</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3">Accept, lock, or reject: not backed by the chat, a label, a one-off, already known</p>
+</div>
+<x-connector style="width:36px;color:#2B4560"></x-connector>
+<div style="flex:0.8;display:flex;flex-direction:column;gap:14px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
+<div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:20px"><x-icon name="Database" style="width:40px;height:40px;color:#8FD3FF"></x-icon></div>
+<h3 style="font-size:34px;font-weight:700">me.json</h3>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3">Yours, with receipts</p>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:0 16px;align-items:baseline;justify-content:center;background:#09121C;border:1px solid #182634;border-radius:24px;padding:26px 36px">
+<p style="font-size:36px;font-weight:700">Backed by your words, or it’s out.</p>
+<p style="font-size:36px;font-weight:700;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Small likes stay: they make help personal.</p>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">10 / 15</p>
+<aside>Before anything enters memory, it passes a gate. One model writes cards from your chats, and every card has to cite the messages it came from. Then plain code rules check it for free: short, backed by something you actually wrote, no labels about who you are, nothing about the agent itself, and anything about health or money is marked private. Then a second model, Muse Wonder, grades each card against those messages: keep, mark private, or reject because it isn’t backed by the chat, it’s a label, a one-off, or already known. The writer never approves its own work. What it doesn’t reject is the small stuff: a usual drink, a favorite artist, what your mom likes. Those are what make help feel personal. If the grader is ever down, learning falls back to the rules alone and never blocks. Insights shows what was kept and what wasn’t, and why.</aside>
+</section>
+<section id="trust" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="position:absolute;right:0;bottom:0;width:1000px;height:600px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.8"></div>
+<div style="position:absolute;left:0;top:0;width:1440px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Trust</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05">Every card shows</h2>
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">its receipts.</h2>
+</div>
+<div style="display:flex;gap:28px;flex:1;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<div style="width:88px;height:88px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:22px"><x-icon name="Search" style="width:44px;height:44px;color:#5CC8FF"></x-icon></div>
+<h3 style="font-size:40px;font-weight:700">Provenance</h3>
+<p style="font-size:30px;color:#A3A9BD;line-height:1.3">“Why?” opens the exact chat and time</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<div style="width:88px;height:88px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:22px"><x-icon name="Lock" style="width:44px;height:44px;color:#FF9A62"></x-icon></div>
+<h3 style="font-size:40px;font-weight:700">Private, marked</h3>
+<p style="font-size:30px;color:#A3A9BD;line-height:1.3">Health or money: used carefully, yours to remove</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<div style="width:88px;height:88px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:22px"><x-icon name="Link" style="width:44px;height:44px;color:#5CC8FF"></x-icon></div>
+<h3 style="font-size:40px;font-weight:700">Portable</h3>
+<p style="font-size:30px;color:#A3A9BD;line-height:1.3">Your memory as me.json, for any agent</p>
+</div>
+</div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:3px;color:#8A90A6;text-transform:uppercase">No ads · No segments · No selling data</p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">11 / 15</p>
+<aside>Trust comes from receipts. Every card links back to the exact conversation it came from. Sensitive things like health or money are marked private: used carefully, checked once when they shape something that matters, and yours to remove any time. Confirming is never a gate in front of memory. And the whole memory is a portable file you can take to any agent. To be clear about what this is not: it’s not for ads, not for segmenting people, not for selling data. User-owned is the point.</aside>
+</section>
+<section id="results" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="position:absolute;left:0;top:0;width:1600px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Eval · 14 people · 312 checks</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05">More accurate.</h2>
+<h2 style="font-size:84px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">A fraction of the reading.</h2>
+</div>
+<div style="display:flex;gap:28px;flex:1;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:48px">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.0;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">88%</h1>
+<p style="font-size:32px;font-weight:600;line-height:1.25">Answer accuracy with Déjà Vu memory</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">vs 79% summary · 74% full history</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:48px">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.0;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">92%</h1>
+<p style="font-size:32px;font-weight:600;line-height:1.25">Right when life changed outside chat</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">vs 58% summary · 42% full history</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:48px">
+<h1 style="font-size:132px;font-weight:800;letter-spacing:-5px;line-height:1.0;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">~150</h1>
+<p style="font-size:32px;font-weight:600;line-height:1.25">Memory tokens read per message</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8A90A6">vs ~490 summary · ~39K full history</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:110px;width:1664px;font-size:26px;color:#A3A9BD">10 more synthetic people: <b style="color:#F2F3F7">79.7%</b> vs 69.5% · changed outside chat <b style="color:#F2F3F7">81%</b> vs 49% · best or tied for 13 of 14</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1300px;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">Judge: Muse Spark 1.3 · real histories from 2 team members, kept private</p>
+<p style="position:absolute;right:128px;bottom:64px;width:200px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">12 / 15</p>
+<aside>Does it work? We tested three ways an agent can remember you. The main set is four people: two of us, with our own real chat history, and two synthetic people, 76 checks judged by Muse Spark. Re-reading the full history got 74 percent right, a memory summary 79, and Déjà Vu memory 88. When life changed in ways that never came up in chat, Déjà Vu got 92 percent; the others, 42 and 58. It reads about 150 tokens of memory per message. Then ten more synthetic people, each a week of chats, 236 checks. Their first run showed thin builds on two of them, so we fixed the builder: a second pass for missed facts, and a grader that rewords instead of rejecting. Now Déjà Vu gets 80 percent against 69.5, and 81 against 49 on changes outside chat, best or tied for 13 of 14 people. Since that fix came after reading two of their builds, we don't call them fully held out.</aside>
+</section>
+<section id="meta" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:32px">
+<div style="position:absolute;right:0;bottom:0;width:1000px;height:600px;background:radial-gradient(ellipse at 85% 95%, #06345c 0%, rgba(6,12,20,0) 70%);opacity:0.8"></div>
+<div style="position:absolute;left:0;top:0;width:1760px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— Built on Meta · each model, and why</p>
+<div style="display:flex;flex-wrap:wrap;gap:0 24px;align-items:baseline">
+<h2 style="font-size:76px;font-weight:800;letter-spacing:-3px;line-height:1.05">One job per model.</h2>
+<h2 style="font-size:76px;font-weight:800;letter-spacing:-3px;line-height:1.05;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Picked for that job.</h2>
+</div>
+<div style="display:flex;gap:20px;flex:1;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:32px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
+<div style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:#0A2440;border:1px solid #0064E0;border-radius:18px"><x-icon name="Star" style="width:36px;height:36px;color:#8FD3FF"></x-icon></div>
+<h3 style="font-size:32px;font-weight:700">Muse Spark 1.3</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#8FD3FF">answers · drafts · picks cards</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3"><span style="color:#F2F3F7">Why:</span> agent-ready tool calls for drafts, fast on low reasoning</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:32px">
+<div style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:18px"><x-icon name="CheckCircle" style="width:36px;height:36px;color:#5CC8FF"></x-icon></div>
+<h3 style="font-size:32px;font-weight:700">Muse Wonder</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">checks every new card</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3"><span style="color:#F2F3F7">Why:</span> a different, stronger model approves; cards are tiny, so under a cent a batch</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:32px">
+<div style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:18px"><x-icon name="Chat" style="width:36px;height:36px;color:#5CC8FF"></x-icon></div>
+<h3 style="font-size:32px;font-weight:700">Voice Transcribe</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">answer a check by voice</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3"><span style="color:#F2F3F7">Why:</span> “nope, Wednesdays now” hands-free, glasses-ready</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px dashed #2B4560;border-radius:28px;padding:32px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="width:72px;height:72px;display:flex;align-items:center;justify-content:center;background:#0F1C2A;border:1px solid #22344A;border-radius:18px"><x-icon name="Lightning" style="width:36px;height:36px;color:#FF9A62"></x-icon></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62;background:#2A1A14;border-radius:14px;padding:6px 14px">NEXT</p>
+</div>
+<h3 style="font-size:32px;font-weight:700">Spark Open · Glimmer</h3>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">background + private cards</p>
+<p style="font-size:26px;color:#A3A9BD;line-height:1.3"><span style="color:#F2F3F7">Why:</span> memory work on open weights you run yourself</p>
+</div>
+</div>
+<div style="display:flex;gap:20px">
+<div style="flex:1;display:flex;align-items:center;gap:16px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:20px 26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">NEXT</p>
+<p style="font-size:26px;font-weight:600">SAM 3.1 + vision: a photo of a ticket or receipt becomes cards</p>
+</div>
+<div style="flex:1;display:flex;align-items:center;gap:16px;background:#09121C;border:1px solid #182634;border-radius:20px;padding:20px 26px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#FF9A62">NEXT</p>
+<p style="font-size:26px;font-weight:600">Muse Wonder also judges the eval, independent of the answers</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">13 / 15</p>
+<aside>Every Meta model here has one job, picked for that job. Muse Spark 1.3 writes the answers, picks the cards each request needs, and makes the drafts, because it’s agent-ready: tool calls come back as structured drafts, and it’s fast at low reasoning. Muse Wonder is the grader: a different, stronger model checks every card Muse Spark writes, so the model that writes a card never approves it. Cards are fourteen words at most, so a batch costs under a cent. Muse Voice Transcribe lets you answer a check by voice, hands-free, ready for glasses. Next: the background memory work and the locked sensitive cards move to Meta’s open weights, Muse Spark Open or Glimmer, so the most personal processing runs on weights you control. After that, SAM 3.1 and vision turn a photo of a ticket or receipt into cards, and Muse Wonder also becomes the independent judge for our eval.</aside>
+</section>
+<section id="light" data-transition="fade" style="background:radial-gradient(ellipse at 50% 40%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:48px">
+<div style="position:absolute;left:0;top:0;width:1840px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— The design rule behind all of it</p>
+<div style="display:flex;flex-direction:column">
+<h1 style="font-size:120px;font-weight:800;letter-spacing:-5px;line-height:1.02">Don’t change what works.</h1>
+<h1 style="font-size:120px;font-weight:800;letter-spacing:-5px;line-height:1.06;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Memory rides along.</h1>
+</div>
+<div style="display:flex;gap:28px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">lightweight</p>
+<h3 style="font-size:38px;font-weight:700">The chat stays the chat</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">One line above an answer, a ⓘ under it, a section in the menu</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">never blocks</p>
+<h3 style="font-size:38px;font-weight:700">Answer first, always</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Checks ride along, learning runs after, redo only when you ask</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:40px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5CC8FF">optional</p>
+<h3 style="font-size:38px;font-weight:700">Off is one switch</h3>
+<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Any agent can plug it in; anyone can turn it off</p>
+</div>
+</div>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">14 / 15</p>
+<aside>All of this comes back to one design rule: don’t change what works. People already like chatting with their agent, so memory rides along instead of taking over. It’s lightweight: the chat stays the chat, with one line above an answer, an info button under it, and a section in the menu. It never blocks: the answer always comes first, checks ride along, learning happens after, and a redo only happens when you ask. And it’s optional: any agent can plug it in over three calls, and anyone can turn it off with one switch.</aside>
+</section>
+<section id="closer" data-transition="fade" style="background:radial-gradient(ellipse at 72% 42%, #0a3f7a 0%, #060c14 64%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 176px;display:flex;flex-direction:column;justify-content:center;gap:44px">
+<x-icon name="CheckCircle" style="position:absolute;left:1120px;top:150px;width:720px;height:720px;color:#0082FB;opacity:0.12"></x-icon>
+<div style="position:absolute;left:0;top:0;width:1920px;height:6px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— The takeaway</p>
+<p style="font-size:46px;color:#8FA3B8;width:1500px;line-height:1.3">Agents are really good at inferring context from chats.</p>
+<div style="display:flex;flex-direction:column;width:1664px">
+<h1 style="font-size:98px;font-weight:700;letter-spacing:-3px;line-height:1.02">But confirmed memory</h1>
+<h1 style="font-size:98px;font-weight:700;letter-spacing:-3px;line-height:1.06;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">is always better</h1>
+<h1 style="font-size:98px;font-weight:700;letter-spacing:-3px;line-height:1.06">than <span style="color:#3E5873">inferred</span> memory.</h1>
+</div>
+<div style="position:absolute;left:128px;bottom:72px;width:1664px;height:64px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1C2B3A">
+<div style="display:flex;align-items:baseline;gap:24px">
+<p style="font-size:40px;font-weight:800;letter-spacing:-1px">Déjà Vu</p>
+</div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#6B8099">github.com/vamshikanderao2579-dbt/deja-vu · live link in the README</p>
+</div>
+<aside>So to close. Agents are really good at inferring context from chats, and they should keep doing that. But confirmed memory is always better than inferred memory. Give people the key to their own context, ask once at the right moment, and you get an agent people trust, that stays accurate for years, and that’s affordable enough to be free for everyone. I’m [your name], this is Déjà Vu. Thank you.</aside>
+</section>
+</div>
+<div id="notes"></div><div id="count"></div>
+<script>
+const S=[...document.querySelectorAll('#stage>section')],stage=document.getElementById('stage');
+let i=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`}
+function show(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classList.toggle('on',j===i));
+  document.getElementById('notes').textContent=S[i].querySelector('aside')?.textContent||'(no notes)';
+  document.getElementById('count').textContent=`${i+1} / ${S.length} · N notes · F full screen · P print`;history.replaceState(null,'','#'+(i+1))}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);else if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);
+  else if(e.key==='n'||e.key==='N')document.body.classList.toggle('notes');else if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();
+  else if(e.key==='p'||e.key==='P')print();else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1)});
+addEventListener('click',e=>{if(!e.target.closest('#notes'))show(e.clientX<innerWidth/3?i-1:i+1)});
+addEventListener('resize',fit);fit();show(i);
+</script></body></html>

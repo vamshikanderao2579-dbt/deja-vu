@@ -1,5 +1,7 @@
 # .agents: start here in a new chat
 
+**Latest state: [`docs/handoff.md`](../docs/handoff.md)** (Nov 2: setup on a new laptop, current numbers, open items). Read it first.
+
 This folder carries the full context of the project so any coding agent (or a fresh chat) can continue without the old conversation.
 Open a new chat in `~/Desktop/personal-context-hackathon/deja-vu` and say:
 
