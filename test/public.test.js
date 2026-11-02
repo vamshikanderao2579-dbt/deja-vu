@@ -1,6 +1,7 @@
 // The public link: every visitor (cookie) has their own memory. Starts the real server
 // with PUBLIC_DEMO=true in mock mode (no API key, no cost).
 import { test, before, after } from 'node:test';
+import { readFileSync } from 'node:fs';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { rmSync, existsSync, readdirSync } from 'node:fs';
@@ -51,7 +52,10 @@ test('public: a new visitor chooses first; only demo personas are listed', async
   const v = visitor();
   const s = await v.get('/api/state');
   assert.equal(s.needsChoice, true);
-  assert.deepEqual(s.profiles.map((p) => p.id), ['alex', 'maria']);
+  // Exactly the synthetic people in data/profiles.json, in order; never a real one.
+  const synthetic = JSON.parse(readFileSync(new URL('../data/profiles.json', import.meta.url), 'utf8')).map((p) => p.id);
+  assert.deepEqual(s.profiles.map((p) => p.id), synthetic);
+  assert.ok(s.profiles.every((p) => p.demo && !p.real));
   assert.equal((await v.get('/api/chats')).status, 409, 'nothing else until they choose');
 });
 

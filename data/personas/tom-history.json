@@ -1,0 +1,626 @@
+{
+  "user": {
+    "name": "Tom"
+  },
+  "conversations": [
+    {
+      "id": "tc01",
+      "date": "2026-10-20",
+      "time": "07:40",
+      "title": "haul to indy",
+      "messages": [
+        {
+          "id": "t001",
+          "role": "user",
+          "text": "hey need a direct route to indianapolis today, no tolls if u can"
+        },
+        {
+          "id": "t002",
+          "role": "assistant",
+          "text": "ok, i'll find one for you."
+        },
+        {
+          "id": "t003",
+          "role": "user",
+          "text": "also gonna need a new audiobook for the drive, something long like 10+ hours"
+        },
+        {
+          "id": "t004",
+          "role": "assistant",
+          "text": "sure, any genre you want?"
+        },
+        {
+          "id": "t005",
+          "role": "user",
+          "text": "and remind me to fill my big red thermos with black coffee before i leave, no sugar"
+        },
+        {
+          "id": "t006",
+          "role": "assistant",
+          "text": "got it, added to your list."
+        }
+      ]
+    },
+    {
+      "id": "tc02",
+      "date": "2026-10-20",
+      "time": "19:15",
+      "title": "weekend plans",
+      "messages": [
+        {
+          "id": "t007",
+          "role": "user",
+          "text": "what time i got pickup again friday? is it still fri 6pm at their moms?"
+        },
+        {
+          "id": "t008",
+          "role": "assistant",
+          "text": "yep, that's what i have."
+        },
+        {
+          "id": "t009",
+          "role": "user",
+          "text": "cool, also set a reminder for me to call the kids sunday evenings around 7"
+        },
+        {
+          "id": "t010",
+          "role": "assistant",
+          "text": "done, i'll remind you."
+        },
+        {
+          "id": "t011",
+          "role": "user",
+          "text": "btw my back is killing me, need my 15 min stretch and walk around the rig in the mornings"
+        },
+        {
+          "id": "t012",
+          "role": "assistant",
+          "text": "hope that helps, want a routine?"
+        }
+      ]
+    },
+    {
+      "id": "tc03",
+      "date": "2026-10-21",
+      "time": "08:05",
+      "title": "home tuesday",
+      "messages": [
+        {
+          "id": "t013",
+          "role": "user",
+          "text": "im home tuesday so put me down for homework help after dinner"
+        },
+        {
+          "id": "t014",
+          "role": "assistant",
+          "text": "ok, noted for tuesday."
+        },
+        {
+          "id": "t015",
+          "role": "user",
+          "text": "ethan wants pepperoni pizza friday night so add that to grocery list"
+        },
+        {
+          "id": "t016",
+          "role": "assistant",
+          "text": "added, anything else?"
+        },
+        {
+          "id": "t017",
+          "role": "user",
+          "text": "ran out of beans, need more for my big red thermos, i only drink it black"
+        },
+        {
+          "id": "t018",
+          "role": "assistant",
+          "text": "got it, on the list."
+        }
+      ]
+    },
+    {
+      "id": "tc04",
+      "date": "2026-10-22",
+      "time": "22:30",
+      "title": "night drive",
+      "messages": [
+        {
+          "id": "t019",
+          "role": "user",
+          "text": "on 70 now, bored af, got another audiobook suggestion? mystery or something"
+        },
+        {
+          "id": "t020",
+          "role": "assistant",
+          "text": "how about a long mystery series?"
+        },
+        {
+          "id": "t021",
+          "role": "user",
+          "text": "trying to do no late-night snacks while driving until nov 28, doc said to cut it out"
+        },
+        {
+          "id": "t022",
+          "role": "assistant",
+          "text": "good luck, you got this."
+        },
+        {
+          "id": "t023",
+          "role": "user",
+          "text": "gonna pull over soon to do my morning stretch and walk thing, my legs are stiff"
+        },
+        {
+          "id": "t024",
+          "role": "assistant",
+          "text": "stay safe out there."
+        }
+      ]
+    },
+    {
+      "id": "tc05",
+      "date": "2026-10-23",
+      "time": "09:12",
+      "title": "route south",
+      "messages": [
+        {
+          "id": "t025",
+          "role": "user",
+          "text": "need directions to louisville, direct routes only please, i avoid tolls"
+        },
+        {
+          "id": "t026",
+          "role": "assistant",
+          "text": "looking that up now."
+        },
+        {
+          "id": "t027",
+          "role": "user",
+          "text": "also can u remind me sunday evenings to call the kids, i always forget when im on the road"
+        },
+        {
+          "id": "t028",
+          "role": "assistant",
+          "text": "yes, i'll remind you."
+        },
+        {
+          "id": "t029",
+          "role": "user",
+          "text": "pickup is fri 6pm right? need to tell dispatch ill be off early"
+        },
+        {
+          "id": "t030",
+          "role": "assistant",
+          "text": "yep, i'll note that."
+        }
+      ]
+    },
+    {
+      "id": "tc06",
+      "date": "2026-10-24",
+      "time": "14:00",
+      "title": "saturday errands",
+      "messages": [
+        {
+          "id": "t031",
+          "role": "user",
+          "text": "tuesday im home so i can help maya with math, put it on calendar"
+        },
+        {
+          "id": "t032",
+          "role": "assistant",
+          "text": "added to tuesday."
+        },
+        {
+          "id": "t033",
+          "role": "user",
+          "text": "went to that car show in dublin last weekend btw, just a one-time thing with my buddy, was pretty cool"
+        },
+        {
+          "id": "t034",
+          "role": "assistant",
+          "text": "nice, glad you had fun."
+        },
+        {
+          "id": "t035",
+          "role": "user",
+          "text": "ethan keeps asking for pepperoni pizza so i guess thats friday dinner again lol"
+        },
+        {
+          "id": "t036",
+          "role": "assistant",
+          "text": "haha, noted."
+        }
+      ]
+    },
+    {
+      "id": "tc07",
+      "date": "2026-10-26",
+      "time": "10:20",
+      "title": "bills",
+      "messages": [
+        {
+          "id": "t037",
+          "role": "user",
+          "text": "ugh need to set autopay, child support $850 comes out on the 1st"
+        },
+        {
+          "id": "t038",
+          "role": "assistant",
+          "text": "want help setting a reminder?"
+        },
+        {
+          "id": "t039",
+          "role": "user",
+          "text": "tires feel weird, where's a good shop near columbus?"
+        },
+        {
+          "id": "t040",
+          "role": "assistant",
+          "text": "i can look up nearby shops."
+        },
+        {
+          "id": "t041",
+          "role": "user",
+          "text": "also my eld is acting up again smh"
+        },
+        {
+          "id": "t042",
+          "role": "assistant",
+          "text": "annoying, want troubleshooting steps?"
+        }
+      ]
+    },
+    {
+      "id": "tc08",
+      "date": "2026-10-27",
+      "time": "08:45",
+      "title": "schedule change",
+      "messages": [
+        {
+          "id": "t043",
+          "role": "user",
+          "text": "hey dispatch changed my home day to wed now, so wednesday is homework-help day"
+        },
+        {
+          "id": "t044",
+          "role": "assistant",
+          "text": "ok, updated to wednesday."
+        },
+        {
+          "id": "t045",
+          "role": "user",
+          "text": "yea school called, maya needs extra help midweek so that works better"
+        },
+        {
+          "id": "t046",
+          "role": "assistant",
+          "text": "makes sense."
+        },
+        {
+          "id": "t047",
+          "role": "user",
+          "text": "so don't do the old one anymore, no tuesday homework help, move it all to wed"
+        },
+        {
+          "id": "t048",
+          "role": "assistant",
+          "text": "got it, tuesday cleared."
+        }
+      ]
+    },
+    {
+      "id": "tc09",
+      "date": "2026-10-28",
+      "time": "07:30",
+      "title": "wed homework",
+      "messages": [
+        {
+          "id": "t049",
+          "role": "user",
+          "text": "im home wed today, remind me homework help after dinner"
+        },
+        {
+          "id": "t050",
+          "role": "assistant",
+          "text": "will do, have fun."
+        },
+        {
+          "id": "t051",
+          "role": "user",
+          "text": "need ideas for maya science project, something easy"
+        },
+        {
+          "id": "t052",
+          "role": "assistant",
+          "text": "how about a volcano model?"
+        },
+        {
+          "id": "t053",
+          "role": "user",
+          "text": "lol she'll hate that, she wants something with stars"
+        },
+        {
+          "id": "t054",
+          "role": "assistant",
+          "text": "a constellation box could work."
+        }
+      ]
+    },
+    {
+      "id": "tc10",
+      "date": "2026-10-29",
+      "time": "23:10",
+      "title": "late haul",
+      "messages": [
+        {
+          "id": "t055",
+          "role": "user",
+          "text": "stuck outside dayton, starving but im doing no late-night snacks while driving until nov 28"
+        },
+        {
+          "id": "t056",
+          "role": "assistant",
+          "text": "stay strong, almost there."
+        },
+        {
+          "id": "t057",
+          "role": "user",
+          "text": "just chewing gum instead, this is rough"
+        },
+        {
+          "id": "t058",
+          "role": "assistant",
+          "text": "gum is a good trick."
+        },
+        {
+          "id": "t059",
+          "role": "user",
+          "text": "how far is the next rest area with parking?"
+        },
+        {
+          "id": "t060",
+          "role": "assistant",
+          "text": "checking parking ahead for you."
+        }
+      ]
+    },
+    {
+      "id": "tc11",
+      "date": "2026-10-29",
+      "time": "18:00",
+      "title": "truck stuff",
+      "messages": [
+        {
+          "id": "t061",
+          "role": "user",
+          "text": "oil change due, any cheap place on west side?"
+        },
+        {
+          "id": "t062",
+          "role": "assistant",
+          "text": "i'll find a few options."
+        },
+        {
+          "id": "t063",
+          "role": "user",
+          "text": "also wipers are shot, rain is crazy"
+        },
+        {
+          "id": "t064",
+          "role": "assistant",
+          "text": "definitely get those replaced."
+        },
+        {
+          "id": "t065",
+          "role": "user",
+          "text": "saw a deer almost hit me lol"
+        },
+        {
+          "id": "t066",
+          "role": "assistant",
+          "text": "yikes, glad you're ok."
+        }
+      ]
+    },
+    {
+      "id": "tc12",
+      "date": "2026-10-30",
+      "time": "09:00",
+      "title": "friday prep",
+      "messages": [
+        {
+          "id": "t067",
+          "role": "user",
+          "text": "need to clean the cab before the weekend, its a mess"
+        },
+        {
+          "id": "t068",
+          "role": "assistant",
+          "text": "good plan."
+        },
+        {
+          "id": "t069",
+          "role": "user",
+          "text": "maya lost her jacket again, gotta buy a new one"
+        },
+        {
+          "id": "t070",
+          "role": "assistant",
+          "text": "want nearby store suggestions?"
+        },
+        {
+          "id": "t071",
+          "role": "user",
+          "text": "yea size medium kids, nothing fancy"
+        },
+        {
+          "id": "t072",
+          "role": "assistant",
+          "text": "ok, i'll look."
+        }
+      ]
+    },
+    {
+      "id": "tc13",
+      "date": "2026-10-30",
+      "time": "20:05",
+      "title": "bored at stop",
+      "messages": [
+        {
+          "id": "t073",
+          "role": "user",
+          "text": "what's the score in the ohio state game?"
+        },
+        {
+          "id": "t074",
+          "role": "assistant",
+          "text": "i don't have live scores."
+        },
+        {
+          "id": "t075",
+          "role": "user",
+          "text": "damn data is slow out here"
+        },
+        {
+          "id": "t076",
+          "role": "assistant",
+          "text": "yeah coverage can be spotty."
+        },
+        {
+          "id": "t077",
+          "role": "user",
+          "text": "any good diners open near lima?"
+        },
+        {
+          "id": "t078",
+          "role": "assistant",
+          "text": "i'll check what's open."
+        },
+        {
+          "id": "t079",
+          "role": "user",
+          "text": "nvm found a mcdonalds, good enough"
+        },
+        {
+          "id": "t080",
+          "role": "assistant",
+          "text": "works in a pinch."
+        }
+      ]
+    },
+    {
+      "id": "tc14",
+      "date": "2026-10-31",
+      "time": "12:30",
+      "title": "halloween",
+      "messages": [
+        {
+          "id": "t081",
+          "role": "user",
+          "text": "maya wants to be an astronaut for halloween, where can i get a helmet quick"
+        },
+        {
+          "id": "t082",
+          "role": "assistant",
+          "text": "try a party store nearby."
+        },
+        {
+          "id": "t083",
+          "role": "user",
+          "text": "ethan says hes too old for costumes smh hes 13"
+        },
+        {
+          "id": "t084",
+          "role": "assistant",
+          "text": "classic teen move."
+        },
+        {
+          "id": "t085",
+          "role": "user",
+          "text": "lol fr, gonna grab candy on the way home"
+        },
+        {
+          "id": "t086",
+          "role": "assistant",
+          "text": "have a fun night."
+        }
+      ]
+    },
+    {
+      "id": "tc15",
+      "date": "2026-11-01",
+      "time": "08:15",
+      "title": "next week plan",
+      "messages": [
+        {
+          "id": "t087",
+          "role": "user",
+          "text": "confirm im home wed for homework help right? not tuesday"
+        },
+        {
+          "id": "t088",
+          "role": "assistant",
+          "text": "correct, wednesday only."
+        },
+        {
+          "id": "t089",
+          "role": "user",
+          "text": "perfect, need to get milk and bread before then"
+        },
+        {
+          "id": "t090",
+          "role": "assistant",
+          "text": "added to your list."
+        },
+        {
+          "id": "t091",
+          "role": "user",
+          "text": "weather looking bad for cleveland run?"
+        },
+        {
+          "id": "t092",
+          "role": "assistant",
+          "text": "looks a bit rainy."
+        }
+      ]
+    },
+    {
+      "id": "tc16",
+      "date": "2026-11-01",
+      "time": "19:40",
+      "title": "sunday night",
+      "messages": [
+        {
+          "id": "t093",
+          "role": "user",
+          "text": "long day, parked for the night in toledo"
+        },
+        {
+          "id": "t094",
+          "role": "assistant",
+          "text": "get some rest."
+        },
+        {
+          "id": "t095",
+          "role": "user",
+          "text": "brakes squeaking a little, hope its nothing"
+        },
+        {
+          "id": "t096",
+          "role": "assistant",
+          "text": "get that checked soon."
+        },
+        {
+          "id": "t097",
+          "role": "user",
+          "text": "yea will in the morning, night"
+        },
+        {
+          "id": "t098",
+          "role": "assistant",
+          "text": "good night."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Tom, 45, Columbus. Long-haul truck driver, divorced, kids 10 and 13 on weekends."
+}

@@ -1,0 +1,251 @@
+{
+  "cards": [
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks black cold brew no sugar every morning",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "l007",
+        "l031",
+        "l069"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Brings chicken and rice meal prep for shifts",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l001",
+        "l019",
+        "l057"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Avoids fried food for fitness test",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l021",
+        "l049"
+      ],
+      "until": "2026-11-30",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Works 24-hour shifts, uses station fridge",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "l001",
+        "l057"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "preference",
+      "text": "Prefers direct flights for Denver trips",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l003",
+        "l025",
+        "l055"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "travel-2",
+      "category": "travel",
+      "type": "preference",
+      "text": "Prefers early-morning flights when traveling",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "l025",
+        "l055"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Day off is Wednesday, usually goes hiking",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l043",
+        "l045",
+        "l067",
+        "l085"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "pets-1",
+      "category": "pets",
+      "type": "preference",
+      "text": "Has dog Milo, joins runs and hikes",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l009",
+        "l011",
+        "l087",
+        "l095"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "In physical therapy twice weekly for back",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.85,
+      "sources": [
+        "l061"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "outdoors-1",
+      "category": "outdoors",
+      "type": "preference",
+      "text": "Regularly hikes trails near Denver area",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "l005",
+        "l013",
+        "l037",
+        "l067"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "outdoors-2",
+      "category": "outdoors",
+      "type": "lesson",
+      "text": "Avoids fishing at Chatfield, mosquitos were brutal",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "l039"
+      ],
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "fitness-1",
+      "category": "fitness",
+      "type": "preference",
+      "text": "Runs at 6am with Milo regularly",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l009",
+        "l041",
+        "l075"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "relationships-1",
+      "category": "relationships",
+      "type": "preference",
+      "text": "Elena loves pad Thai takeout",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "l015",
+        "l033",
+        "l073"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Brother lives in Phoenix area",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "l003"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    }
+  ]
+}

@@ -1,0 +1,550 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Sofia.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "S01",
+      "category": "stable",
+      "text": "Shops at the Saturday farmers market for veggies",
+      "sources": [
+        "s001",
+        "s031",
+        "s085"
+      ]
+    },
+    {
+      "id": "S02",
+      "category": "stable",
+      "text": "Drinks iced oat milk coffee in the morning",
+      "sources": [
+        "s003",
+        "s049",
+        "s075"
+      ]
+    },
+    {
+      "id": "S03",
+      "category": "stable",
+      "text": "Kids want pasta on Fridays as a rule",
+      "sources": [
+        "s007",
+        "s037",
+        "s087"
+      ]
+    },
+    {
+      "id": "S04",
+      "category": "stable",
+      "text": "Prefers morning appointments for doctor, dentist and school meetings",
+      "sources": [
+        "s013",
+        "s051",
+        "s095"
+      ]
+    },
+    {
+      "id": "S05",
+      "category": "stable",
+      "text": "Works as school counselor and is busy afternoons",
+      "sources": [
+        "s015",
+        "s055"
+      ]
+    },
+    {
+      "id": "S06",
+      "category": "stable",
+      "text": "Mom Rosa loves lemon desserts and lemon anything",
+      "sources": [
+        "s021",
+        "s059",
+        "s091"
+      ]
+    },
+    {
+      "id": "S07",
+      "category": "stable",
+      "text": "Does an evening walk around the block after dinner",
+      "sources": [
+        "s029",
+        "s063",
+        "s099"
+      ]
+    },
+    {
+      "id": "S08",
+      "category": "stable",
+      "text": "8-year-old hates broccoli",
+      "sources": [
+        "s039"
+      ]
+    },
+    {
+      "id": "S09",
+      "category": "stable",
+      "text": "8-year-old will only eat cereal, has Cheerios at home",
+      "sources": [
+        "s071",
+        "s073"
+      ]
+    },
+    {
+      "id": "S10",
+      "category": "stable",
+      "text": "Mom Rosa loves mystery novels",
+      "sources": [
+        "s057"
+      ]
+    },
+    {
+      "id": "S11",
+      "category": "stable",
+      "text": "Mom Rosa helps with kids, watches them for late meetings and brings crosswords",
+      "sources": [
+        "s023",
+        "s061",
+        "s093"
+      ]
+    },
+    {
+      "id": "S12",
+      "category": "stable",
+      "text": "Needs decaf after 2pm or won't sleep",
+      "sources": [
+        "s077"
+      ]
+    },
+    {
+      "id": "S13",
+      "category": "stable",
+      "text": "11-year-old eats regular family meals including Friday pasta and lemon chicken",
+      "sources": [
+        "s007",
+        "s091"
+      ]
+    },
+    {
+      "id": "S14",
+      "category": "stable",
+      "text": "Kids soccer is on Thursday evenings, Thursday dinner must be quick",
+      "sources": [
+        "s043",
+        "s045",
+        "s089"
+      ]
+    },
+    {
+      "id": "S15",
+      "category": "stable",
+      "text": "Tuesdays are free now, no need for quick Tuesday dinner",
+      "sources": [
+        "s047"
+      ]
+    },
+    {
+      "id": "S16",
+      "category": "stable",
+      "text": "Needs quick Tuesday dinner because kids have soccer Tuesday evening",
+      "sources": [
+        "s011"
+      ],
+      "superseded_by": "S14"
+    },
+    {
+      "id": "S17",
+      "category": "short",
+      "text": "On dairy-free trial until Nov 22, needs dairy-free meals",
+      "sources": [
+        "s025",
+        "s069",
+        "s083"
+      ]
+    },
+    {
+      "id": "S18",
+      "category": "sensitive",
+      "text": "Has custody paperwork in progress with kids' dad, trying to keep routines normal",
+      "sources": [
+        "s067"
+      ]
+    },
+    {
+      "id": "S19",
+      "category": "oneoff",
+      "text": "Bought concert tickets for next month with a friend as a one-time treat",
+      "sources": [
+        "s079"
+      ]
+    }
+  ],
+  "_current_truth": "What Sofia answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "S01": {
+      "action": "edit",
+      "text": "Shops at the Sunday farmers market for veggies, it moved from Saturday to Sundays"
+    },
+    "S13": {
+      "action": "edit",
+      "text": "11-year-old went vegetarian, needs vegetarian meals while family eats regular meals"
+    },
+    "S02": {
+      "action": "confirm"
+    },
+    "S03": {
+      "action": "confirm"
+    },
+    "S04": {
+      "action": "confirm"
+    },
+    "S06": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "SQ01",
+      "kind": "stable",
+      "text": "Can you book a dentist appointment for me and the kids next week?",
+      "checks": [
+        {
+          "text": "Offers morning appointments",
+          "kw": [
+            "morning",
+            "am"
+          ],
+          "want": true,
+          "fact": "S04"
+        }
+      ]
+    },
+    {
+      "id": "SQ02",
+      "kind": "stable",
+      "text": "What should I make for Friday dinner for the kids?",
+      "checks": [
+        {
+          "text": "Suggests pasta for Friday",
+          "kw": [
+            "pasta",
+            "friday"
+          ],
+          "want": true,
+          "fact": "S03"
+        }
+      ]
+    },
+    {
+      "id": "SQ03",
+      "kind": "stable",
+      "text": "I need a dessert idea for my mom Rosa coming over.",
+      "checks": [
+        {
+          "text": "Suggests lemon dessert",
+          "kw": [
+            "lemon",
+            "bars"
+          ],
+          "want": true,
+          "fact": "S06"
+        }
+      ]
+    },
+    {
+      "id": "SQ04",
+      "kind": "stable",
+      "text": "How do I make my iced oat milk coffee less watery?",
+      "checks": [
+        {
+          "text": "Uses oat milk in coffee recipe",
+          "kw": [
+            "oat milk",
+            "iced coffee"
+          ],
+          "want": true,
+          "fact": "S02"
+        }
+      ]
+    },
+    {
+      "id": "SQ05",
+      "kind": "stable",
+      "text": "Should we do our walk tonight after dinner?",
+      "checks": [
+        {
+          "text": "Mentions walk around the block after dinner",
+          "kw": [
+            "walk",
+            "block"
+          ],
+          "want": true,
+          "fact": "S07"
+        }
+      ]
+    },
+    {
+      "id": "SQ06",
+      "kind": "stable",
+      "text": "Need a birthday gift idea for my mom Rosa.",
+      "checks": [
+        {
+          "text": "Recommends mystery novels",
+          "kw": [
+            "mystery",
+            "novel"
+          ],
+          "want": true,
+          "fact": "S10"
+        }
+      ]
+    },
+    {
+      "id": "SQ07",
+      "kind": "stable",
+      "text": "What coffee can I have at 4pm without ruining sleep?",
+      "checks": [
+        {
+          "text": "Recommends decaf",
+          "kw": [
+            "decaf"
+          ],
+          "want": true,
+          "fact": "S12"
+        }
+      ]
+    },
+    {
+      "id": "SQ08",
+      "kind": "stable",
+      "text": "What breakfast can I give my 8-year-old?",
+      "checks": [
+        {
+          "text": "Offers cereal or Cheerios",
+          "kw": [
+            "cereal",
+            "cheerios"
+          ],
+          "want": true,
+          "fact": "S09"
+        }
+      ]
+    },
+    {
+      "id": "SQ09",
+      "kind": "outside",
+      "text": "What should I get at the farmers market this weekend?",
+      "checks": [
+        {
+          "text": "Plans market trip for Sunday",
+          "kw": [
+            "sunday",
+            "market"
+          ],
+          "want": true,
+          "fact": "S01"
+        },
+        {
+          "text": "Plans market trip for Saturday",
+          "kw": [
+            "saturday",
+            "market"
+          ],
+          "want": false,
+          "fact": "S01"
+        }
+      ]
+    },
+    {
+      "id": "SQ10",
+      "kind": "outside",
+      "text": "Need a Friday pasta idea everyone can eat.",
+      "checks": [
+        {
+          "text": "Includes vegetarian option for 11-year-old",
+          "kw": [
+            "vegetarian",
+            "meatless"
+          ],
+          "want": true,
+          "fact": "S13"
+        }
+      ]
+    },
+    {
+      "id": "SQ11",
+      "kind": "outside",
+      "text": "Can you plan dinners this week for me and the kids?",
+      "checks": [
+        {
+          "text": "Provides vegetarian meal for 11-year-old",
+          "kw": [
+            "vegetarian",
+            "veggie"
+          ],
+          "want": true,
+          "fact": "S13"
+        }
+      ]
+    },
+    {
+      "id": "SQ12",
+      "kind": "outside",
+      "text": "When should I go to the farmers market for veggies?",
+      "checks": [
+        {
+          "text": "Says market is on Sunday",
+          "kw": [
+            "sunday"
+          ],
+          "want": true,
+          "fact": "S01"
+        },
+        {
+          "text": "Says market is on Saturday",
+          "kw": [
+            "saturday"
+          ],
+          "want": false,
+          "fact": "S01"
+        }
+      ]
+    },
+    {
+      "id": "SQ13",
+      "kind": "inchat",
+      "text": "I need a quick dinner idea for Thursday before soccer.",
+      "checks": [
+        {
+          "text": "Provides quick Thursday dinner for soccer",
+          "kw": [
+            "quick",
+            "thursday"
+          ],
+          "want": true,
+          "fact": "S14"
+        }
+      ]
+    },
+    {
+      "id": "SQ14",
+      "kind": "inchat",
+      "text": "Can you plan a slow elaborate dinner for Tuesday night?",
+      "checks": [
+        {
+          "text": "Treats Tuesday as free for slow cooking",
+          "kw": [
+            "tuesday",
+            "free"
+          ],
+          "want": true,
+          "fact": "S15"
+        },
+        {
+          "text": "Plans quick Tuesday dinner for soccer",
+          "kw": [
+            "quick",
+            "tuesday"
+          ],
+          "want": false,
+          "fact": "S16"
+        }
+      ]
+    },
+    {
+      "id": "SQ15",
+      "kind": "short",
+      "text": "What should I make for breakfast tomorrow?",
+      "checks": [
+        {
+          "text": "Suggests dairy-free breakfast",
+          "kw": [
+            "dairy-free",
+            "oat milk"
+          ],
+          "want": true,
+          "fact": "S17"
+        }
+      ]
+    },
+    {
+      "id": "SQ16",
+      "kind": "short",
+      "text": "Need dinner ideas for this week.",
+      "checks": [
+        {
+          "text": "Keeps dinners dairy-free",
+          "kw": [
+            "dairy-free",
+            "no cheese"
+          ],
+          "want": true,
+          "fact": "S17"
+        }
+      ]
+    },
+    {
+      "id": "SQ17",
+      "kind": "sensitive",
+      "text": "How should I handle bedtime and evening routines with the kids right now?",
+      "checks": [
+        {
+          "text": "Emphasizes keeping routines normal and stable",
+          "kw": [
+            "routine",
+            "stable",
+            "normal"
+          ],
+          "want": true,
+          "fact": "S18"
+        }
+      ]
+    },
+    {
+      "id": "SQ18",
+      "kind": "sensitive",
+      "text": "Can you help me plan the week to keep things calm for the kids?",
+      "checks": [
+        {
+          "text": "Acknowledges custody stress and keeps routines consistent",
+          "kw": [
+            "custody",
+            "routine"
+          ],
+          "want": true,
+          "fact": "S18"
+        }
+      ]
+    },
+    {
+      "id": "SQ19",
+      "kind": "oneoff",
+      "text": "Should I buy season concert tickets every month?",
+      "checks": [
+        {
+          "text": "Treats concert as monthly habit",
+          "kw": [
+            "monthly",
+            "season tickets"
+          ],
+          "want": false,
+          "fact": "S19"
+        }
+      ]
+    },
+    {
+      "id": "SQ20",
+      "kind": "oneoff",
+      "text": "I loved the concert, should I go out with friends every weekend now?",
+      "checks": [
+        {
+          "text": "Treats one-time concert as regular nightlife habit",
+          "kw": [
+            "every weekend",
+            "regular"
+          ],
+          "want": false,
+          "fact": "S19"
+        }
+      ]
+    }
+  ]
+}

@@ -272,7 +272,8 @@ export async function answer(message, mode, relevantCards, { summary, recent = [
     ...recent.slice(-6).map((m) => ({ role: m.role, content: m.text })),
     { role: 'user', content: message },
   ];
-  const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: effort, tools: actions ? ACTION_TOOLS : null, model });
+  // More thinking needs more room, or the reply comes back empty.
+  const res = await complete('main', messages, { maxTokens: effort === 'low' ? 2000 : 6000, temperature: 0.4, reasoning: effort, tools: actions ? ACTION_TOOLS : null, model });
   const draft = toDraft(res.toolCalls?.[0]);
   // A tool call can come with no text; give the draft a short lead-in.
   const text = res.text.trim() || (draft ? `Here's a draft${draft.title ? ` for ${draft.title}` : ''}, based on what I know. Want me to change anything?` : '');

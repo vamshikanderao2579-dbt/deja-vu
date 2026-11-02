@@ -1,0 +1,604 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Ethan.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "E01",
+      "category": "stable",
+      "text": "Works part-time as a barista at a cafe",
+      "sources": [
+        "e005",
+        "e033",
+        "e053",
+        "e093"
+      ]
+    },
+    {
+      "id": "E02",
+      "category": "stable",
+      "text": "College senior living in Nashville",
+      "sources": [
+        "e021",
+        "e073"
+      ]
+    },
+    {
+      "id": "E03",
+      "category": "stable",
+      "text": "Lives in a shared house with roommates",
+      "sources": [
+        "e017",
+        "e095",
+        "e097"
+      ]
+    },
+    {
+      "id": "E04",
+      "category": "stable",
+      "text": "Roommate Maya likes matcha lattes not too sweet, now makes them at home",
+      "sources": [
+        "e013",
+        "e015",
+        "e059",
+        "e081"
+      ]
+    },
+    {
+      "id": "E05",
+      "category": "stable",
+      "text": "Likes cold brew coffee",
+      "sources": [
+        "e001",
+        "e019",
+        "e057"
+      ]
+    },
+    {
+      "id": "E06",
+      "category": "stable",
+      "text": "Studies to lo-fi playlists",
+      "sources": [
+        "e003",
+        "e025",
+        "e065"
+      ]
+    },
+    {
+      "id": "E07",
+      "category": "stable",
+      "text": "Bikes everywhere, including to the store",
+      "sources": [
+        "e009",
+        "e031",
+        "e071"
+      ]
+    },
+    {
+      "id": "E08",
+      "category": "stable",
+      "text": "Likes spicy instant ramen around midnight",
+      "sources": [
+        "e011",
+        "e037",
+        "e075"
+      ]
+    },
+    {
+      "id": "E09",
+      "category": "stable",
+      "text": "Prefers cheap eats near campus under 10 dollars",
+      "sources": [
+        "e007",
+        "e021",
+        "e023",
+        "e063"
+      ]
+    },
+    {
+      "id": "E10",
+      "category": "stable",
+      "text": "Has Sunday movie night with roommates",
+      "sources": [
+        "e017",
+        "e067",
+        "e083"
+      ]
+    },
+    {
+      "id": "E11",
+      "category": "stable",
+      "text": "Worked night shifts at the cafe and studied late",
+      "sources": [
+        "e005",
+        "e033"
+      ],
+      "superseded_by": "E12"
+    },
+    {
+      "id": "E12",
+      "category": "stable",
+      "text": "Works morning opening shifts at the cafe, mornings are busy",
+      "sources": [
+        "e049",
+        "e051",
+        "e087",
+        "e089"
+      ]
+    },
+    {
+      "id": "E13",
+      "category": "short-term",
+      "text": "Trying no takeout spending until semester ends Dec 10, cooks grocery meals",
+      "sources": [
+        "e027",
+        "e029",
+        "e077",
+        "e079"
+      ]
+    },
+    {
+      "id": "E14",
+      "category": "sensitive",
+      "text": "Worried about student loan debt after graduation and budgeting for it",
+      "sources": [
+        "e043",
+        "e045",
+        "e047"
+      ]
+    },
+    {
+      "id": "E15",
+      "category": "one-off",
+      "text": "Went to a muddy music festival last summer with cousins",
+      "sources": [
+        "e039"
+      ]
+    },
+    {
+      "id": "E16",
+      "category": "one-off",
+      "text": "Room was a mess and needed cleaning",
+      "sources": [
+        "e041"
+      ]
+    },
+    {
+      "id": "E17",
+      "category": "one-off",
+      "text": "House shared candy duty on Halloween night",
+      "sources": [
+        "e085"
+      ]
+    },
+    {
+      "id": "E18",
+      "category": "one-off",
+      "text": "Wanted horror snacks for Halloween week movie night",
+      "sources": [
+        "e069"
+      ]
+    },
+    {
+      "id": "E19",
+      "category": "stable",
+      "text": "Needs quick breakfast before morning shift and evening tea to sleep early",
+      "sources": [
+        "e089",
+        "e091",
+        "e099"
+      ]
+    },
+    {
+      "id": "E20",
+      "category": "stable",
+      "text": "Wants alarm routine and ways to stay awake without more caffeine",
+      "sources": [
+        "e035",
+        "e055"
+      ]
+    },
+    {
+      "id": "E21",
+      "category": "stable",
+      "text": "Asks for cheap store-brand matcha powder",
+      "sources": [
+        "e061"
+      ]
+    }
+  ],
+  "_current_truth": "What Ethan answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "E07": {
+      "action": "edit",
+      "text": "Sold his bike, now uses an e-scooter everywhere including to the store"
+    },
+    "E01": {
+      "action": "edit",
+      "text": "Works part-time as a barista on morning shifts and has a remote internship weekdays 9-5"
+    },
+    "E06": {
+      "action": "confirm"
+    },
+    "E08": {
+      "action": "confirm"
+    },
+    "E10": {
+      "action": "confirm"
+    },
+    "E04": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "EQ01",
+      "kind": "stable",
+      "text": "Suggest a cheap dinner near campus for tonight",
+      "checks": [
+        {
+          "text": "Recommends cheap eats under 10 dollars",
+          "kw": [
+            "cheap",
+            "under 10",
+            "budget"
+          ],
+          "want": true,
+          "fact": "E09"
+        }
+      ]
+    },
+    {
+      "id": "EQ02",
+      "kind": "stable",
+      "text": "Put on something to help me focus while I study",
+      "checks": [
+        {
+          "text": "Plays lo-fi to study to",
+          "kw": [
+            "lo-fi",
+            "playlist",
+            "study"
+          ],
+          "want": true,
+          "fact": "E06"
+        }
+      ]
+    },
+    {
+      "id": "EQ03",
+      "kind": "stable",
+      "text": "What midnight snack should I stock up on?",
+      "checks": [
+        {
+          "text": "Suggests spicy instant ramen",
+          "kw": [
+            "spicy",
+            "ramen",
+            "midnight"
+          ],
+          "want": true,
+          "fact": "E08"
+        }
+      ]
+    },
+    {
+      "id": "EQ04",
+      "kind": "stable",
+      "text": "How should I make cold brew for tonight?",
+      "checks": [
+        {
+          "text": "Gives cold brew ratio",
+          "kw": [
+            "cold brew",
+            "ratio",
+            "coffee"
+          ],
+          "want": true,
+          "fact": "E05"
+        }
+      ]
+    },
+    {
+      "id": "EQ05",
+      "kind": "stable",
+      "text": "Plan snacks for our Sunday movie night",
+      "checks": [
+        {
+          "text": "Plans Sunday movie night snacks with roommates",
+          "kw": [
+            "sunday",
+            "movie night",
+            "snacks"
+          ],
+          "want": true,
+          "fact": "E10"
+        }
+      ]
+    },
+    {
+      "id": "EQ06",
+      "kind": "stable",
+      "text": "How does Maya like her matcha latte?",
+      "checks": [
+        {
+          "text": "Makes matcha not too sweet for Maya",
+          "kw": [
+            "maya",
+            "matcha",
+            "not too sweet"
+          ],
+          "want": true,
+          "fact": "E04"
+        }
+      ]
+    },
+    {
+      "id": "EQ07",
+      "kind": "stable",
+      "text": "What can I eat quickly before my shift?",
+      "checks": [
+        {
+          "text": "Suggests quick breakfast before shift",
+          "kw": [
+            "quick",
+            "breakfast",
+            "shift"
+          ],
+          "want": true,
+          "fact": "E19"
+        }
+      ]
+    },
+    {
+      "id": "EQ08",
+      "kind": "stable",
+      "text": "Where can I find cheap matcha powder?",
+      "checks": [
+        {
+          "text": "Recommends cheap store-brand matcha",
+          "kw": [
+            "cheap",
+            "store brand",
+            "matcha"
+          ],
+          "want": true,
+          "fact": "E21"
+        }
+      ]
+    },
+    {
+      "id": "EQ09",
+      "kind": "outside",
+      "text": "Can you come help me fix my bike on Saturday?",
+      "checks": [
+        {
+          "text": "Notes he sold his bike and uses e-scooter",
+          "kw": [
+            "sold",
+            "bike",
+            "e-scooter"
+          ],
+          "want": true,
+          "fact": "E07"
+        },
+        {
+          "text": "Plans a bike repair as if he still bikes",
+          "kw": [
+            "bike repair",
+            "fix your bike",
+            "bike chain"
+          ],
+          "want": false,
+          "fact": "E07"
+        }
+      ]
+    },
+    {
+      "id": "EQ10",
+      "kind": "outside",
+      "text": "Plan a 15 minute ride route to the store for me",
+      "checks": [
+        {
+          "text": "Plans route for e-scooter instead of bike",
+          "kw": [
+            "e-scooter",
+            "scooter",
+            "ride"
+          ],
+          "want": true,
+          "fact": "E07"
+        }
+      ]
+    },
+    {
+      "id": "EQ11",
+      "kind": "outside",
+      "text": "Are you free for lunch downtown on Wednesday at noon?",
+      "checks": [
+        {
+          "text": "Says weekdays 9-5 are taken by internship",
+          "kw": [
+            "internship",
+            "9-5",
+            "weekdays"
+          ],
+          "want": true,
+          "fact": "E01"
+        },
+        {
+          "text": "Says he is free Wednesday noon",
+          "kw": [
+            "free",
+            "wednesday",
+            "noon"
+          ],
+          "want": false,
+          "fact": "E01"
+        }
+      ]
+    },
+    {
+      "id": "EQ12",
+      "kind": "outside",
+      "text": "Can we schedule a weekday study session at 2pm?",
+      "checks": [
+        {
+          "text": "Declines weekday daytime due to remote internship",
+          "kw": [
+            "internship",
+            "remote",
+            "9-5"
+          ],
+          "want": true,
+          "fact": "E01"
+        }
+      ]
+    },
+    {
+      "id": "EQ13",
+      "kind": "inchat",
+      "text": "When should I schedule my study sessions this week?",
+      "checks": [
+        {
+          "text": "Schedules around morning cafe shifts",
+          "kw": [
+            "morning",
+            "opening shift",
+            "cafe"
+          ],
+          "want": true,
+          "fact": "E12"
+        },
+        {
+          "text": "Schedules late-night study after night shift",
+          "kw": [
+            "night shift",
+            "nights",
+            "late"
+          ],
+          "want": false,
+          "fact": "E11"
+        }
+      ]
+    },
+    {
+      "id": "EQ14",
+      "kind": "inchat",
+      "text": "Help me plan my sleep routine for work",
+      "checks": [
+        {
+          "text": "Plans early sleep for morning shift",
+          "kw": [
+            "morning",
+            "early",
+            "alarm"
+          ],
+          "want": true,
+          "fact": "E12"
+        }
+      ]
+    },
+    {
+      "id": "EQ15",
+      "kind": "short",
+      "text": "Should I order pizza takeout tonight?",
+      "checks": [
+        {
+          "text": "Reminds of no takeout until Dec 10",
+          "kw": [
+            "no takeout",
+            "dec 10",
+            "semester"
+          ],
+          "want": true,
+          "fact": "E13"
+        }
+      ]
+    },
+    {
+      "id": "EQ16",
+      "kind": "short",
+      "text": "What should I cook instead of takeout this week?",
+      "checks": [
+        {
+          "text": "Suggests cooking grocery meals at home",
+          "kw": [
+            "cook",
+            "grocery",
+            "home"
+          ],
+          "want": true,
+          "fact": "E13"
+        }
+      ]
+    },
+    {
+      "id": "EQ17",
+      "kind": "sensitive",
+      "text": "Help me make a post-grad budget plan",
+      "checks": [
+        {
+          "text": "Acknowledges worry about student loan debt",
+          "kw": [
+            "loan",
+            "debt",
+            "budget"
+          ],
+          "want": true,
+          "fact": "E14"
+        }
+      ]
+    },
+    {
+      "id": "EQ18",
+      "kind": "sensitive",
+      "text": "Any tips for saving money after graduation?",
+      "checks": [
+        {
+          "text": "Gives gentle budgeting advice for loan worry",
+          "kw": [
+            "loan",
+            "budget",
+            "saving"
+          ],
+          "want": true,
+          "fact": "E14"
+        }
+      ]
+    },
+    {
+      "id": "EQ19",
+      "kind": "oneoff",
+      "text": "Should I pack for another muddy festival this weekend?",
+      "checks": [
+        {
+          "text": "Treats last summer festival with cousins as regular habit",
+          "kw": [
+            "festival",
+            "every",
+            "cousins"
+          ],
+          "want": false,
+          "fact": "E15"
+        }
+      ]
+    },
+    {
+      "id": "EQ20",
+      "kind": "oneoff",
+      "text": "Do I need to buy more Halloween candy for tonight?",
+      "checks": [
+        {
+          "text": "Treats shared candy duty as ongoing habit",
+          "kw": [
+            "candy duty",
+            "every",
+            "halloween"
+          ],
+          "want": false,
+          "fact": "E17"
+        }
+      ]
+    }
+  ]
+}

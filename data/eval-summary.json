@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-02T02:18:35.537Z",
+  "generated": "2026-11-02T15:16:29.696Z",
   "build": "staged (guard → writer → self-review → grader → contract)",
   "models": {
     "answers": "muse-spark-1.3",
@@ -13,59 +13,92 @@
   "combined": [
     {
       "mode": "full",
-      "accuracy": 75,
-      "accuracyDrifted": 33.3,
-      "staleErrors": 3,
+      "accuracy": 73.7,
+      "accuracyDrifted": 41.7,
+      "staleErrors": 4,
       "avgContextTokens": 39022,
       "maxContextTokens": 113619,
-      "avgLatencyMs": 3869
+      "avgLatencyMs": 5631
     },
     {
       "mode": "summary",
-      "accuracy": 73.7,
-      "accuracyDrifted": 41.7,
-      "staleErrors": 2,
-      "avgContextTokens": 472,
-      "maxContextTokens": 564,
-      "avgLatencyMs": 3651
+      "accuracy": 78.9,
+      "accuracyDrifted": 58.3,
+      "staleErrors": 4,
+      "avgContextTokens": 486,
+      "maxContextTokens": 583,
+      "avgLatencyMs": 5077
     },
     {
       "mode": "confirmed",
-      "accuracy": 86.8,
+      "accuracy": 88.2,
       "accuracyDrifted": 91.7,
-      "staleErrors": 2,
-      "avgContextTokens": 143,
-      "maxContextTokens": 158,
-      "avgLatencyMs": 6579
+      "staleErrors": 0,
+      "avgContextTokens": 153,
+      "maxContextTokens": 177,
+      "avgLatencyMs": 9818
     }
   ],
+  "heldOut": {
+    "people": 10,
+    "checks": 236,
+    "combined": [
+      {
+        "mode": "full",
+        "accuracy": 69.5,
+        "accuracyDrifted": 49.1,
+        "staleErrors": 11,
+        "avgContextTokens": 1652,
+        "maxContextTokens": 1881,
+        "avgLatencyMs": 4390
+      },
+      {
+        "mode": "summary",
+        "accuracy": 69.5,
+        "accuracyDrifted": 48.2,
+        "staleErrors": 13,
+        "avgContextTokens": 395,
+        "maxContextTokens": 459,
+        "avgLatencyMs": 4033
+      },
+      {
+        "mode": "confirmed",
+        "accuracy": 79.7,
+        "accuracyDrifted": 81.3,
+        "staleErrors": 7,
+        "avgContextTokens": 138,
+        "maxContextTokens": 150,
+        "avgLatencyMs": 8755
+      }
+    ]
+  },
   "perPerson": [
     {
       "label": "Alex (synthetic)",
       "questions": 15,
       "checks": 29,
-      "cards": 23,
+      "cards": 30,
       "summary": [
         {
           "mode": "full",
-          "accuracy": 76,
+          "accuracy": 79,
           "accuracyDrifted": 25,
           "staleErrors": 1,
           "avgContextTokens": 1996
         },
         {
           "mode": "summary",
-          "accuracy": 72,
+          "accuracy": 79,
           "accuracyDrifted": 25,
           "staleErrors": 1,
-          "avgContextTokens": 460
+          "avgContextTokens": 499
         },
         {
           "mode": "confirmed",
-          "accuracy": 93,
+          "accuracy": 90,
           "accuracyDrifted": 100,
           "staleErrors": 0,
-          "avgContextTokens": 143
+          "avgContextTokens": 149
         }
       ]
     },
@@ -73,28 +106,28 @@
       "label": "Maria (synthetic)",
       "questions": 11,
       "checks": 20,
-      "cards": 13,
+      "cards": 16,
       "summary": [
         {
           "mode": "full",
-          "accuracy": 65,
-          "accuracyDrifted": 38,
+          "accuracy": 70,
+          "accuracyDrifted": 50,
           "staleErrors": 2,
           "avgContextTokens": 1513
         },
         {
           "mode": "summary",
-          "accuracy": 75,
-          "accuracyDrifted": 50,
+          "accuracy": 90,
+          "accuracyDrifted": 75,
           "staleErrors": 1,
-          "avgContextTokens": 353
+          "avgContextTokens": 304
         },
         {
           "mode": "confirmed",
           "accuracy": 95,
           "accuracyDrifted": 88,
           "staleErrors": 0,
-          "avgContextTokens": 138
+          "avgContextTokens": 130
         }
       ]
     },
@@ -102,28 +135,28 @@
       "label": "Real history A",
       "questions": 8,
       "checks": 14,
-      "cards": 11,
+      "cards": 19,
       "summary": [
         {
           "mode": "full",
-          "accuracy": 86,
+          "accuracy": 71,
           "accuracyDrifted": null,
-          "staleErrors": 0,
+          "staleErrors": 1,
           "avgContextTokens": 38961
         },
         {
           "mode": "summary",
           "accuracy": 86,
           "accuracyDrifted": null,
-          "staleErrors": 0,
-          "avgContextTokens": 564
+          "staleErrors": 2,
+          "avgContextTokens": 556
         },
         {
           "mode": "confirmed",
-          "accuracy": 71,
+          "accuracy": 93,
           "accuracyDrifted": null,
-          "staleErrors": 2,
-          "avgContextTokens": 134
+          "staleErrors": 0,
+          "avgContextTokens": 177
         }
       ]
     },
@@ -131,28 +164,318 @@
       "label": "Real history B",
       "questions": 8,
       "checks": 13,
-      "cards": 27,
+      "cards": 28,
       "summary": [
         {
           "mode": "full",
-          "accuracy": 77,
+          "accuracy": 69,
           "accuracyDrifted": null,
           "staleErrors": 0,
           "avgContextTokens": 113619
         },
         {
           "mode": "summary",
-          "accuracy": 62,
+          "accuracy": 54,
           "accuracyDrifted": null,
           "staleErrors": 0,
-          "avgContextTokens": 512
+          "avgContextTokens": 583
         },
         {
           "mode": "confirmed",
-          "accuracy": 77,
+          "accuracy": 69,
           "accuracyDrifted": null,
           "staleErrors": 0,
-          "avgContextTokens": 158
+          "avgContextTokens": 157
+        }
+      ]
+    },
+    {
+      "label": "Aisha (synthetic, held out)",
+      "questions": 20,
+      "checks": 25,
+      "cards": 14,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 68,
+          "accuracyDrifted": 42,
+          "staleErrors": 3,
+          "avgContextTokens": 1801
+        },
+        {
+          "mode": "summary",
+          "accuracy": 72,
+          "accuracyDrifted": 42,
+          "staleErrors": 3,
+          "avgContextTokens": 371
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 84,
+          "accuracyDrifted": 92,
+          "staleErrors": 1,
+          "avgContextTokens": 135
+        }
+      ]
+    },
+    {
+      "label": "Daniel (synthetic, held out)",
+      "questions": 20,
+      "checks": 24,
+      "cards": 14,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 63,
+          "accuracyDrifted": 45,
+          "staleErrors": 1,
+          "avgContextTokens": 1599
+        },
+        {
+          "mode": "summary",
+          "accuracy": 67,
+          "accuracyDrifted": 55,
+          "staleErrors": 1,
+          "avgContextTokens": 331
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 67,
+          "accuracyDrifted": 82,
+          "staleErrors": 2,
+          "avgContextTokens": 134
+        }
+      ]
+    },
+    {
+      "label": "Ethan (synthetic, held out)",
+      "questions": 20,
+      "checks": 23,
+      "cards": 15,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 57,
+          "accuracyDrifted": 10,
+          "staleErrors": 2,
+          "avgContextTokens": 1601
+        },
+        {
+          "mode": "summary",
+          "accuracy": 65,
+          "accuracyDrifted": 30,
+          "staleErrors": 1,
+          "avgContextTokens": 413
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 78,
+          "accuracyDrifted": 60,
+          "staleErrors": 1,
+          "avgContextTokens": 150
+        }
+      ]
+    },
+    {
+      "label": "Fatima (synthetic, held out)",
+      "questions": 20,
+      "checks": 23,
+      "cards": 11,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 70,
+          "accuracyDrifted": 40,
+          "staleErrors": 2,
+          "avgContextTokens": 1749
+        },
+        {
+          "mode": "summary",
+          "accuracy": 61,
+          "accuracyDrifted": 30,
+          "staleErrors": 2,
+          "avgContextTokens": 410
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 91,
+          "accuracyDrifted": 100,
+          "staleErrors": 0,
+          "avgContextTokens": 150
+        }
+      ]
+    },
+    {
+      "label": "Grace (synthetic, held out)",
+      "questions": 20,
+      "checks": 25,
+      "cards": 13,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 64,
+          "accuracyDrifted": 42,
+          "staleErrors": 0,
+          "avgContextTokens": 1507
+        },
+        {
+          "mode": "summary",
+          "accuracy": 68,
+          "accuracyDrifted": 42,
+          "staleErrors": 1,
+          "avgContextTokens": 420
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 76,
+          "accuracyDrifted": 67,
+          "staleErrors": 0,
+          "avgContextTokens": 135
+        }
+      ]
+    },
+    {
+      "label": "James (synthetic, held out)",
+      "questions": 20,
+      "checks": 24,
+      "cards": 11,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 79,
+          "accuracyDrifted": 67,
+          "staleErrors": 0,
+          "avgContextTokens": 1614
+        },
+        {
+          "mode": "summary",
+          "accuracy": 83,
+          "accuracyDrifted": 67,
+          "staleErrors": 0,
+          "avgContextTokens": 369
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 92,
+          "accuracyDrifted": 100,
+          "staleErrors": 0,
+          "avgContextTokens": 133
+        }
+      ]
+    },
+    {
+      "label": "Luis (synthetic, held out)",
+      "questions": 20,
+      "checks": 23,
+      "cards": 14,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 74,
+          "accuracyDrifted": 60,
+          "staleErrors": 2,
+          "avgContextTokens": 1584
+        },
+        {
+          "mode": "summary",
+          "accuracy": 74,
+          "accuracyDrifted": 60,
+          "staleErrors": 2,
+          "avgContextTokens": 413
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 74,
+          "accuracyDrifted": 80,
+          "staleErrors": 2,
+          "avgContextTokens": 140
+        }
+      ]
+    },
+    {
+      "label": "Rosa (synthetic, held out)",
+      "questions": 20,
+      "checks": 23,
+      "cards": 14,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 74,
+          "accuracyDrifted": 67,
+          "staleErrors": 0,
+          "avgContextTokens": 1643
+        },
+        {
+          "mode": "summary",
+          "accuracy": 74,
+          "accuracyDrifted": 58,
+          "staleErrors": 0,
+          "avgContextTokens": 459
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 87,
+          "accuracyDrifted": 75,
+          "staleErrors": 0,
+          "avgContextTokens": 133
+        }
+      ]
+    },
+    {
+      "label": "Sofia (synthetic, held out)",
+      "questions": 20,
+      "checks": 23,
+      "cards": 14,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 78,
+          "accuracyDrifted": 60,
+          "staleErrors": 1,
+          "avgContextTokens": 1881
+        },
+        {
+          "mode": "summary",
+          "accuracy": 70,
+          "accuracyDrifted": 50,
+          "staleErrors": 3,
+          "avgContextTokens": 397
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 83,
+          "accuracyDrifted": 90,
+          "staleErrors": 1,
+          "avgContextTokens": 148
+        }
+      ]
+    },
+    {
+      "label": "Tom (synthetic, held out)",
+      "questions": 20,
+      "checks": 23,
+      "cards": 13,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 70,
+          "accuracyDrifted": 54,
+          "staleErrors": 0,
+          "avgContextTokens": 1543
+        },
+        {
+          "mode": "summary",
+          "accuracy": 61,
+          "accuracyDrifted": 46,
+          "staleErrors": 0,
+          "avgContextTokens": 367
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 65,
+          "accuracyDrifted": 69,
+          "staleErrors": 0,
+          "avgContextTokens": 124
         }
       ]
     }
@@ -166,36 +489,36 @@
       {
         "months": 1,
         "fullHistory": 3846,
-        "cardsPerQuestion": 143,
-        "summaryPerMessage": 446,
+        "cardsPerQuestion": 149,
+        "summaryPerMessage": 485,
         "cardsCeiling": 1568
       },
       {
         "months": 3,
         "fullHistory": 11537,
-        "cardsPerQuestion": 143,
-        "summaryPerMessage": 446,
+        "cardsPerQuestion": 149,
+        "summaryPerMessage": 485,
         "cardsCeiling": 1568
       },
       {
         "months": 6,
         "fullHistory": 23075,
-        "cardsPerQuestion": 143,
-        "summaryPerMessage": 446,
+        "cardsPerQuestion": 149,
+        "summaryPerMessage": 485,
         "cardsCeiling": 1568
       },
       {
         "months": 12,
         "fullHistory": 46150,
-        "cardsPerQuestion": 143,
-        "summaryPerMessage": 446,
+        "cardsPerQuestion": 149,
+        "summaryPerMessage": 485,
         "cardsCeiling": 1568
       },
       {
         "months": 24,
         "fullHistory": 92299,
-        "cardsPerQuestion": 143,
-        "summaryPerMessage": 446,
+        "cardsPerQuestion": 149,
+        "summaryPerMessage": 485,
         "cardsCeiling": 1568
       }
     ]

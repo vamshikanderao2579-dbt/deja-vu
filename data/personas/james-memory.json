@@ -1,0 +1,200 @@
+{
+  "cards": [
+    {
+      "id": "reading-2",
+      "category": "reading",
+      "type": "preference",
+      "text": "Prefers cozy small-town mystery novels",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "j009",
+        "j045",
+        "j047"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "reading-1",
+      "category": "reading",
+      "type": "preference",
+      "text": "Attends book club Saturdays at 2pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "j065",
+        "j091"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-2",
+      "category": "family",
+      "type": "preference",
+      "text": "Grandson Eli, age 6, loves dinosaurs",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "j019",
+        "j021",
+        "j061",
+        "j099"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-3",
+      "category": "family",
+      "type": "preference",
+      "text": "Grandkids like simple pasta and chicken nuggets",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "j053",
+        "j083",
+        "j085"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Hosting grandkids December 18-24",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "j051",
+        "j083"
+      ],
+      "until": "2026-12-24",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Takes heart medication daily at 8am",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.95,
+      "sources": [
+        "j071"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Prefers tea over coffee, drinks tea mornings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "j003",
+        "j031",
+        "j077"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Eats oatmeal with blueberries every morning",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "j013",
+        "j055",
+        "j089"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Takes morning walk around 7am",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "j001",
+        "j037",
+        "j087"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "leisure-1",
+      "category": "leisure",
+      "type": "preference",
+      "text": "Does crossword puzzle every evening to unwind",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "j027",
+        "j073"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "community-1",
+      "category": "community",
+      "type": "preference",
+      "text": "Volunteers at library on regular shifts",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "j017",
+        "j063",
+        "j065",
+        "j101"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    }
+  ]
+}

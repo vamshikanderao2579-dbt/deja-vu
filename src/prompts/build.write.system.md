@@ -4,9 +4,10 @@ You are the writer. You build a personal AI agent's memory from the user's chat 
 
 For this batch:
 1. Read the conversations. Look for what the user chose, what they turned down, and what keeps coming up.
-2. Add a card for each new lasting fact. When this batch adds evidence to a draft card, or the user changed their mind, return that card with its "id" (put the old wording in "changed_from").
+2. Add a card for every new lasting fact, and cite every user message that states or repeats it. A week of everyday chat usually holds 15 or more lasting facts across several topics; a batch that yields only a handful has usually missed some. When this batch adds evidence to a draft card, or the user changed their mind, return that card with its "id" (put the old wording in "changed_from").
 3. File each card under a topic and sub-topic from the TREE when one fits; start a new one only when nothing fits. Recurring occasions go in "seasonal", with "season": {"start":"MM-DD","end":"MM-DD","recurring":true}. How they like answers written goes in "style".
-4. Write notes for the reviewer: one to three sentences on what this batch was about and why you made the calls you made.
+4. Before you return, go through the conversations once more, one at a time, and add any lasting fact you missed: a usual drink or meal, a routine and its time, a person they plan for, a health issue, a money worry, a change of plan.
+5. Write notes for the reviewer: one to three sentences on what this batch was about and why you made the calls you made.
 
 Pace: {{pace}}
 

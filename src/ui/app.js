@@ -441,9 +441,9 @@ function renderAnswer(res, question) {
     if (used.length) {
       const chips = el('<div class="chips"></div>');
       for (const c of used) {
-        // A private card is used, but its words stay out of view until opened in Memory.
-        const hidden = c.sensitive || c.status === 'pending';
-        const chip = el(`<button class="chip ${c.status}" title="Open in Memory">${hidden ? `${ico('lock', 'sm')} Private card` : esc(c.text)}</button>`);
+        // Private cards are used like any other; a lock marks them on your own screen.
+        const priv = c.sensitive || c.status === 'pending';
+        const chip = el(`<button class="chip ${c.status}" title="Open in Memory">${priv ? `${ico('lock', 'sm')} ` : ''}${esc(c.text)}</button>`);
         chip.addEventListener('click', () => openCard(c.id));
         chips.append(chip);
       }
@@ -1290,7 +1290,7 @@ function renderSession() {
 }
 
 // ---------------- eval charts ----------------
-const MODE_NAMES = { confirmed: 'Confirmed cards', inferred: 'Guessed cards', summary: 'Memory summary', full: 'Full history', none: 'No memory' };
+const MODE_NAMES = { confirmed: 'Déjà Vu memory', inferred: 'Guessed cards', summary: 'Memory summary', full: 'Full history', none: 'No memory' };
 const MODE_ORDER = ['confirmed', 'inferred', 'summary', 'full', 'none'];
 
 async function renderEval() {
@@ -1334,6 +1334,7 @@ function renderCombinedEval(box, ev) {
       ${barChart('Answer accuracy', 'Share of checklist items each setup got right, all people', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}
       ${rows.some((r) => r.accuracyDrifted != null) ? barChart('Preferences that changed outside chat', 'Only a confirmation can catch these', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100) : ''}
       ${barChart('Memory sent per question', 'Tokens of memory in each prompt (average per person)', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.avgContextTokens, emph: r.mode === 'confirmed' })), (v) => `${v.toLocaleString()} tok`)}
+      ${ev.heldOut ? (() => { const h = MODE_ORDER.map((m) => ev.heldOut.combined.find((x) => x.mode === m)).filter(Boolean); return `<h3 class="held-h">Held out: ${ev.heldOut.people} more synthetic people, ${ev.heldOut.checks} checks</h3><p class="fine">Written after the engine was built and never used to tune it.</p>${barChart('Answer accuracy', 'Held-out people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}${barChart('Preferences that changed outside chat', 'Held-out people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}`; })() : ''}
       ${ev.projection ? lineChart(ev.projection) : ''}
       <details class="table-view"><summary>Each person</summary>
         <table><thead><tr><th>Person</th><th>Checks</th>${rows.map((r) => `<th>${MODE_NAMES[r.mode]}</th>`).join('')}</tr></thead>
@@ -1851,10 +1852,11 @@ function showLanding(choice, { canGoBack = false } = {}) {
   const real = choice.profiles.filter((p) => p.real);
   const demos = choice.profiles.filter((p) => p.demo);
   const sel = $('#userSelect');
-  sel.innerHTML = (mine.length ? `<optgroup label="You">${mine.map(opt).join('')}</optgroup>` : '') +
-    `<optgroup label="Demo users">${demos.map(opt).join('')}</optgroup>` +
-    (real.length ? `<optgroup label="On this computer">${real.map(opt).join('')}</optgroup>` : '') +
-    `<optgroup label="Your own chats"><option value="${NEW_USER}">+ New user: import my chats</option></optgroup>`;
+  // Bring your own chats first, then the demo people, then anyone already here.
+  sel.innerHTML = `<option value="${NEW_USER}">+ Import my memory (new user)</option>` +
+    (mine.length ? `<optgroup label="You">${mine.map(opt).join('')}</optgroup>` : '') +
+    `<optgroup label="Demo personas">${demos.map(opt).join('')}</optgroup>` +
+    (real.length ? `<optgroup label="On this computer">${real.map(opt).join('')}</optgroup>` : '');
   sel.value = choice.profiles.some((p) => p.id === choice.active) ? choice.active : (mine[0] ?? demos[0] ?? real[0])?.id ?? NEW_USER;
   landingProfiles = choice.profiles;
   describeUser();

@@ -1,0 +1,626 @@
+{
+  "user": {
+    "name": "Grace"
+  },
+  "conversations": [
+    {
+      "id": "gc01",
+      "date": "2026-10-20",
+      "time": "05:10",
+      "title": "early starter check",
+      "messages": [
+        {
+          "id": "g001",
+          "role": "user",
+          "text": "up at 430am again, need a quick checklist for my sourdough starter before i open"
+        },
+        {
+          "id": "g002",
+          "role": "assistant",
+          "text": "got it, here's a quick starter check for you."
+        },
+        {
+          "id": "g003",
+          "role": "user",
+          "text": "also flour is low, add bread flour to the order list"
+        },
+        {
+          "id": "g004",
+          "role": "assistant",
+          "text": "added bread flour to your list."
+        },
+        {
+          "id": "g005",
+          "role": "user",
+          "text": "what time does the supply shop open today"
+        },
+        {
+          "id": "g006",
+          "role": "assistant",
+          "text": "it opens at 7am today."
+        }
+      ]
+    },
+    {
+      "id": "gc02",
+      "date": "2026-10-21",
+      "time": "06:15",
+      "title": "back room restock",
+      "messages": [
+        {
+          "id": "g007",
+          "role": "user",
+          "text": "need more tea for the back room, find a bulk box i can order"
+        },
+        {
+          "id": "g008",
+          "role": "assistant",
+          "text": "here are a couple bulk options for you."
+        },
+        {
+          "id": "g009",
+          "role": "user",
+          "text": "find me friday takeout near the bakery, thinking noodles"
+        },
+        {
+          "id": "g010",
+          "role": "assistant",
+          "text": "found a few noodle spots near you."
+        },
+        {
+          "id": "g011",
+          "role": "user",
+          "text": "cool, send me the hours for the first one"
+        },
+        {
+          "id": "g012",
+          "role": "assistant",
+          "text": "it's open till 10pm on fridays."
+        }
+      ]
+    },
+    {
+      "id": "gc03",
+      "date": "2026-10-22",
+      "time": "18:20",
+      "title": "evening route",
+      "messages": [
+        {
+          "id": "g013",
+          "role": "user",
+          "text": "remind me about my evening dog walk at 8, need a short loop near the park"
+        },
+        {
+          "id": "g014",
+          "role": "assistant",
+          "text": "set a reminder for 8pm with a park loop."
+        },
+        {
+          "id": "g015",
+          "role": "user",
+          "text": "is it gonna rain tonight"
+        },
+        {
+          "id": "g016",
+          "role": "assistant",
+          "text": "no rain expected tonight."
+        },
+        {
+          "id": "g017",
+          "role": "user",
+          "text": "ok good, leash is by the door anyway"
+        },
+        {
+          "id": "g018",
+          "role": "assistant",
+          "text": "sounds good."
+        }
+      ]
+    },
+    {
+      "id": "gc04",
+      "date": "2026-10-23",
+      "time": "06:05",
+      "title": "groceries and friday",
+      "messages": [
+        {
+          "id": "g019",
+          "role": "user",
+          "text": "out of blueberries for my morning oatmeal, put em on the grocery list"
+        },
+        {
+          "id": "g020",
+          "role": "assistant",
+          "text": "added blueberries to your grocery list."
+        },
+        {
+          "id": "g021",
+          "role": "user",
+          "text": "we usually do friday takeout, any good dumpling place open late"
+        },
+        {
+          "id": "g022",
+          "role": "assistant",
+          "text": "yes, found two late spots nearby."
+        },
+        {
+          "id": "g023",
+          "role": "user",
+          "text": "price for a dozen eggs at whole foods rn"
+        },
+        {
+          "id": "g024",
+          "role": "assistant",
+          "text": "around $4.50 right now."
+        }
+      ]
+    },
+    {
+      "id": "gc05",
+      "date": "2026-10-24",
+      "time": "09:30",
+      "title": "save some rolls",
+      "messages": [
+        {
+          "id": "g025",
+          "role": "user",
+          "text": "hold back a half dozen cinnamon rolls tomorrow, daniel loves em"
+        },
+        {
+          "id": "g026",
+          "role": "assistant",
+          "text": "noted, will hold them back."
+        },
+        {
+          "id": "g027",
+          "role": "user",
+          "text": "his brother is stopping by the shop around noon"
+        },
+        {
+          "id": "g028",
+          "role": "assistant",
+          "text": "ok, hope you have a nice visit."
+        },
+        {
+          "id": "g029",
+          "role": "user",
+          "text": "need a small gift bag for him too"
+        },
+        {
+          "id": "g030",
+          "role": "assistant",
+          "text": "added gift bag to your to-do."
+        }
+      ]
+    },
+    {
+      "id": "gc06",
+      "date": "2026-10-25",
+      "time": "05:00",
+      "title": "early sunday prep",
+      "messages": [
+        {
+          "id": "g031",
+          "role": "user",
+          "text": "up at 430am again, ovens are slow to heat"
+        },
+        {
+          "id": "g032",
+          "role": "assistant",
+          "text": "ugh, hope they warm up soon."
+        },
+        {
+          "id": "g033",
+          "role": "user",
+          "text": "remind me for my sunday call with mom at 7pm"
+        },
+        {
+          "id": "g034",
+          "role": "assistant",
+          "text": "set a reminder for 7pm."
+        },
+        {
+          "id": "g035",
+          "role": "user",
+          "text": "also need birthday card ideas for her"
+        },
+        {
+          "id": "g036",
+          "role": "assistant",
+          "text": "how about a funny bakery card?"
+        },
+        {
+          "id": "g037",
+          "role": "user",
+          "text": "lol perfect, i'll look after close"
+        },
+        {
+          "id": "g038",
+          "role": "assistant",
+          "text": "sounds like a plan."
+        }
+      ]
+    },
+    {
+      "id": "gc07",
+      "date": "2026-10-26",
+      "time": "06:40",
+      "title": "break room tea",
+      "messages": [
+        {
+          "id": "g039",
+          "role": "user",
+          "text": "running low on tea again, which one did i order last time"
+        },
+        {
+          "id": "g040",
+          "role": "assistant",
+          "text": "you got the plain black last time."
+        },
+        {
+          "id": "g041",
+          "role": "user",
+          "text": "order same one, two boxes"
+        },
+        {
+          "id": "g042",
+          "role": "assistant",
+          "text": "ordered two boxes for you."
+        },
+        {
+          "id": "g043",
+          "role": "user",
+          "text": "thx, staff keeps drinking it all lol"
+        },
+        {
+          "id": "g044",
+          "role": "assistant",
+          "text": "haha that's a good sign."
+        }
+      ]
+    },
+    {
+      "id": "gc08",
+      "date": "2026-10-26",
+      "time": "19:05",
+      "title": "market rush",
+      "messages": [
+        {
+          "id": "g045",
+          "role": "user",
+          "text": "my sourdough loaves are selling out too fast, help me plan a bigger bake"
+        },
+        {
+          "id": "g046",
+          "role": "assistant",
+          "text": "let's bump up your bake schedule a bit."
+        },
+        {
+          "id": "g047",
+          "role": "user",
+          "text": "no weekends off until the holiday market ends dec 20, so need extra stock"
+        },
+        {
+          "id": "g048",
+          "role": "assistant",
+          "text": "got it, we'll plan for full weekends."
+        },
+        {
+          "id": "g049",
+          "role": "user",
+          "text": "yeah just tired already"
+        },
+        {
+          "id": "g050",
+          "role": "assistant",
+          "text": "hang in there, rush will pass."
+        }
+      ]
+    },
+    {
+      "id": "gc09",
+      "date": "2026-10-27",
+      "time": "18:45",
+      "title": "walk and bills",
+      "messages": [
+        {
+          "id": "g051",
+          "role": "user",
+          "text": "push my evening dog walk to 830 tonight, closing late"
+        },
+        {
+          "id": "g052",
+          "role": "assistant",
+          "text": "moved your reminder to 8:30."
+        },
+        {
+          "id": "g053",
+          "role": "user",
+          "text": "stressed abt business loan payments, cash flow is tight this month"
+        },
+        {
+          "id": "g054",
+          "role": "assistant",
+          "text": "sorry to hear that, hope it eases up."
+        },
+        {
+          "id": "g055",
+          "role": "user",
+          "text": "yeah just need to get thru the week"
+        },
+        {
+          "id": "g056",
+          "role": "assistant",
+          "text": "you've got this."
+        }
+      ]
+    },
+    {
+      "id": "gc10",
+      "date": "2026-10-28",
+      "time": "06:10",
+      "title": "morning bowl",
+      "messages": [
+        {
+          "id": "g057",
+          "role": "user",
+          "text": "no blueberries again for my morning oatmeal, ugh"
+        },
+        {
+          "id": "g058",
+          "role": "assistant",
+          "text": "want me to add them again?"
+        },
+        {
+          "id": "g059",
+          "role": "user",
+          "text": "yes pls, and bananas too"
+        },
+        {
+          "id": "g060",
+          "role": "assistant",
+          "text": "added both to your list."
+        },
+        {
+          "id": "g061",
+          "role": "user",
+          "text": "kids coming home next month btw"
+        },
+        {
+          "id": "g062",
+          "role": "assistant",
+          "text": "that's nice, will be fun."
+        }
+      ]
+    },
+    {
+      "id": "gc11",
+      "date": "2026-10-29",
+      "time": "10:15",
+      "title": "rolls for home",
+      "messages": [
+        {
+          "id": "g063",
+          "role": "user",
+          "text": "save two cinnamon rolls for daniel tonight, he asked yesterday"
+        },
+        {
+          "id": "g064",
+          "role": "assistant",
+          "text": "saved two for him."
+        },
+        {
+          "id": "g065",
+          "role": "user",
+          "text": "he wants to bring em to his card game"
+        },
+        {
+          "id": "g066",
+          "role": "assistant",
+          "text": "fun, they'll be a hit."
+        },
+        {
+          "id": "g067",
+          "role": "user",
+          "text": "lol yeah he always shows off"
+        },
+        {
+          "id": "g068",
+          "role": "assistant",
+          "text": "as he should."
+        }
+      ]
+    },
+    {
+      "id": "gc12",
+      "date": "2026-10-30",
+      "time": "07:20",
+      "title": "friday plan change",
+      "messages": [
+        {
+          "id": "g069",
+          "role": "user",
+          "text": "up at 430am, fridays are brutal"
+        },
+        {
+          "id": "g070",
+          "role": "assistant",
+          "text": "early start again, take it easy."
+        },
+        {
+          "id": "g071",
+          "role": "user",
+          "text": "we're cooking at home on fridays now for budget, don't do takeout anymore, find me a simple pasta recipe"
+        },
+        {
+          "id": "g072",
+          "role": "assistant",
+          "text": "here's an easy pasta recipe for tonight."
+        },
+        {
+          "id": "g073",
+          "role": "user",
+          "text": "does it need a lot of cheese, trying to keep it cheap"
+        },
+        {
+          "id": "g074",
+          "role": "assistant",
+          "text": "no, just a little parmesan."
+        }
+      ]
+    },
+    {
+      "id": "gc13",
+      "date": "2026-10-30",
+      "time": "16:00",
+      "title": "bake and call",
+      "messages": [
+        {
+          "id": "g075",
+          "role": "user",
+          "text": "my sourdough crust is too dark, what temp do you use"
+        },
+        {
+          "id": "g076",
+          "role": "assistant",
+          "text": "try 450f for 20 mins covered."
+        },
+        {
+          "id": "g077",
+          "role": "user",
+          "text": "ok will try that batch tomorrow"
+        },
+        {
+          "id": "g078",
+          "role": "assistant",
+          "text": "good luck with it."
+        },
+        {
+          "id": "g079",
+          "role": "user",
+          "text": "also remind me sunday call with mom, almost forgot last week"
+        },
+        {
+          "id": "g080",
+          "role": "assistant",
+          "text": "set a reminder for sunday."
+        }
+      ]
+    },
+    {
+      "id": "gc14",
+      "date": "2026-10-31",
+      "time": "08:30",
+      "title": "halloween morning",
+      "messages": [
+        {
+          "id": "g081",
+          "role": "user",
+          "text": "need more tea for tomorrow, shop is busy"
+        },
+        {
+          "id": "g082",
+          "role": "assistant",
+          "text": "want the same bulk order?"
+        },
+        {
+          "id": "g083",
+          "role": "user",
+          "text": "yes, and some cookies for the kids trick or treating"
+        },
+        {
+          "id": "g084",
+          "role": "assistant",
+          "text": "added cookies to your list."
+        },
+        {
+          "id": "g085",
+          "role": "user",
+          "text": "i took a pottery class once last spring, thinking of gifting mugs this year"
+        },
+        {
+          "id": "g086",
+          "role": "assistant",
+          "text": "cute idea, handmade mugs are nice."
+        }
+      ]
+    },
+    {
+      "id": "gc15",
+      "date": "2026-11-01",
+      "time": "18:30",
+      "title": "november start",
+      "messages": [
+        {
+          "id": "g087",
+          "role": "user",
+          "text": "late evening dog walk today, like 845"
+        },
+        {
+          "id": "g088",
+          "role": "assistant",
+          "text": "updated to 8:45 for tonight."
+        },
+        {
+          "id": "g089",
+          "role": "user",
+          "text": "no weekends off until the holiday market ends dec 20, i'm beat"
+        },
+        {
+          "id": "g090",
+          "role": "assistant",
+          "text": "long stretch, hope sales stay strong."
+        },
+        {
+          "id": "g091",
+          "role": "user",
+          "text": "yeah pumpkin stuff is finally done"
+        },
+        {
+          "id": "g092",
+          "role": "assistant",
+          "text": "on to peppermint season."
+        }
+      ]
+    },
+    {
+      "id": "gc16",
+      "date": "2026-11-01",
+      "time": "20:10",
+      "title": "night note",
+      "messages": [
+        {
+          "id": "g093",
+          "role": "user",
+          "text": "can you save me the recipe for cinnamon rolls, daniel wants to try baking"
+        },
+        {
+          "id": "g094",
+          "role": "assistant",
+          "text": "saved the recipe for you both."
+        },
+        {
+          "id": "g095",
+          "role": "user",
+          "text": "lol he will make a mess in my kitchen"
+        },
+        {
+          "id": "g096",
+          "role": "assistant",
+          "text": "haha let him try anyway."
+        },
+        {
+          "id": "g097",
+          "role": "user",
+          "text": "find me a cheap apron for him"
+        },
+        {
+          "id": "g098",
+          "role": "assistant",
+          "text": "found a few cheap aprons online."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Grace, 52, Boston. Bakery owner, married, kids grown."
+}

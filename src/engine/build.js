@@ -203,7 +203,7 @@ async function buildOnce({ conversations, existing, rejected, profileId, since, 
         const line = (m, mark) => m ? `   ${mark} ${m.role === 'user' ? 'user' : 'assistant'}: ${m.text.slice(0, mark === '▶' ? QUOTE_CHARS : 140)}` : null;
         return [`   (${at.conv.date} · ${at.conv.title})`, line(at.conv.messages[at.i - 1], ' '), line(at.conv.messages[at.i], '▶'), line(at.conv.messages[at.i + 1], ' ')].filter(Boolean).join('\n');
       };
-      const quotes = (c) => (c.sources ?? []).map(around).filter(Boolean).slice(0, 2).join('\n');
+      const quotes = (c) => (c.sources ?? []).map(around).filter(Boolean).slice(0, 3).join('\n');
       let verdicts;
       try {
         verdicts = config.mock || !config.graderEnabled
@@ -221,9 +221,12 @@ async function buildOnce({ conversations, existing, rejected, profileId, since, 
       const byId = new Map(verdicts.map((v) => [v.id, v]));
       for (const c of chunk) {
         const v = byId.get(c.id);
-        if (!v || v.verdict === 'reject') { cp.dropped = [...(cp.dropped ?? []), { reason: v?.reason ?? 'no_verdict' }]; continue; }
+        if (!v || v.verdict === 'reject') { cp.dropped = [...(cp.dropped ?? []), { id: c.id, text: c.text, sources: c.sources, reason: v?.reason ?? 'no_verdict' }]; continue; }
+        // A supported card with one detail the spot doesn't say comes back reworded, not rejected.
+        const fixed = typeof v.text === 'string' && v.text.trim() && v.text.trim().split(/\s+/).length <= 14 ? { text: v.text.trim() } : {};
         graded.push({
           ...c,
+          ...fixed,
           ...(v.category ? { category: String(v.category).toLowerCase() } : {}),
           ...(v.sub ? { sub: v.sub } : {}),
           sensitive: c.sensitive || v.verdict === 'lock',

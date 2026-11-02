@@ -1,0 +1,616 @@
+{
+  "user": {
+    "name": "Rosa"
+  },
+  "conversations": [
+    {
+      "id": "rc01",
+      "date": "2026-10-20",
+      "time": "07:40",
+      "title": "morning garden help",
+      "messages": [
+        {
+          "id": "r001",
+          "role": "user",
+          "text": "hey can u look up when to prune my roses, i gardens in the morning before it gets hot"
+        },
+        {
+          "id": "r002",
+          "role": "assistant",
+          "text": "Sure, fall pruning is light, just deadhead and shape."
+        },
+        {
+          "id": "r003",
+          "role": "user",
+          "text": "thx, also what herbal tea is good for evenings, i need something calming"
+        },
+        {
+          "id": "r004",
+          "role": "assistant",
+          "text": "Chamomile or lemon balm are nice calming options."
+        },
+        {
+          "id": "r005",
+          "role": "user",
+          "text": "lol my cat keeps sitting on my seedlings, any trick for that"
+        },
+        {
+          "id": "r006",
+          "role": "assistant",
+          "text": "Try citrus peels or a little mesh cover."
+        }
+      ]
+    },
+    {
+      "id": "rc02",
+      "date": "2026-10-20",
+      "time": "18:15",
+      "title": "food bank shift",
+      "messages": [
+        {
+          "id": "r007",
+          "role": "user",
+          "text": "can u set a reminder for my food bank volunteer shift mon mornings at 9"
+        },
+        {
+          "id": "r008",
+          "role": "assistant",
+          "text": "Got it, reminder set for Monday at 9."
+        },
+        {
+          "id": "r009",
+          "role": "user",
+          "text": "also is it ok to walks 3 miles a day at my age, feet kinda tired"
+        },
+        {
+          "id": "r010",
+          "role": "assistant",
+          "text": "Yes, that's great, just wear supportive shoes."
+        },
+        {
+          "id": "r011",
+          "role": "user",
+          "text": "k good, what podcast should i listen to while i walk"
+        },
+        {
+          "id": "r012",
+          "role": "assistant",
+          "text": "True crime or gardening shows are popular for walks."
+        }
+      ]
+    },
+    {
+      "id": "rc03",
+      "date": "2026-10-21",
+      "time": "08:05",
+      "title": "dinner ideas",
+      "messages": [
+        {
+          "id": "r013",
+          "role": "user",
+          "text": "need a new seasoning for beans and rice, i make it like every week"
+        },
+        {
+          "id": "r014",
+          "role": "assistant",
+          "text": "Try cumin, garlic, and a bay leaf."
+        },
+        {
+          "id": "r015",
+          "role": "user",
+          "text": "and is oatmeal with cinnamon every morning for breakfast too boring"
+        },
+        {
+          "id": "r016",
+          "role": "assistant",
+          "text": "Not at all, it's healthy and cozy."
+        },
+        {
+          "id": "r017",
+          "role": "user",
+          "text": "haha my neighbor brought over green chiles, what do i do with em"
+        },
+        {
+          "id": "r018",
+          "role": "assistant",
+          "text": "Roast them and add to eggs or stews."
+        }
+      ]
+    },
+    {
+      "id": "rc04",
+      "date": "2026-10-22",
+      "time": "12:30",
+      "title": "grandson lunch",
+      "messages": [
+        {
+          "id": "r019",
+          "role": "user",
+          "text": "my grandson mateo is coming over, he loves cheese quesadillas, any fun twist"
+        },
+        {
+          "id": "r020",
+          "role": "assistant",
+          "text": "Add mild green chile or corn for a twist."
+        },
+        {
+          "id": "r021",
+          "role": "user",
+          "text": "cute, also got any easy evening crossword apps u like"
+        },
+        {
+          "id": "r022",
+          "role": "assistant",
+          "text": "Yes, the NYT mini is quick and fun."
+        },
+        {
+          "id": "r023",
+          "role": "user",
+          "text": "perfect, he likes to color while i do that"
+        },
+        {
+          "id": "r024",
+          "role": "assistant",
+          "text": "Sounds like a sweet afternoon together."
+        }
+      ]
+    },
+    {
+      "id": "rc05",
+      "date": "2026-10-23",
+      "time": "07:20",
+      "title": "tomatoes and walk",
+      "messages": [
+        {
+          "id": "r025",
+          "role": "user",
+          "text": "my tomatoes are wilting, i only gardens in the morning so did i miss watering"
+        },
+        {
+          "id": "r026",
+          "role": "assistant",
+          "text": "Morning watering is best, check soil depth too."
+        },
+        {
+          "id": "r027",
+          "role": "user",
+          "text": "ok, also best socks for when i walks 3 miles a day"
+        },
+        {
+          "id": "r028",
+          "role": "assistant",
+          "text": "Look for cushioned moisture-wicking socks."
+        },
+        {
+          "id": "r029",
+          "role": "user",
+          "text": "ugh mailman late again lol"
+        },
+        {
+          "id": "r030",
+          "role": "assistant",
+          "text": "Haha, hopefully it comes soon."
+        }
+      ]
+    },
+    {
+      "id": "rc06",
+      "date": "2026-10-24",
+      "time": "20:10",
+      "title": "tea and breakfast",
+      "messages": [
+        {
+          "id": "r031",
+          "role": "user",
+          "text": "can't sleep, making some herbal tea, chamomile or peppermint better"
+        },
+        {
+          "id": "r032",
+          "role": "assistant",
+          "text": "Chamomile is better for sleep."
+        },
+        {
+          "id": "r033",
+          "role": "user",
+          "text": "k, and can i prep oatmeal with cinnamon the night before"
+        },
+        {
+          "id": "r034",
+          "role": "assistant",
+          "text": "Yes, overnight oats work great."
+        },
+        {
+          "id": "r035",
+          "role": "user",
+          "text": "saw a funny owl on my fence today"
+        },
+        {
+          "id": "r036",
+          "role": "assistant",
+          "text": "Oh nice, that's good luck."
+        }
+      ]
+    },
+    {
+      "id": "rc07",
+      "date": "2026-10-25",
+      "time": "09:00",
+      "title": "monday plans",
+      "messages": [
+        {
+          "id": "r037",
+          "role": "user",
+          "text": "remind me what time i volunteer at the food bank on mon"
+        },
+        {
+          "id": "r038",
+          "role": "assistant",
+          "text": "You have Monday mornings at 9."
+        },
+        {
+          "id": "r039",
+          "role": "user",
+          "text": "ty, need to buy more cans for donation too"
+        },
+        {
+          "id": "r040",
+          "role": "assistant",
+          "text": "Canned beans and soup are always needed."
+        },
+        {
+          "id": "r041",
+          "role": "user",
+          "text": "k adding to my grocery list now"
+        },
+        {
+          "id": "r042",
+          "role": "assistant",
+          "text": "Good idea."
+        }
+      ]
+    },
+    {
+      "id": "rc08",
+      "date": "2026-10-26",
+      "time": "14:45",
+      "title": "old photos",
+      "messages": [
+        {
+          "id": "r043",
+          "role": "user",
+          "text": "found pics from when i took a train trip to chicago that one time, was so fun"
+        },
+        {
+          "id": "r044",
+          "role": "assistant",
+          "text": "That sounds like a wonderful memory."
+        },
+        {
+          "id": "r045",
+          "role": "user",
+          "text": "yeah lol, anyway how do u keep leftover beans and rice from drying out"
+        },
+        {
+          "id": "r046",
+          "role": "assistant",
+          "text": "Add a splash of water and cover tight."
+        },
+        {
+          "id": "r047",
+          "role": "user",
+          "text": "got it, will try that tonight"
+        },
+        {
+          "id": "r048",
+          "role": "assistant",
+          "text": "Hope dinner turns out great."
+        }
+      ]
+    },
+    {
+      "id": "rc09",
+      "date": "2026-10-27",
+      "time": "10:15",
+      "title": "holiday hosting",
+      "messages": [
+        {
+          "id": "r049",
+          "role": "user",
+          "text": "we're hosting family for thanksgiving nov 26, need a big meal plan that week, like 10 people"
+        },
+        {
+          "id": "r050",
+          "role": "assistant",
+          "text": "Wow, exciting, I can help plan for 10."
+        },
+        {
+          "id": "r051",
+          "role": "user",
+          "text": "mateo is picky, he loves cheese quesadillas, can i make those as a kid side"
+        },
+        {
+          "id": "r052",
+          "role": "assistant",
+          "text": "Absolutely, kids love having their own option."
+        },
+        {
+          "id": "r053",
+          "role": "user",
+          "text": "lol my garden is full of leaves rn"
+        },
+        {
+          "id": "r054",
+          "role": "assistant",
+          "text": "Fall cleanup time for sure."
+        }
+      ]
+    },
+    {
+      "id": "rc10",
+      "date": "2026-10-28",
+      "time": "09:30",
+      "title": "shift change",
+      "messages": [
+        {
+          "id": "r055",
+          "role": "user",
+          "text": "update my food bank shift, i switched to wed mornings cause they were short staffed, don't do the old monday one anymore"
+        },
+        {
+          "id": "r056",
+          "role": "assistant",
+          "text": "Updated, Wednesday mornings now."
+        },
+        {
+          "id": "r057",
+          "role": "user",
+          "text": "thank u, also what to bring for first wed shift"
+        },
+        {
+          "id": "r058",
+          "role": "assistant",
+          "text": "Just bring water and comfy shoes."
+        },
+        {
+          "id": "r059",
+          "role": "user",
+          "text": "k see how it goes"
+        },
+        {
+          "id": "r060",
+          "role": "assistant",
+          "text": "Hope you like the new crew."
+        }
+      ]
+    },
+    {
+      "id": "rc11",
+      "date": "2026-10-29",
+      "time": "19:00",
+      "title": "hands hurting",
+      "messages": [
+        {
+          "id": "r061",
+          "role": "user",
+          "text": "my arthritis in my hands is acting up so i use grip aids to open jars, any easy one-pot meals"
+        },
+        {
+          "id": "r062",
+          "role": "assistant",
+          "text": "Soups and slow cooker meals are easiest."
+        },
+        {
+          "id": "r063",
+          "role": "user",
+          "text": "good idea, also stuck on today's evening crossword, clue is desert plant lol"
+        },
+        {
+          "id": "r064",
+          "role": "assistant",
+          "text": "Could be cactus or agave."
+        },
+        {
+          "id": "r065",
+          "role": "user",
+          "text": "oh agave fits, ty"
+        },
+        {
+          "id": "r066",
+          "role": "assistant",
+          "text": "Nice, glad that helped."
+        }
+      ]
+    },
+    {
+      "id": "rc12",
+      "date": "2026-10-30",
+      "time": "07:50",
+      "title": "chilly morning",
+      "messages": [
+        {
+          "id": "r067",
+          "role": "user",
+          "text": "frost last night, should i cover my peppers, i gardens in the morning usually"
+        },
+        {
+          "id": "r068",
+          "role": "assistant",
+          "text": "Yes, cover them with cloth overnight."
+        },
+        {
+          "id": "r069",
+          "role": "user",
+          "text": "k will do, warming up with herbal tea right now"
+        },
+        {
+          "id": "r070",
+          "role": "assistant",
+          "text": "Perfect for a chilly morning."
+        },
+        {
+          "id": "r071",
+          "role": "user",
+          "text": "santa fe gets so cold so fast"
+        },
+        {
+          "id": "r072",
+          "role": "assistant",
+          "text": "Yeah, fall swings fast there."
+        }
+      ]
+    },
+    {
+      "id": "rc13",
+      "date": "2026-10-30",
+      "time": "17:20",
+      "title": "walk shoes",
+      "messages": [
+        {
+          "id": "r073",
+          "role": "user",
+          "text": "my knees ache when i walks 3 miles a day, should i split it up"
+        },
+        {
+          "id": "r074",
+          "role": "assistant",
+          "text": "Splitting into two walks can help."
+        },
+        {
+          "id": "r075",
+          "role": "user",
+          "text": "ok try that, also can u freeze beans and rice"
+        },
+        {
+          "id": "r076",
+          "role": "assistant",
+          "text": "Yes, they freeze really well."
+        },
+        {
+          "id": "r077",
+          "role": "user",
+          "text": "awesome, batch cooking tomorrow"
+        },
+        {
+          "id": "r078",
+          "role": "assistant",
+          "text": "Smart plan."
+        }
+      ]
+    },
+    {
+      "id": "rc14",
+      "date": "2026-10-31",
+      "time": "11:05",
+      "title": "thanksgiving plan",
+      "messages": [
+        {
+          "id": "r079",
+          "role": "user",
+          "text": "ok lets start that meal plan, hosting family for thanksgiving nov 26, need shopping list too"
+        },
+        {
+          "id": "r080",
+          "role": "assistant",
+          "text": "Great, let's start with turkey and sides."
+        },
+        {
+          "id": "r081",
+          "role": "user",
+          "text": "can we do something with oatmeal with cinnamon for breakfast that week for guests"
+        },
+        {
+          "id": "r082",
+          "role": "assistant",
+          "text": "Yes, a topping bar would be fun."
+        },
+        {
+          "id": "r083",
+          "role": "user",
+          "text": "love that idea, kids will like it"
+        },
+        {
+          "id": "r084",
+          "role": "assistant",
+          "text": "Definitely, easy and cozy."
+        }
+      ]
+    },
+    {
+      "id": "rc15",
+      "date": "2026-11-01",
+      "time": "09:15",
+      "title": "weekend visit",
+      "messages": [
+        {
+          "id": "r085",
+          "role": "user",
+          "text": "mateo wants cheese quesadillas again today, he loves cheese quesadillas, what cheese melts best"
+        },
+        {
+          "id": "r086",
+          "role": "assistant",
+          "text": "Oaxaca or Monterey Jack melt great."
+        },
+        {
+          "id": "r087",
+          "role": "user",
+          "text": "ty, also whats a good evening crossword book for beginners"
+        },
+        {
+          "id": "r088",
+          "role": "assistant",
+          "text": "Look for large-print easy puzzles."
+        },
+        {
+          "id": "r089",
+          "role": "user",
+          "text": "k ordering one now lol"
+        },
+        {
+          "id": "r090",
+          "role": "assistant",
+          "text": "Have fun with it."
+        }
+      ]
+    },
+    {
+      "id": "rc16",
+      "date": "2026-11-01",
+      "time": "16:40",
+      "title": "wed shift check",
+      "messages": [
+        {
+          "id": "r091",
+          "role": "user",
+          "text": "just checking my volunteer shift is wed mornings now right"
+        },
+        {
+          "id": "r092",
+          "role": "assistant",
+          "text": "Yes, Wednesday mornings is correct."
+        },
+        {
+          "id": "r093",
+          "role": "user",
+          "text": "perfect, need ideas for sorting cans faster"
+        },
+        {
+          "id": "r094",
+          "role": "assistant",
+          "text": "Sort by size first, then label."
+        },
+        {
+          "id": "r095",
+          "role": "user",
+          "text": "k good tip, see ya"
+        },
+        {
+          "id": "r096",
+          "role": "assistant",
+          "text": "See you later."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Rosa, 58, Santa Fe. Retired nurse, lives with her partner, gardens, volunteers at a food bank."
+}

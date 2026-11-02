@@ -1,0 +1,282 @@
+{
+  "cards": [
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Eats spicy instant ramen around midnight",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "e011",
+        "e037",
+        "e075"
+      ],
+      "sub": "meals",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Prefers cheap meals under $10",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "e021",
+        "e023",
+        "e063"
+      ],
+      "sub": "budget",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-4",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks cold brew coffee",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "e001",
+        "e019",
+        "e057"
+      ],
+      "sub": "drinks",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Cooks at home instead of takeout",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "e027",
+        "e077"
+      ],
+      "sub": "cooking",
+      "until": "2026-12-10",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-5",
+      "category": "food",
+      "type": "preference",
+      "text": "Needs quick breakfast before morning shift",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "e089",
+        "e091"
+      ],
+      "sub": "breakfast",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "transport-1",
+      "category": "transport",
+      "type": "preference",
+      "text": "Bikes everywhere for transportation",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "e009",
+        "e031",
+        "e071"
+      ],
+      "sub": "biking",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "transport-2",
+      "category": "transport",
+      "type": "preference",
+      "text": "Prefers spots within 15-minute bike ride",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "e009"
+      ],
+      "sub": "proximity",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Works morning shifts at cafe",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "e049",
+        "e051",
+        "e087",
+        "e089"
+      ],
+      "sub": "schedule",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "entertainment-1",
+      "category": "entertainment",
+      "type": "preference",
+      "text": "Studies with lo-fi music",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "e003",
+        "e025",
+        "e065"
+      ],
+      "sub": "music",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "social-1",
+      "category": "social",
+      "type": "preference",
+      "text": "Has Sunday movie night with roommates",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "e017",
+        "e067",
+        "e083"
+      ],
+      "sub": "routines",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "social-2",
+      "category": "social",
+      "type": "preference",
+      "text": "Roommate Maya likes not-too-sweet matcha lattes",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "e013",
+        "e015",
+        "e059"
+      ],
+      "sub": "roommates",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "home-1",
+      "category": "home",
+      "type": "preference",
+      "text": "Lives in shared house with roommates",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "e085",
+        "e095",
+        "e097"
+      ],
+      "sub": "living",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "home-2",
+      "category": "home",
+      "type": "preference",
+      "text": "Lives in Nashville",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "e073"
+      ],
+      "sub": "location",
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "finance-1",
+      "category": "finance",
+      "type": "preference",
+      "text": "Focused on managing student loan debt after graduation",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.85,
+      "sources": [
+        "e043",
+        "e045"
+      ],
+      "sub": "debt",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "education-1",
+      "category": "education",
+      "type": "preference",
+      "text": "Is a college senior",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "e021"
+      ],
+      "sub": "status",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    }
+  ]
+}

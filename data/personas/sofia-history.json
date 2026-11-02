@@ -1,0 +1,636 @@
+{
+  "user": {
+    "name": "Sofia"
+  },
+  "conversations": [
+    {
+      "id": "sc01",
+      "date": "2026-10-20",
+      "time": "07:40",
+      "title": "groceries and coffee",
+      "messages": [
+        {
+          "id": "s001",
+          "role": "user",
+          "text": "hey can u help me make a grocery list for the week? trying to hit the saturday farmers market for veggies"
+        },
+        {
+          "id": "s002",
+          "role": "assistant",
+          "text": "Sure, let's build it around what you get Saturday."
+        },
+        {
+          "id": "s003",
+          "role": "user",
+          "text": "also remind me to grab oat milk, i need my iced oat milk coffee in the morning or im useless lol"
+        },
+        {
+          "id": "s004",
+          "role": "assistant",
+          "text": "Got it, oat milk is on the list."
+        },
+        {
+          "id": "s005",
+          "role": "user",
+          "text": "kids have school lunch stuff too, theyre so picky ugh"
+        },
+        {
+          "id": "s006",
+          "role": "assistant",
+          "text": "I'll add some kid-friendly lunch options."
+        }
+      ]
+    },
+    {
+      "id": "sc02",
+      "date": "2026-10-20",
+      "time": "18:15",
+      "title": "friday pasta plan",
+      "messages": [
+        {
+          "id": "s007",
+          "role": "user",
+          "text": "need an easy pasta idea for friday, kids want pasta on fridays its like a rule now"
+        },
+        {
+          "id": "s008",
+          "role": "assistant",
+          "text": "Cute tradition, how about penne with butter and parmesan?"
+        },
+        {
+          "id": "s009",
+          "role": "user",
+          "text": "yeah that works, maybe with peas on the side"
+        },
+        {
+          "id": "s010",
+          "role": "assistant",
+          "text": "Perfect, I'll save that for Friday."
+        },
+        {
+          "id": "s011",
+          "role": "user",
+          "text": "also tuesdays are crazy cuz kids have soccer in the evening so need something super quick for dinner tues"
+        },
+        {
+          "id": "s012",
+          "role": "assistant",
+          "text": "Okay, I'll keep Tuesday dinners quick and simple."
+        }
+      ]
+    },
+    {
+      "id": "sc03",
+      "date": "2026-10-21",
+      "time": "08:05",
+      "title": "dentist scheduling",
+      "messages": [
+        {
+          "id": "s013",
+          "role": "user",
+          "text": "ugh need to book dentist for me and the kids, can u find morning appointments? i prefer mornings"
+        },
+        {
+          "id": "s014",
+          "role": "assistant",
+          "text": "Mornings are best, I'll look for early slots."
+        },
+        {
+          "id": "s015",
+          "role": "user",
+          "text": "afternoons im at school counseling stuff so yeah mornings only"
+        },
+        {
+          "id": "s016",
+          "role": "assistant",
+          "text": "Understood, filtering for morning times."
+        },
+        {
+          "id": "s017",
+          "role": "user",
+          "text": "lmk what u find, gotta run to work"
+        },
+        {
+          "id": "s018",
+          "role": "assistant",
+          "text": "Will do, have a good day at work."
+        }
+      ]
+    },
+    {
+      "id": "sc04",
+      "date": "2026-10-22",
+      "time": "12:30",
+      "title": "mom visit dessert",
+      "messages": [
+        {
+          "id": "s019",
+          "role": "user",
+          "text": "my mom rosa is coming over sunday, need a dessert idea"
+        },
+        {
+          "id": "s020",
+          "role": "assistant",
+          "text": "What kind of sweets does she like?"
+        },
+        {
+          "id": "s021",
+          "role": "user",
+          "text": "she loves anything lemon so maybe lemon bars? can u send a simple recipe"
+        },
+        {
+          "id": "s022",
+          "role": "assistant",
+          "text": "Lemon bars are perfect, I'll find an easy recipe."
+        },
+        {
+          "id": "s023",
+          "role": "user",
+          "text": "shes been helping with the kids a lot lately"
+        },
+        {
+          "id": "s024",
+          "role": "assistant",
+          "text": "That's sweet of her."
+        }
+      ]
+    },
+    {
+      "id": "sc05",
+      "date": "2026-10-22",
+      "time": "19:20",
+      "title": "dairy free dinners",
+      "messages": [
+        {
+          "id": "s025",
+          "role": "user",
+          "text": "trying a dairy-free trial until nov 22 so need dinner ideas with no cheese/milk this week"
+        },
+        {
+          "id": "s026",
+          "role": "assistant",
+          "text": "Got it, I'll keep everything dairy-free for now."
+        },
+        {
+          "id": "s027",
+          "role": "user",
+          "text": "kids are gonna complain lol but we'll try"
+        },
+        {
+          "id": "s028",
+          "role": "assistant",
+          "text": "We'll find some kid-approved ones."
+        },
+        {
+          "id": "s029",
+          "role": "user",
+          "text": "also whats the weather tmrw? we usually do an evening walk around the block after dinner"
+        },
+        {
+          "id": "s030",
+          "role": "assistant",
+          "text": "I'll check tomorrow's weather for your walk."
+        }
+      ]
+    },
+    {
+      "id": "sc06",
+      "date": "2026-10-24",
+      "time": "09:10",
+      "title": "saturday market list",
+      "messages": [
+        {
+          "id": "s031",
+          "role": "user",
+          "text": "heading to the saturday farmers market in a bit, what should i get for tacos?"
+        },
+        {
+          "id": "s032",
+          "role": "assistant",
+          "text": "Grab tomatoes, onions, cilantro and limes."
+        },
+        {
+          "id": "s033",
+          "role": "user",
+          "text": "cool, hope they have good avocados today"
+        },
+        {
+          "id": "s034",
+          "role": "assistant",
+          "text": "Fingers crossed for ripe ones."
+        },
+        {
+          "id": "s035",
+          "role": "user",
+          "text": "parking there is always a nightmare haha"
+        },
+        {
+          "id": "s036",
+          "role": "assistant",
+          "text": "Go early if you can."
+        }
+      ]
+    },
+    {
+      "id": "sc07",
+      "date": "2026-10-24",
+      "time": "17:45",
+      "title": "pasta friday again",
+      "messages": [
+        {
+          "id": "s037",
+          "role": "user",
+          "text": "ok friday pasta time, kids want pasta on fridays so what sauce besides red?"
+        },
+        {
+          "id": "s038",
+          "role": "assistant",
+          "text": "Try garlic olive oil with broccoli."
+        },
+        {
+          "id": "s039",
+          "role": "user",
+          "text": "my 8 yr old hates broccoli tho"
+        },
+        {
+          "id": "s040",
+          "role": "assistant",
+          "text": "Then maybe just garlic bread and plain pasta."
+        },
+        {
+          "id": "s041",
+          "role": "user",
+          "text": "lol true, keep it simple"
+        },
+        {
+          "id": "s042",
+          "role": "assistant",
+          "text": "Simple always wins on Fridays."
+        }
+      ]
+    },
+    {
+      "id": "sc08",
+      "date": "2026-10-25",
+      "time": "10:20",
+      "title": "soccer schedule change",
+      "messages": [
+        {
+          "id": "s043",
+          "role": "user",
+          "text": "ugh kids soccer moved from tue to thu evenings so need to replan dinners"
+        },
+        {
+          "id": "s044",
+          "role": "assistant",
+          "text": "Oh no, schedule changes are tough."
+        },
+        {
+          "id": "s045",
+          "role": "user",
+          "text": "yeah so thursday dinner must be quick now cuz of soccer practice"
+        },
+        {
+          "id": "s046",
+          "role": "assistant",
+          "text": "Got it, I'll make Thursdays the quick dinner night."
+        },
+        {
+          "id": "s047",
+          "role": "user",
+          "text": "and dont do the old one anymore, tuesdays are free now no need for quick tues dinner"
+        },
+        {
+          "id": "s048",
+          "role": "assistant",
+          "text": "Understood, quick dinners moved to Thursday."
+        },
+        {
+          "id": "s049",
+          "role": "user",
+          "text": "also need my iced oat milk coffee recipe, mine tasted watery today"
+        },
+        {
+          "id": "s050",
+          "role": "assistant",
+          "text": "Try less ice and a double shot."
+        }
+      ]
+    },
+    {
+      "id": "sc09",
+      "date": "2026-10-25",
+      "time": "15:00",
+      "title": "parent teacher thing",
+      "messages": [
+        {
+          "id": "s051",
+          "role": "user",
+          "text": "need to schedule parent teacher conference for my 11 yr old, do u know if they have morning appointments? i prefer mornings"
+        },
+        {
+          "id": "s052",
+          "role": "assistant",
+          "text": "I can check for morning availability."
+        },
+        {
+          "id": "s053",
+          "role": "user",
+          "text": "i can do before 9am dropoff kinda thing"
+        },
+        {
+          "id": "s054",
+          "role": "assistant",
+          "text": "Perfect, I'll note before 9am."
+        },
+        {
+          "id": "s055",
+          "role": "user",
+          "text": "school counselor life but still hate afternoon meetings lol"
+        },
+        {
+          "id": "s056",
+          "role": "assistant",
+          "text": "Makes sense with your work schedule."
+        }
+      ]
+    },
+    {
+      "id": "sc10",
+      "date": "2026-10-27",
+      "time": "11:15",
+      "title": "birthday for rosa",
+      "messages": [
+        {
+          "id": "s057",
+          "role": "user",
+          "text": "looking for bday gift for my mom rosa, she loves mystery novels right? any recs"
+        },
+        {
+          "id": "s058",
+          "role": "assistant",
+          "text": "Yes, I can suggest some cozy mysteries."
+        },
+        {
+          "id": "s059",
+          "role": "user",
+          "text": "oh also want to bake her lemon cake cuz she loves lemon desserts, need a dairy free version tho"
+        },
+        {
+          "id": "s060",
+          "role": "assistant",
+          "text": "I'll find a dairy-free lemon cake recipe."
+        },
+        {
+          "id": "s061",
+          "role": "user",
+          "text": "shes the best, watches kids when i have late meetings"
+        },
+        {
+          "id": "s062",
+          "role": "assistant",
+          "text": "She sounds wonderful."
+        }
+      ]
+    },
+    {
+      "id": "sc11",
+      "date": "2026-10-27",
+      "time": "20:05",
+      "title": "evening routine",
+      "messages": [
+        {
+          "id": "s063",
+          "role": "user",
+          "text": "is it gonna rain tonight? we do our evening walk around the block after dinner if its clear"
+        },
+        {
+          "id": "s064",
+          "role": "assistant",
+          "text": "Let me check tonight's forecast."
+        },
+        {
+          "id": "s065",
+          "role": "user",
+          "text": "kids need to burn energy after thu soccer lol"
+        },
+        {
+          "id": "s066",
+          "role": "assistant",
+          "text": "A walk sounds perfect after practice."
+        },
+        {
+          "id": "s067",
+          "role": "user",
+          "text": "btw been stressed, got custody paperwork in progress with their dad so trying to keep routines normal"
+        },
+        {
+          "id": "s068",
+          "role": "assistant",
+          "text": "That sounds stressful, keeping routines helps."
+        }
+      ]
+    },
+    {
+      "id": "sc12",
+      "date": "2026-10-28",
+      "time": "08:30",
+      "title": "dairy free check",
+      "messages": [
+        {
+          "id": "s069",
+          "role": "user",
+          "text": "can u give me dairy free breakfast ideas? still on that dairy-free trial until nov 22"
+        },
+        {
+          "id": "s070",
+          "role": "assistant",
+          "text": "How about oatmeal with fruit and peanut butter?"
+        },
+        {
+          "id": "s071",
+          "role": "user",
+          "text": "my 8 yr old will only eat cereal ugh"
+        },
+        {
+          "id": "s072",
+          "role": "assistant",
+          "text": "There are good dairy-free cereals with oat milk."
+        },
+        {
+          "id": "s073",
+          "role": "user",
+          "text": "true, we have cheerios at home"
+        },
+        {
+          "id": "s074",
+          "role": "assistant",
+          "text": "Perfect, that works great."
+        }
+      ]
+    },
+    {
+      "id": "sc13",
+      "date": "2026-10-28",
+      "time": "19:00",
+      "title": "coffee and concert",
+      "messages": [
+        {
+          "id": "s075",
+          "role": "user",
+          "text": "my iced oat milk coffee craving is real today, any new cafe near me in miami?"
+        },
+        {
+          "id": "s076",
+          "role": "assistant",
+          "text": "I'll look up cafes with oat milk nearby."
+        },
+        {
+          "id": "s077",
+          "role": "user",
+          "text": "need decaf after 2pm or i wont sleep lol"
+        },
+        {
+          "id": "s078",
+          "role": "assistant",
+          "text": "Good call, decaf in the afternoon."
+        },
+        {
+          "id": "s079",
+          "role": "user",
+          "text": "omg finally bought concert tickets for next month, just me and a friend, one-time treat!"
+        },
+        {
+          "id": "s080",
+          "role": "assistant",
+          "text": "So fun, enjoy your night out!"
+        }
+      ]
+    },
+    {
+      "id": "sc14",
+      "date": "2026-10-30",
+      "time": "09:00",
+      "title": "market meal prep",
+      "messages": [
+        {
+          "id": "s081",
+          "role": "user",
+          "text": "planning meals around what i got at the saturday farmers market last week, lots of squash left"
+        },
+        {
+          "id": "s082",
+          "role": "assistant",
+          "text": "Squash soup could be great."
+        },
+        {
+          "id": "s083",
+          "role": "user",
+          "text": "yeah need dairy free soup recipe"
+        },
+        {
+          "id": "s084",
+          "role": "assistant",
+          "text": "I'll find a dairy-free squash soup."
+        },
+        {
+          "id": "s085",
+          "role": "user",
+          "text": "going again this saturday hopefully"
+        },
+        {
+          "id": "s086",
+          "role": "assistant",
+          "text": "Nice, hope you find good stuff."
+        }
+      ]
+    },
+    {
+      "id": "sc15",
+      "date": "2026-10-30",
+      "time": "18:30",
+      "title": "friday and rosa",
+      "messages": [
+        {
+          "id": "s087",
+          "role": "user",
+          "text": "friday tomorrow, kids want pasta on fridays so need to shop tonight"
+        },
+        {
+          "id": "s088",
+          "role": "assistant",
+          "text": "Want me to add pasta to your list?."
+        },
+        {
+          "id": "s089",
+          "role": "user",
+          "text": "yes pls, and thursday was hectic with soccer so glad friday is chill"
+        },
+        {
+          "id": "s090",
+          "role": "assistant",
+          "text": "Thursdays sound busy now."
+        },
+        {
+          "id": "s091",
+          "role": "user",
+          "text": "also mom rosa is coming for dinner, making lemon chicken cuz she loves lemon desserts and lemon anything lol"
+        },
+        {
+          "id": "s092",
+          "role": "assistant",
+          "text": "Lemon chicken sounds perfect for Rosa."
+        },
+        {
+          "id": "s093",
+          "role": "user",
+          "text": "she always brings crosswords for the kids"
+        },
+        {
+          "id": "s094",
+          "role": "assistant",
+          "text": "That's such a cute habit."
+        }
+      ]
+    },
+    {
+      "id": "sc16",
+      "date": "2026-11-01",
+      "time": "08:15",
+      "title": "morning checkup",
+      "messages": [
+        {
+          "id": "s095",
+          "role": "user",
+          "text": "need to book my annual physical, can u call out morning appointments only? i prefer mornings for any doctor stuff"
+        },
+        {
+          "id": "s096",
+          "role": "assistant",
+          "text": "Absolutely, I'll filter for mornings."
+        },
+        {
+          "id": "s097",
+          "role": "user",
+          "text": "miami traffic is awful after 10am"
+        },
+        {
+          "id": "s098",
+          "role": "assistant",
+          "text": "Morning avoids the worst traffic."
+        },
+        {
+          "id": "s099",
+          "role": "user",
+          "text": "then evening walk around the block after dinner to unwind, if kids cooperate lol"
+        },
+        {
+          "id": "s100",
+          "role": "assistant",
+          "text": "Hope you get a nice relaxing walk."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Sofia, 41, Miami. School counselor, single mom of kids aged 8 and 11."
+}

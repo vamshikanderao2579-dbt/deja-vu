@@ -1,0 +1,201 @@
+{
+  "cards": [
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Keeps toddler bedtime at 7:30pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "f003",
+        "f035",
+        "f067"
+      ],
+      "sub": "bedtime",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-3",
+      "category": "family",
+      "type": "preference",
+      "text": "Imran loves extra spicy dal",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "f009",
+        "f051",
+        "f093"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-4",
+      "category": "family",
+      "type": "preference",
+      "text": "Does weekend park outings with toddler",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "f015",
+        "f045",
+        "f081"
+      ],
+      "sub": "weekend",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-2",
+      "category": "family",
+      "type": "preference",
+      "text": "Has 2-year-old toddler",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "f003"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Picks up daycare at 5pm on Lyndale",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "f055",
+        "f077",
+        "f083"
+      ],
+      "sub": "daycare",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-2",
+      "category": "routine",
+      "type": "preference",
+      "text": "Does Sunday meal prep with rice veggies chicken",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "f033",
+        "f075"
+      ],
+      "sub": "meal-prep",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-3",
+      "category": "routine",
+      "type": "preference",
+      "text": "Eats dinner around 6pm after pickup",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "f057"
+      ],
+      "sub": "meals",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks ginger chai every morning before work",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "f027",
+        "f059",
+        "f025"
+      ],
+      "sub": "drinks",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Prefers quick home-cooked meals over takeout",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "f007",
+        "f073"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Eats mild foods for sensitive stomach postpartum",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.75,
+      "sources": [
+        "f049",
+        "f051"
+      ],
+      "sub": "health-diet",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "preference",
+      "text": "Prefers trains over flights for short trips",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "f021",
+        "f063"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    }
+  ]
+}

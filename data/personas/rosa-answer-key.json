@@ -1,0 +1,533 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Rosa.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "R01",
+      "category": "stable",
+      "text": "gardens in the morning before it gets hot",
+      "sources": [
+        "r001",
+        "r025",
+        "r067"
+      ]
+    },
+    {
+      "id": "R02",
+      "category": "stable",
+      "text": "enjoys calming herbal tea in the evenings",
+      "sources": [
+        "r003",
+        "r031",
+        "r069"
+      ]
+    },
+    {
+      "id": "R03",
+      "category": "stable",
+      "text": "has a cat that sits on seedlings",
+      "sources": [
+        "r005"
+      ]
+    },
+    {
+      "id": "R04",
+      "category": "stable",
+      "text": "walks 3 miles a day, sometimes splitting it up for knees",
+      "sources": [
+        "r009",
+        "r027",
+        "r073"
+      ]
+    },
+    {
+      "id": "R05",
+      "category": "stable",
+      "text": "makes beans and rice like every week",
+      "sources": [
+        "r013",
+        "r045",
+        "r075"
+      ]
+    },
+    {
+      "id": "R06",
+      "category": "stable",
+      "text": "eats oatmeal with cinnamon every morning for breakfast",
+      "sources": [
+        "r015",
+        "r033",
+        "r081"
+      ]
+    },
+    {
+      "id": "R07",
+      "category": "stable",
+      "text": "grandson Mateo loves cheese quesadillas",
+      "sources": [
+        "r019",
+        "r051",
+        "r085"
+      ]
+    },
+    {
+      "id": "R08",
+      "category": "stable",
+      "text": "does evening crossword puzzles",
+      "sources": [
+        "r021",
+        "r063",
+        "r087"
+      ]
+    },
+    {
+      "id": "R09",
+      "category": "stable",
+      "text": "volunteered at food bank on Monday mornings at 9",
+      "sources": [
+        "r007",
+        "r037"
+      ],
+      "superseded_by": "R10"
+    },
+    {
+      "id": "R10",
+      "category": "stable",
+      "text": "volunteers at food bank on Wednesday mornings",
+      "sources": [
+        "r055",
+        "r091"
+      ]
+    },
+    {
+      "id": "R11",
+      "category": "sensitive",
+      "text": "has arthritis in hands and uses grip aids to open jars",
+      "sources": [
+        "r061"
+      ]
+    },
+    {
+      "id": "R12",
+      "category": "short",
+      "text": "hosting family for Thanksgiving Nov 26 for 10 people",
+      "sources": [
+        "r049",
+        "r079"
+      ]
+    },
+    {
+      "id": "R13",
+      "category": "short",
+      "text": "plans batch cooking beans and rice tomorrow",
+      "sources": [
+        "r075",
+        "r077"
+      ]
+    },
+    {
+      "id": "R14",
+      "category": "oneoff",
+      "text": "neighbor brought over green chiles once",
+      "sources": [
+        "r017"
+      ]
+    },
+    {
+      "id": "R15",
+      "category": "oneoff",
+      "text": "took a train trip to Chicago that one time",
+      "sources": [
+        "r043"
+      ]
+    },
+    {
+      "id": "R16",
+      "category": "oneoff",
+      "text": "saw a funny owl on fence one day",
+      "sources": [
+        "r035"
+      ]
+    },
+    {
+      "id": "R17",
+      "category": "stable",
+      "text": "lives in Santa Fe",
+      "sources": [
+        "r071"
+      ]
+    }
+  ],
+  "_current_truth": "What Rosa answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "R05": {
+      "action": "edit",
+      "text": "makes beans and rice like every week, partner is now vegetarian so household meals need vegetarian options"
+    },
+    "R04": {
+      "action": "edit",
+      "text": "walks 3 miles a day split if needed for knees and now does tai chi on Tuesday mornings"
+    },
+    "R01": {
+      "action": "confirm"
+    },
+    "R06": {
+      "action": "confirm"
+    },
+    "R07": {
+      "action": "confirm"
+    },
+    "R10": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "RQ01",
+      "kind": "stable",
+      "text": "What should I plant this weekend for my morning garden time?",
+      "checks": [
+        {
+          "text": "Schedules gardening in the morning",
+          "kw": [
+            "morning garden",
+            "garden in the morning"
+          ],
+          "want": true,
+          "fact": "R01"
+        }
+      ]
+    },
+    {
+      "id": "RQ02",
+      "kind": "stable",
+      "text": "Suggest a calming evening drink for me.",
+      "checks": [
+        {
+          "text": "Recommends calming herbal tea",
+          "kw": [
+            "herbal tea",
+            "chamomile"
+          ],
+          "want": true,
+          "fact": "R02"
+        }
+      ]
+    },
+    {
+      "id": "RQ03",
+      "kind": "stable",
+      "text": "How do I keep my cat off my seedlings?",
+      "checks": [
+        {
+          "text": "Mentions cat sitting on seedlings",
+          "kw": [
+            "cat",
+            "seedlings"
+          ],
+          "want": true,
+          "fact": "R03"
+        }
+      ]
+    },
+    {
+      "id": "RQ04",
+      "kind": "stable",
+      "text": "What breakfast should I prep for tomorrow?",
+      "checks": [
+        {
+          "text": "Suggests oatmeal with cinnamon",
+          "kw": [
+            "oatmeal",
+            "cinnamon"
+          ],
+          "want": true,
+          "fact": "R06"
+        }
+      ]
+    },
+    {
+      "id": "RQ05",
+      "kind": "stable",
+      "text": "My grandson is visiting, what should I make him?",
+      "checks": [
+        {
+          "text": "Suggests cheese quesadillas for Mateo",
+          "kw": [
+            "cheese quesadillas",
+            "mateo"
+          ],
+          "want": true,
+          "fact": "R07"
+        }
+      ]
+    },
+    {
+      "id": "RQ06",
+      "kind": "stable",
+      "text": "Recommend something relaxing for tonight.",
+      "checks": [
+        {
+          "text": "Suggests evening crossword",
+          "kw": [
+            "crossword",
+            "evening puzzle"
+          ],
+          "want": true,
+          "fact": "R08"
+        }
+      ]
+    },
+    {
+      "id": "RQ07",
+      "kind": "stable",
+      "text": "What socks should I buy for my daily walks?",
+      "checks": [
+        {
+          "text": "References walks 3 miles a day",
+          "kw": [
+            "3 miles",
+            "daily walk"
+          ],
+          "want": true,
+          "fact": "R04"
+        }
+      ]
+    },
+    {
+      "id": "RQ08",
+      "kind": "stable",
+      "text": "Any Santa Fe cold-weather garden tips?",
+      "checks": [
+        {
+          "text": "References living in Santa Fe",
+          "kw": [
+            "santa fe",
+            "santa"
+          ],
+          "want": true,
+          "fact": "R17"
+        }
+      ]
+    },
+    {
+      "id": "RQ09",
+      "kind": "outside",
+      "text": "Plan a vegetarian-friendly beans and rice dinner for me and my partner this week.",
+      "checks": [
+        {
+          "text": "Includes vegetarian option for partner",
+          "kw": [
+            "vegetarian",
+            "meatless"
+          ],
+          "want": true,
+          "fact": "R05"
+        },
+        {
+          "text": "Plans beef stew with no vegetarian option",
+          "kw": [
+            "beef stew",
+            "ground beef"
+          ],
+          "want": false,
+          "fact": "R05"
+        }
+      ]
+    },
+    {
+      "id": "RQ10",
+      "kind": "outside",
+      "text": "Help plan Thanksgiving dinner for 10 including my partner.",
+      "checks": [
+        {
+          "text": "Includes vegetarian dish for partner",
+          "kw": [
+            "vegetarian",
+            "meatless main"
+          ],
+          "want": true,
+          "fact": "R05"
+        }
+      ]
+    },
+    {
+      "id": "RQ11",
+      "kind": "outside",
+      "text": "Can I schedule a dentist appointment Tuesday morning?",
+      "checks": [
+        {
+          "text": "Notes tai chi on Tuesday mornings",
+          "kw": [
+            "tai chi",
+            "tuesday morning"
+          ],
+          "want": true,
+          "fact": "R04"
+        }
+      ]
+    },
+    {
+      "id": "RQ12",
+      "kind": "outside",
+      "text": "Plan my exercise schedule for next week.",
+      "checks": [
+        {
+          "text": "Includes tai chi Tuesday morning",
+          "kw": [
+            "tai chi",
+            "tuesday"
+          ],
+          "want": true,
+          "fact": "R04"
+        },
+        {
+          "text": "Plans hard workout Tuesday morning ignoring commitment",
+          "kw": [
+            "tuesday run",
+            "tuesday workout"
+          ],
+          "want": false,
+          "fact": "R04"
+        }
+      ]
+    },
+    {
+      "id": "RQ13",
+      "kind": "inchat",
+      "text": "Set a reminder for my food bank volunteer shift.",
+      "checks": [
+        {
+          "text": "Sets reminder for Wednesday mornings",
+          "kw": [
+            "wednesday morning",
+            "wed mornings"
+          ],
+          "want": true,
+          "fact": "R10"
+        },
+        {
+          "text": "Sets reminder for Monday mornings",
+          "kw": [
+            "monday morning",
+            "monday at 9"
+          ],
+          "want": false,
+          "fact": "R09"
+        }
+      ]
+    },
+    {
+      "id": "RQ14",
+      "kind": "inchat",
+      "text": "What day should I do my donation grocery run before my shift?",
+      "checks": [
+        {
+          "text": "References Wednesday shift",
+          "kw": [
+            "wednesday shift",
+            "wed morning"
+          ],
+          "want": true,
+          "fact": "R10"
+        }
+      ]
+    },
+    {
+      "id": "RQ15",
+      "kind": "short",
+      "text": "Help me finalize the shopping list for Thanksgiving Nov 26 for 10 people.",
+      "checks": [
+        {
+          "text": "Plans for 10 people Thanksgiving",
+          "kw": [
+            "10 people",
+            "thanksgiving"
+          ],
+          "want": true,
+          "fact": "R12"
+        }
+      ]
+    },
+    {
+      "id": "RQ16",
+      "kind": "short",
+      "text": "What containers should I use for batch cooking tomorrow?",
+      "checks": [
+        {
+          "text": "References batch cooking beans and rice",
+          "kw": [
+            "batch cooking",
+            "beans and rice"
+          ],
+          "want": true,
+          "fact": "R13"
+        }
+      ]
+    },
+    {
+      "id": "RQ17",
+      "kind": "sensitive",
+      "text": "Suggest easy meals I can open and cook with sore hands.",
+      "checks": [
+        {
+          "text": "Suggests grip aids and easy one-pot meals",
+          "kw": [
+            "grip aids",
+            "one-pot"
+          ],
+          "want": true,
+          "fact": "R11"
+        }
+      ]
+    },
+    {
+      "id": "RQ18",
+      "kind": "sensitive",
+      "text": "What kitchen gifts should I ask for with my arthritis?",
+      "checks": [
+        {
+          "text": "Accounts for arthritis in hands",
+          "kw": [
+            "arthritis",
+            "grip aids"
+          ],
+          "want": true,
+          "fact": "R11"
+        }
+      ]
+    },
+    {
+      "id": "RQ19",
+      "kind": "oneoff",
+      "text": "What should I cook with green chiles?",
+      "checks": [
+        {
+          "text": "Treats neighbor green chiles as regular supply",
+          "kw": [
+            "always have green chiles",
+            "regular supply"
+          ],
+          "want": false,
+          "fact": "R14"
+        }
+      ]
+    },
+    {
+      "id": "RQ20",
+      "kind": "oneoff",
+      "text": "Should I book another train trip like Chicago?",
+      "checks": [
+        {
+          "text": "Assumes takes train trips regularly",
+          "kw": [
+            "regular train trips",
+            "often travel by train"
+          ],
+          "want": false,
+          "fact": "R15"
+        }
+      ]
+    }
+  ]
+}

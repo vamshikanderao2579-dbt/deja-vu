@@ -1,0 +1,261 @@
+{
+  "cards": [
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "preference",
+      "text": "Books only direct flights, no layovers",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "d009",
+        "d049",
+        "d087"
+      ],
+      "sub": "flights",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "fitness-2",
+      "category": "fitness",
+      "type": "preference",
+      "text": "Does morning runs regularly",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "d001",
+        "d023",
+        "d059",
+        "d093"
+      ],
+      "sub": "running",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "fitness-1",
+      "category": "fitness",
+      "type": "preference",
+      "text": "Goes to gym at 6am",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "d055",
+        "d089",
+        "d091"
+      ],
+      "sub": "gym",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "fitness-3",
+      "category": "fitness",
+      "type": "preference",
+      "text": "Training for 10k race",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "d017",
+        "d063"
+      ],
+      "sub": "training",
+      "until": "2026-12-06",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Takes anxiety medication nightly at 10pm",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.9,
+      "sources": [
+        "d039"
+      ],
+      "sub": "medication",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks black coffee with no sugar",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "d001",
+        "d035",
+        "d075"
+      ],
+      "sub": "drink",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Eats overnight oats with peanut butter for weekday breakfast",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "d003",
+        "d057"
+      ],
+      "sub": "breakfast",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Cooks jollof rice on Sundays",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "d011",
+        "d069"
+      ],
+      "sub": "cooking",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-4",
+      "category": "food",
+      "type": "preference",
+      "text": "Likes extra cheese on pizza",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "d047"
+      ],
+      "sub": "pizza",
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Journals 10 minutes after morning run",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "d005",
+        "d065"
+      ],
+      "sub": "morning",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Sister Amara loves margherita pizza",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "d013",
+        "d045",
+        "d083"
+      ],
+      "sub": "sister",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Works with software code",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "d015",
+        "d025",
+        "d093"
+      ],
+      "sub": "role",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-2",
+      "category": "work",
+      "type": "preference",
+      "text": "Has work meetings in evenings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "d055",
+        "d091"
+      ],
+      "sub": "schedule",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-3",
+      "category": "work",
+      "type": "preference",
+      "text": "Listens to lofi playlists while coding",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "d025"
+      ],
+      "sub": "focus",
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.548Z",
+      "last_seen": "2026-11-02T15:17:17.548Z",
+      "last_confirmed": null
+    }
+  ]
+}

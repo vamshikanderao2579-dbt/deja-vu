@@ -1,0 +1,515 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Daniel.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "D01",
+      "category": "food",
+      "text": "Drinks large black coffee with no sugar",
+      "sources": [
+        "d001",
+        "d035",
+        "d075"
+      ]
+    },
+    {
+      "id": "D02",
+      "category": "food",
+      "text": "Eats overnight oats with peanut butter for weekday breakfasts",
+      "sources": [
+        "d003",
+        "d057"
+      ]
+    },
+    {
+      "id": "D03",
+      "category": "routine",
+      "text": "Does 10 minutes of journaling after morning run",
+      "sources": [
+        "d005",
+        "d065"
+      ]
+    },
+    {
+      "id": "D04",
+      "category": "fitness",
+      "text": "Went to gym in evenings around 7pm",
+      "sources": [
+        "d007",
+        "d029"
+      ],
+      "superseded_by": "D05"
+    },
+    {
+      "id": "D05",
+      "category": "fitness",
+      "text": "Goes to gym at 6am in mornings",
+      "sources": [
+        "d055",
+        "d089"
+      ]
+    },
+    {
+      "id": "D06",
+      "category": "travel",
+      "text": "Prefers direct flights and hates layovers",
+      "sources": [
+        "d009",
+        "d049",
+        "d087"
+      ]
+    },
+    {
+      "id": "D07",
+      "category": "food",
+      "text": "Cooks jollof rice on Sundays",
+      "sources": [
+        "d011",
+        "d069"
+      ]
+    },
+    {
+      "id": "D08",
+      "category": "family",
+      "text": "Sister Amara is vegetarian and loves margherita pizza",
+      "sources": [
+        "d013",
+        "d045",
+        "d083"
+      ]
+    },
+    {
+      "id": "D09",
+      "category": "health",
+      "text": "No alcohol until 10k race on Dec 6",
+      "sources": [
+        "d017",
+        "d063"
+      ]
+    },
+    {
+      "id": "D10",
+      "category": "fitness",
+      "text": "Tried rock climbing once with friends as a one-time thing",
+      "sources": [
+        "d019"
+      ]
+    },
+    {
+      "id": "D11",
+      "category": "fitness",
+      "text": "Runs in the mornings",
+      "sources": [
+        "d023",
+        "d059",
+        "d093"
+      ]
+    },
+    {
+      "id": "D12",
+      "category": "health",
+      "text": "Takes anxiety medication every night at 10pm",
+      "sources": [
+        "d039"
+      ]
+    },
+    {
+      "id": "D13",
+      "category": "food",
+      "text": "Likes extra cheese on his pizza",
+      "sources": [
+        "d047"
+      ]
+    },
+    {
+      "id": "D14",
+      "category": "work",
+      "text": "Has work meetings in the evenings",
+      "sources": [
+        "d055",
+        "d091"
+      ]
+    }
+  ],
+  "_current_truth": "What Daniel answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "D11": {
+      "action": "edit",
+      "text": "Swims instead of running since a pool opened nearby"
+    },
+    "D14": {
+      "action": "edit",
+      "text": "Works in the office on Tue and Thu"
+    },
+    "D01": {
+      "action": "confirm"
+    },
+    "D06": {
+      "action": "confirm"
+    },
+    "D08": {
+      "action": "confirm"
+    },
+    "D02": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "DQ01",
+      "kind": "stable",
+      "text": "Order my usual coffee for pickup this morning",
+      "checks": [
+        {
+          "text": "Orders large black coffee with no sugar",
+          "kw": [
+            "black coffee",
+            "no sugar"
+          ],
+          "want": true,
+          "fact": "D01"
+        }
+      ]
+    },
+    {
+      "id": "DQ02",
+      "kind": "stable",
+      "text": "What should I prep for weekday breakfasts?",
+      "checks": [
+        {
+          "text": "Suggests overnight oats with peanut butter",
+          "kw": [
+            "overnight oats",
+            "peanut butter"
+          ],
+          "want": true,
+          "fact": "D02"
+        }
+      ]
+    },
+    {
+      "id": "DQ03",
+      "kind": "stable",
+      "text": "Find me a flight to Denver next month",
+      "checks": [
+        {
+          "text": "Searches direct flights with no layovers",
+          "kw": [
+            "direct flights",
+            "no layovers"
+          ],
+          "want": true,
+          "fact": "D06"
+        }
+      ]
+    },
+    {
+      "id": "DQ04",
+      "kind": "stable",
+      "text": "Help me plan Sunday cooking",
+      "checks": [
+        {
+          "text": "Suggests cooking jollof rice",
+          "kw": [
+            "jollof rice",
+            "sunday"
+          ],
+          "want": true,
+          "fact": "D07"
+        }
+      ]
+    },
+    {
+      "id": "DQ05",
+      "kind": "stable",
+      "text": "My sister Amara is coming over, what food should I get?",
+      "checks": [
+        {
+          "text": "Suggests margherita pizza for vegetarian Amara",
+          "kw": [
+            "margherita pizza",
+            "vegetarian"
+          ],
+          "want": true,
+          "fact": "D08"
+        }
+      ]
+    },
+    {
+      "id": "DQ06",
+      "kind": "stable",
+      "text": "Order pizza for me tonight",
+      "checks": [
+        {
+          "text": "Orders pizza with extra cheese",
+          "kw": [
+            "extra cheese",
+            "pizza"
+          ],
+          "want": true,
+          "fact": "D13"
+        }
+      ]
+    },
+    {
+      "id": "DQ07",
+      "kind": "stable",
+      "text": "Give me a journal prompt for tomorrow",
+      "checks": [
+        {
+          "text": "Provides journal prompt for 10 mins journaling",
+          "kw": [
+            "journal prompt",
+            "10 mins"
+          ],
+          "want": true,
+          "fact": "D03"
+        }
+      ]
+    },
+    {
+      "id": "DQ08",
+      "kind": "stable",
+      "text": "Find a direct flight to NYC for the holidays, I hate stops",
+      "checks": [
+        {
+          "text": "Looks for direct flights avoiding layovers",
+          "kw": [
+            "direct",
+            "layovers"
+          ],
+          "want": true,
+          "fact": "D06"
+        }
+      ]
+    },
+    {
+      "id": "DQ09",
+      "kind": "outside",
+      "text": "Plan my morning workout for tomorrow",
+      "checks": [
+        {
+          "text": "Plans a morning swim",
+          "kw": [
+            "swim",
+            "pool"
+          ],
+          "want": true,
+          "fact": "D11"
+        },
+        {
+          "text": "Plans a morning run",
+          "kw": [
+            "morning run",
+            "running"
+          ],
+          "want": false,
+          "fact": "D11"
+        }
+      ]
+    },
+    {
+      "id": "DQ10",
+      "kind": "outside",
+      "text": "What should I do for exercise now that the pool is open?",
+      "checks": [
+        {
+          "text": "Suggests swimming",
+          "kw": [
+            "swimming",
+            "pool"
+          ],
+          "want": true,
+          "fact": "D11"
+        }
+      ]
+    },
+    {
+      "id": "DQ11",
+      "kind": "outside",
+      "text": "Am I working from home all week?",
+      "checks": [
+        {
+          "text": "Says in office Tue and Thu",
+          "kw": [
+            "office",
+            "tue and thu"
+          ],
+          "want": true,
+          "fact": "D14"
+        },
+        {
+          "text": "Says works remotely every day",
+          "kw": [
+            "remotely",
+            "work from home"
+          ],
+          "want": false,
+          "fact": "D14"
+        }
+      ]
+    },
+    {
+      "id": "DQ12",
+      "kind": "outside",
+      "text": "Plan my commute and schedule for this week",
+      "checks": [
+        {
+          "text": "Mentions office on Tue and Thu",
+          "kw": [
+            "office",
+            "tue"
+          ],
+          "want": true,
+          "fact": "D14"
+        }
+      ]
+    },
+    {
+      "id": "DQ13",
+      "kind": "inchat",
+      "text": "Book my gym session for tomorrow",
+      "checks": [
+        {
+          "text": "Books gym at 6am morning",
+          "kw": [
+            "6am",
+            "morning"
+          ],
+          "want": true,
+          "fact": "D05"
+        },
+        {
+          "text": "Books gym in evening at 7pm",
+          "kw": [
+            "evening",
+            "7pm"
+          ],
+          "want": false,
+          "fact": "D05"
+        }
+      ]
+    },
+    {
+      "id": "DQ14",
+      "kind": "inchat",
+      "text": "When should I work out given my meetings?",
+      "checks": [
+        {
+          "text": "Suggests 6am morning gym",
+          "kw": [
+            "6am",
+            "morning gym"
+          ],
+          "want": true,
+          "fact": "D05"
+        },
+        {
+          "text": "Suggests evening gym session",
+          "kw": [
+            "evening gym",
+            "7pm"
+          ],
+          "want": false,
+          "fact": "D05"
+        }
+      ]
+    },
+    {
+      "id": "DQ15",
+      "kind": "short",
+      "text": "Friends want to grab drinks Friday, should I go?",
+      "checks": [
+        {
+          "text": "Reminds of no alcohol until Dec 6 race",
+          "kw": [
+            "no alcohol",
+            "dec 6"
+          ],
+          "want": true,
+          "fact": "D09"
+        }
+      ]
+    },
+    {
+      "id": "DQ16",
+      "kind": "short",
+      "text": "Plan a celebratory dinner with wine this weekend",
+      "checks": [
+        {
+          "text": "Notes avoids alcohol until 10k race",
+          "kw": [
+            "no alcohol",
+            "10k race"
+          ],
+          "want": true,
+          "fact": "D09"
+        }
+      ]
+    },
+    {
+      "id": "DQ17",
+      "kind": "sensitive",
+      "text": "Remind me to take a late night walk at 10pm tonight",
+      "checks": [
+        {
+          "text": "Accounts for anxiety medication at 10pm",
+          "kw": [
+            "medication",
+            "10pm"
+          ],
+          "want": true,
+          "fact": "D12"
+        }
+      ]
+    },
+    {
+      "id": "DQ18",
+      "kind": "sensitive",
+      "text": "Plan my nighttime routine",
+      "checks": [
+        {
+          "text": "Includes taking anxiety medication at night",
+          "kw": [
+            "anxiety medication",
+            "night"
+          ],
+          "want": true,
+          "fact": "D12"
+        }
+      ]
+    },
+    {
+      "id": "DQ19",
+      "kind": "oneoff",
+      "text": "Plan my weekend workout",
+      "checks": [
+        {
+          "text": "Treats rock climbing as regular habit",
+          "kw": [
+            "rock climbing",
+            "climbing"
+          ],
+          "want": false,
+          "fact": "D10"
+        }
+      ]
+    },
+    {
+      "id": "DQ20",
+      "kind": "oneoff",
+      "text": "What gear should I buy for my climbing hobby?",
+      "checks": [
+        {
+          "text": "Treats one-time climbing as hobby",
+          "kw": [
+            "climbing hobby",
+            "climbing gear"
+          ],
+          "want": false,
+          "fact": "D10"
+        }
+      ]
+    }
+  ]
+}

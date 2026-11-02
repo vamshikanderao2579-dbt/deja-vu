@@ -1,0 +1,532 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Aisha.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "A01",
+      "category": "stable",
+      "text": "Prefers bus over driving",
+      "sources": [
+        "a001",
+        "a031",
+        "a063",
+        "a065"
+      ]
+    },
+    {
+      "id": "A02",
+      "category": "stable",
+      "text": "Bikes to campus",
+      "sources": [
+        "a005",
+        "a069",
+        "a093"
+      ]
+    },
+    {
+      "id": "A03",
+      "category": "stable",
+      "text": "Drinks oat milk chai every morning",
+      "sources": [
+        "a003",
+        "a045",
+        "a091"
+      ]
+    },
+    {
+      "id": "A04",
+      "category": "stable",
+      "text": "Does Sunday lentil soup meal prep weekly",
+      "sources": [
+        "a007",
+        "a039",
+        "a077"
+      ]
+    },
+    {
+      "id": "A05",
+      "category": "stable",
+      "text": "Lives with 2 roommates, one is Priya",
+      "sources": [
+        "a019",
+        "a023",
+        "a077"
+      ]
+    },
+    {
+      "id": "A06",
+      "category": "stable",
+      "text": "Cooks meal prep for three people",
+      "sources": [
+        "a023",
+        "a077"
+      ]
+    },
+    {
+      "id": "A07",
+      "category": "stable",
+      "text": "Takes evening walk after dinner to unwind",
+      "sources": [
+        "a009",
+        "a047",
+        "a073"
+      ]
+    },
+    {
+      "id": "A08",
+      "category": "stable",
+      "text": "Roommate Priya is vegan",
+      "sources": [
+        "a019",
+        "a079"
+      ]
+    },
+    {
+      "id": "A09",
+      "category": "stable",
+      "text": "Priya loves peanut noodles with peanut sauce",
+      "sources": [
+        "a021",
+        "a051",
+        "a079"
+      ]
+    },
+    {
+      "id": "A10",
+      "category": "stable",
+      "text": "Studied late evenings at library",
+      "sources": [
+        "a013",
+        "a025"
+      ],
+      "superseded_by": "A11"
+    },
+    {
+      "id": "A11",
+      "category": "stable",
+      "text": "Studies mornings 7-10am at library, no evenings",
+      "sources": [
+        "a057",
+        "a059",
+        "a085"
+      ]
+    },
+    {
+      "id": "A12",
+      "category": "short-term",
+      "text": "No caffeine after 2pm until finals end Dec 12",
+      "sources": [
+        "a033",
+        "a071"
+      ]
+    },
+    {
+      "id": "A13",
+      "category": "sensitive",
+      "text": "Visa renewal is pending",
+      "sources": [
+        "a065"
+      ]
+    },
+    {
+      "id": "A14",
+      "category": "one-off",
+      "text": "Went to one-time wedding out of state in Portland last weekend",
+      "sources": [
+        "a041",
+        "a043"
+      ]
+    }
+  ],
+  "_current_truth": "What Aisha answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "A05": {
+      "action": "edit",
+      "text": "Lives alone in her own studio with no roommates"
+    },
+    "A06": {
+      "action": "edit",
+      "text": "Now cooks for one"
+    },
+    "A01": {
+      "action": "confirm"
+    },
+    "A03": {
+      "action": "confirm"
+    },
+    "A07": {
+      "action": "confirm"
+    },
+    "A08": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "AQ01",
+      "kind": "stable",
+      "text": "Plan my commute to UW campus tomorrow morning?",
+      "checks": [
+        {
+          "text": "Recommends taking the bus over driving",
+          "kw": [
+            "bus",
+            "not driving",
+            "bus lane"
+          ],
+          "want": true,
+          "fact": "A01"
+        }
+      ]
+    },
+    {
+      "id": "AQ02",
+      "kind": "stable",
+      "text": "Can you get my bike ready for campus?",
+      "checks": [
+        {
+          "text": "Mentions biking to campus",
+          "kw": [
+            "bike",
+            "campus"
+          ],
+          "want": true,
+          "fact": "A02"
+        }
+      ]
+    },
+    {
+      "id": "AQ03",
+      "kind": "stable",
+      "text": "What should I have tomorrow morning to drink?",
+      "checks": [
+        {
+          "text": "Suggests oat milk chai",
+          "kw": [
+            "oat milk",
+            "chai"
+          ],
+          "want": true,
+          "fact": "A03"
+        }
+      ]
+    },
+    {
+      "id": "AQ04",
+      "kind": "stable",
+      "text": "What should I do after dinner to unwind?",
+      "checks": [
+        {
+          "text": "Suggests evening walk after dinner",
+          "kw": [
+            "evening walk",
+            "after dinner"
+          ],
+          "want": true,
+          "fact": "A07"
+        }
+      ]
+    },
+    {
+      "id": "AQ05",
+      "kind": "stable",
+      "text": "Suggest a shared dinner recipe I can make with Priya?",
+      "checks": [
+        {
+          "text": "Suggests a vegan recipe for Priya",
+          "kw": [
+            "vegan",
+            "priya"
+          ],
+          "want": true,
+          "fact": "A08"
+        }
+      ]
+    },
+    {
+      "id": "AQ06",
+      "kind": "stable",
+      "text": "Where should I take Priya for lunch?",
+      "checks": [
+        {
+          "text": "Mentions peanut noodles she loves",
+          "kw": [
+            "peanut noodles",
+            "peanut sauce"
+          ],
+          "want": true,
+          "fact": "A09"
+        }
+      ]
+    },
+    {
+      "id": "AQ07",
+      "kind": "stable",
+      "text": "Help me plan my Sunday cooking?",
+      "checks": [
+        {
+          "text": "Mentions lentil soup meal prep",
+          "kw": [
+            "lentil soup",
+            "meal prep"
+          ],
+          "want": true,
+          "fact": "A04"
+        }
+      ]
+    },
+    {
+      "id": "AQ08",
+      "kind": "stable",
+      "text": "Should I drive downtown at 5pm?",
+      "checks": [
+        {
+          "text": "Recommends taking the bus",
+          "kw": [
+            "take the bus",
+            "bus faster"
+          ],
+          "want": true,
+          "fact": "A01"
+        }
+      ]
+    },
+    {
+      "id": "AQ09",
+      "kind": "outside",
+      "text": "Plan my Sunday lentil soup for me and my 2 roommates?",
+      "checks": [
+        {
+          "text": "Scales meal prep for one person",
+          "kw": [
+            "for one",
+            "single serving"
+          ],
+          "want": true,
+          "fact": "A06"
+        },
+        {
+          "text": "Plans a triple batch for three people",
+          "kw": [
+            "for three",
+            "triple batch"
+          ],
+          "want": false,
+          "fact": "A06"
+        }
+      ]
+    },
+    {
+      "id": "AQ10",
+      "kind": "outside",
+      "text": "Should I invite my roommates to dinner tonight?",
+      "checks": [
+        {
+          "text": "Notes she lives alone in own studio",
+          "kw": [
+            "live alone",
+            "own studio"
+          ],
+          "want": true,
+          "fact": "A05"
+        },
+        {
+          "text": "Assumes she still lives with roommates",
+          "kw": [
+            "roommates",
+            "with priya"
+          ],
+          "want": false,
+          "fact": "A05"
+        }
+      ]
+    },
+    {
+      "id": "AQ11",
+      "kind": "outside",
+      "text": "How much soup should I make this week?",
+      "checks": [
+        {
+          "text": "Scales recipe for one person",
+          "kw": [
+            "one person",
+            "for one"
+          ],
+          "want": true,
+          "fact": "A06"
+        }
+      ]
+    },
+    {
+      "id": "AQ12",
+      "kind": "outside",
+      "text": "Should I buy groceries for three this week?",
+      "checks": [
+        {
+          "text": "Suggests buying groceries for one",
+          "kw": [
+            "for one",
+            "single portion"
+          ],
+          "want": true,
+          "fact": "A06"
+        },
+        {
+          "text": "Suggests buying for three people",
+          "kw": [
+            "for three",
+            "three people"
+          ],
+          "want": false,
+          "fact": "A06"
+        }
+      ]
+    },
+    {
+      "id": "AQ13",
+      "kind": "inchat",
+      "text": "When should I go to the library to study?",
+      "checks": [
+        {
+          "text": "Schedules morning study 7-10am",
+          "kw": [
+            "morning study",
+            "7am"
+          ],
+          "want": true,
+          "fact": "A11"
+        },
+        {
+          "text": "Schedules a late evening study session",
+          "kw": [
+            "late night",
+            "evening session"
+          ],
+          "want": false,
+          "fact": "A10"
+        }
+      ]
+    },
+    {
+      "id": "AQ14",
+      "kind": "inchat",
+      "text": "Can you quiz me tonight at 11pm at the library?",
+      "checks": [
+        {
+          "text": "Suggests studying in the morning instead",
+          "kw": [
+            "morning",
+            "7-10am"
+          ],
+          "want": true,
+          "fact": "A11"
+        },
+        {
+          "text": "Agrees to a late night quiz at 11pm",
+          "kw": [
+            "11pm",
+            "late night"
+          ],
+          "want": false,
+          "fact": "A10"
+        }
+      ]
+    },
+    {
+      "id": "AQ15",
+      "kind": "short",
+      "text": "Can I get a latte at 4pm today?",
+      "checks": [
+        {
+          "text": "Refuses caffeine after 2pm until finals",
+          "kw": [
+            "no caffeine",
+            "after 2pm"
+          ],
+          "want": true,
+          "fact": "A12"
+        }
+      ]
+    },
+    {
+      "id": "AQ16",
+      "kind": "short",
+      "text": "Plan a coffee run at 3pm before study?",
+      "checks": [
+        {
+          "text": "Suggests decaf herbal tea instead",
+          "kw": [
+            "decaf",
+            "herbal tea"
+          ],
+          "want": true,
+          "fact": "A12"
+        }
+      ]
+    },
+    {
+      "id": "AQ17",
+      "kind": "sensitive",
+      "text": "Should I book an international trip next week?",
+      "checks": [
+        {
+          "text": "Mentions visa renewal is pending",
+          "kw": [
+            "visa",
+            "pending"
+          ],
+          "want": true,
+          "fact": "A13"
+        }
+      ]
+    },
+    {
+      "id": "AQ18",
+      "kind": "sensitive",
+      "text": "Plan travel for winter break?",
+      "checks": [
+        {
+          "text": "Notes visa renewal pending risk",
+          "kw": [
+            "visa renewal",
+            "pending"
+          ],
+          "want": true,
+          "fact": "A13"
+        }
+      ]
+    },
+    {
+      "id": "AQ19",
+      "kind": "oneoff",
+      "text": "Plan my weekend trip to that Portland wedding?",
+      "checks": [
+        {
+          "text": "Treats Portland wedding trip as regular habit",
+          "kw": [
+            "every weekend",
+            "regular trip"
+          ],
+          "want": false,
+          "fact": "A14"
+        }
+      ]
+    },
+    {
+      "id": "AQ20",
+      "kind": "oneoff",
+      "text": "Book my usual flight to Portland?",
+      "checks": [
+        {
+          "text": "Assumes regular Portland travel habit",
+          "kw": [
+            "usual flight",
+            "regular travel"
+          ],
+          "want": false,
+          "fact": "A14"
+        }
+      ]
+    }
+  ]
+}

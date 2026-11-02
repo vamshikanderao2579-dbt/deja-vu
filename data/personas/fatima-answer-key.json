@@ -1,0 +1,599 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Fatima.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "F01",
+      "category": "family",
+      "text": "Toddler is 2 years old",
+      "sources": [
+        "f003",
+        "f013"
+      ]
+    },
+    {
+      "id": "F02",
+      "category": "routine",
+      "text": "Toddler bedtime is 7:30pm sharp after 7pm bath",
+      "sources": [
+        "f003",
+        "f035",
+        "f067"
+      ]
+    },
+    {
+      "id": "F03",
+      "category": "work",
+      "text": "Works clinic shifts as pediatric physical therapist",
+      "sources": [
+        "f005",
+        "f097"
+      ]
+    },
+    {
+      "id": "F04",
+      "category": "short-term",
+      "text": "Had sore throat on Oct 20",
+      "sources": [
+        "f005"
+      ]
+    },
+    {
+      "id": "F05",
+      "category": "food",
+      "text": "Prefers quick home-cooked meals over takeout",
+      "sources": [
+        "f007",
+        "f039",
+        "f073"
+      ]
+    },
+    {
+      "id": "F06",
+      "category": "food",
+      "text": "Husband Imran loves extra spicy dal",
+      "sources": [
+        "f009",
+        "f051",
+        "f093"
+      ]
+    },
+    {
+      "id": "F07",
+      "category": "one-off",
+      "text": "Requested 3-day grocery list",
+      "sources": [
+        "f011"
+      ]
+    },
+    {
+      "id": "F08",
+      "category": "routine",
+      "text": "Usually does park on weekends with toddler and stroller",
+      "sources": [
+        "f015",
+        "f045",
+        "f081"
+      ]
+    },
+    {
+      "id": "F09",
+      "category": "short-term",
+      "text": "Needs extra mittens and snow boots size 6 for toddler",
+      "sources": [
+        "f017",
+        "f029",
+        "f085"
+      ]
+    },
+    {
+      "id": "F10",
+      "category": "one-off",
+      "text": "Asked for train to Chicago next month for family visit",
+      "sources": [
+        "f019"
+      ]
+    },
+    {
+      "id": "F11",
+      "category": "preference",
+      "text": "Prefers trains over flights for short trips with toddler",
+      "sources": [
+        "f021",
+        "f063"
+      ]
+    },
+    {
+      "id": "F12",
+      "category": "food",
+      "text": "Drinks morning ginger chai every morning before work",
+      "sources": [
+        "f025",
+        "f027",
+        "f059"
+      ]
+    },
+    {
+      "id": "F13",
+      "category": "routine",
+      "text": "Does Sunday meal prep every week with rice veggies chicken",
+      "sources": [
+        "f033",
+        "f075"
+      ]
+    },
+    {
+      "id": "F14",
+      "category": "short-term",
+      "text": "Family visiting Dec 5-8 needs spare room setup",
+      "sources": [
+        "f037",
+        "f089"
+      ]
+    },
+    {
+      "id": "F15",
+      "category": "one-off",
+      "text": "Tried Ethiopian place on Lake St for anniversary as one-time treat",
+      "sources": [
+        "f043"
+      ]
+    },
+    {
+      "id": "F16",
+      "category": "sensitive",
+      "text": "Has postpartum health follow-up next week and is nervous",
+      "sources": [
+        "f049"
+      ]
+    },
+    {
+      "id": "F17",
+      "category": "sensitive",
+      "text": "Stomach cannot handle spicy food currently needs mild",
+      "sources": [
+        "f051"
+      ]
+    },
+    {
+      "id": "F18",
+      "category": "schedule",
+      "text": "Daycare pickup was at 4pm",
+      "sources": [
+        "f001"
+      ],
+      "superseded_by": "F19"
+    },
+    {
+      "id": "F19",
+      "category": "schedule",
+      "text": "Daycare pickup is now 5pm at new location on Lyndale",
+      "sources": [
+        "f055",
+        "f077",
+        "f083"
+      ]
+    },
+    {
+      "id": "F20",
+      "category": "routine",
+      "text": "Evenings shift later now dinner pushed to 6ish needs quick meals",
+      "sources": [
+        "f057",
+        "f079"
+      ]
+    },
+    {
+      "id": "F21",
+      "category": "one-off",
+      "text": "Asked for train times to Milwaukee for December",
+      "sources": [
+        "f061"
+      ]
+    },
+    {
+      "id": "F22",
+      "category": "short-term",
+      "text": "Toddler threw oatmeal and got too much Halloween candy",
+      "sources": [
+        "f041",
+        "f095"
+      ]
+    }
+  ],
+  "_current_truth": "What Fatima answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "F02": {
+      "action": "edit",
+      "text": "Toddler bedtime is now 8pm"
+    },
+    "F11": {
+      "action": "edit",
+      "text": "Drives short trips now with car seat instead of taking train"
+    },
+    "F01": {
+      "action": "confirm"
+    },
+    "F06": {
+      "action": "confirm"
+    },
+    "F08": {
+      "action": "confirm"
+    },
+    "F12": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "FQ01",
+      "kind": "stable",
+      "text": "Plan a quick home-cooked dinner for tonight",
+      "checks": [
+        {
+          "text": "Suggests home-cooked meal",
+          "kw": [
+            "home-cooked",
+            "dal",
+            "dinner"
+          ],
+          "want": true,
+          "fact": "F05"
+        }
+      ]
+    },
+    {
+      "id": "FQ02",
+      "kind": "stable",
+      "text": "What should I cook for Imran this week?",
+      "checks": [
+        {
+          "text": "Includes extra spicy dal for Imran",
+          "kw": [
+            "spicy dal",
+            "imran",
+            "extra spicy"
+          ],
+          "want": true,
+          "fact": "F06"
+        }
+      ]
+    },
+    {
+      "id": "FQ03",
+      "kind": "stable",
+      "text": "Suggest a weekend activity with my toddler",
+      "checks": [
+        {
+          "text": "Suggests park outing",
+          "kw": [
+            "park",
+            "stroller",
+            "playground"
+          ],
+          "want": true,
+          "fact": "F08"
+        }
+      ]
+    },
+    {
+      "id": "FQ04",
+      "kind": "stable",
+      "text": "Remind me about my morning routine before work",
+      "checks": [
+        {
+          "text": "Mentions morning ginger chai",
+          "kw": [
+            "ginger chai",
+            "morning",
+            "chai"
+          ],
+          "want": true,
+          "fact": "F12"
+        }
+      ]
+    },
+    {
+      "id": "FQ05",
+      "kind": "stable",
+      "text": "Help restart my Sunday meal prep",
+      "checks": [
+        {
+          "text": "Mentions rice veggies chicken prep",
+          "kw": [
+            "rice",
+            "veggies",
+            "meal prep"
+          ],
+          "want": true,
+          "fact": "F13"
+        }
+      ]
+    },
+    {
+      "id": "FQ06",
+      "kind": "stable",
+      "text": "Plan dinner around daycare and bedtime routine",
+      "checks": [
+        {
+          "text": "Mentions later dinner around 6ish",
+          "kw": [
+            "dinner",
+            "6ish",
+            "evening"
+          ],
+          "want": true,
+          "fact": "F20"
+        }
+      ]
+    },
+    {
+      "id": "FQ07",
+      "kind": "stable",
+      "text": "What meal suits a 2-year-old at home?",
+      "checks": [
+        {
+          "text": "Notes toddler is 2 years old",
+          "kw": [
+            "2 years",
+            "toddler",
+            "2 yr"
+          ],
+          "want": true,
+          "fact": "F01"
+        }
+      ]
+    },
+    {
+      "id": "FQ08",
+      "kind": "stable",
+      "text": "I need energy for my clinic shift tomorrow",
+      "checks": [
+        {
+          "text": "Acknowledges clinic work",
+          "kw": [
+            "clinic",
+            "shift",
+            "work"
+          ],
+          "want": true,
+          "fact": "F03"
+        }
+      ]
+    },
+    {
+      "id": "FQ09",
+      "kind": "outside",
+      "text": "Plan our evening bath and bedtime routine tonight",
+      "checks": [
+        {
+          "text": "Plans bedtime at 8pm",
+          "kw": [
+            "8pm",
+            "bedtime",
+            "8 pm"
+          ],
+          "want": true,
+          "fact": "F02"
+        },
+        {
+          "text": "Plans bedtime at 7:30pm sharp",
+          "kw": [
+            "7:30pm",
+            "7:30 pm",
+            "half past seven"
+          ],
+          "want": false,
+          "fact": "F02"
+        }
+      ]
+    },
+    {
+      "id": "FQ10",
+      "kind": "outside",
+      "text": "What's the best way to visit family in Milwaukee with the toddler?",
+      "checks": [
+        {
+          "text": "Suggests driving with car seat",
+          "kw": [
+            "drive",
+            "car seat",
+            "driving"
+          ],
+          "want": true,
+          "fact": "F11"
+        },
+        {
+          "text": "Suggests taking train over driving",
+          "kw": [
+            "train",
+            "amtrak",
+            "rail"
+          ],
+          "want": false,
+          "fact": "F11"
+        }
+      ]
+    },
+    {
+      "id": "FQ11",
+      "kind": "outside",
+      "text": "Make a schedule for dinner and toddler sleep",
+      "checks": [
+        {
+          "text": "Uses 8pm bedtime",
+          "kw": [
+            "8pm",
+            "bedtime",
+            "sleep"
+          ],
+          "want": true,
+          "fact": "F02"
+        }
+      ]
+    },
+    {
+      "id": "FQ12",
+      "kind": "outside",
+      "text": "Plan a short trip to Chicago next month",
+      "checks": [
+        {
+          "text": "Recommends driving short trip",
+          "kw": [
+            "drive",
+            "car seat",
+            "road"
+          ],
+          "want": true,
+          "fact": "F11"
+        }
+      ]
+    },
+    {
+      "id": "FQ13",
+      "kind": "inchat",
+      "text": "Remind me when and where is daycare pickup today?",
+      "checks": [
+        {
+          "text": "States 5pm pickup on Lyndale",
+          "kw": [
+            "5pm",
+            "lyndale",
+            "pickup"
+          ],
+          "want": true,
+          "fact": "F19"
+        },
+        {
+          "text": "States 4pm pickup",
+          "kw": [
+            "4pm",
+            "4 pm",
+            "four pm"
+          ],
+          "want": false,
+          "fact": "F19"
+        }
+      ]
+    },
+    {
+      "id": "FQ14",
+      "kind": "inchat",
+      "text": "Plan dinner around pickup time",
+      "checks": [
+        {
+          "text": "Plans around 5pm pickup",
+          "kw": [
+            "5pm",
+            "pickup",
+            "dinner"
+          ],
+          "want": true,
+          "fact": "F19"
+        }
+      ]
+    },
+    {
+      "id": "FQ15",
+      "kind": "short",
+      "text": "Help set up the spare room for visitors",
+      "checks": [
+        {
+          "text": "Mentions Dec 5-8 family visit",
+          "kw": [
+            "dec 5-8",
+            "spare room",
+            "visitors"
+          ],
+          "want": true,
+          "fact": "F14"
+        }
+      ]
+    },
+    {
+      "id": "FQ16",
+      "kind": "short",
+      "text": "What should I pack for the toddler for winter?",
+      "checks": [
+        {
+          "text": "Mentions mittens and snow boots",
+          "kw": [
+            "mittens",
+            "boots",
+            "size 6"
+          ],
+          "want": true,
+          "fact": "F09"
+        }
+      ]
+    },
+    {
+      "id": "FQ17",
+      "kind": "sensitive",
+      "text": "What should I ask at my health appointment next week?",
+      "checks": [
+        {
+          "text": "Acknowledges postpartum follow-up nervousness",
+          "kw": [
+            "postpartum",
+            "follow-up",
+            "nervous"
+          ],
+          "want": true,
+          "fact": "F16"
+        }
+      ]
+    },
+    {
+      "id": "FQ18",
+      "kind": "sensitive",
+      "text": "Plan meals for me and Imran this week",
+      "checks": [
+        {
+          "text": "Makes mild base for stomach with spicy side",
+          "kw": [
+            "mild",
+            "stomach",
+            "spicy side"
+          ],
+          "want": true,
+          "fact": "F17"
+        }
+      ]
+    },
+    {
+      "id": "FQ19",
+      "kind": "oneoff",
+      "text": "Where should we go for anniversary dinner?",
+      "checks": [
+        {
+          "text": "Treats Ethiopian place as regular favorite",
+          "kw": [
+            "ethiopian",
+            "lake st",
+            "favorite spot"
+          ],
+          "want": false,
+          "fact": "F15"
+        }
+      ]
+    },
+    {
+      "id": "FQ20",
+      "kind": "oneoff",
+      "text": "Book our Chicago family train trip",
+      "checks": [
+        {
+          "text": "Treats Chicago train lookup as established habit",
+          "kw": [
+            "always take train",
+            "usual train",
+            "regular train"
+          ],
+          "want": false,
+          "fact": "F10"
+        }
+      ]
+    }
+  ]
+}

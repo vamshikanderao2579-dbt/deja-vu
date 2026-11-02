@@ -1,0 +1,247 @@
+{
+  "cards": [
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks iced oat milk coffee in mornings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "s003",
+        "s049",
+        "s075"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Shops Saturday farmers market for vegetables",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s001",
+        "s031",
+        "s085"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Follows dairy-free diet",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "s025",
+        "s069"
+      ],
+      "until": "2026-11-22",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-4",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks decaf coffee after 2pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s077"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-3",
+      "category": "family",
+      "type": "preference",
+      "text": "Holds Friday pasta dinner with kids",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "s007",
+        "s037",
+        "s087"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Has 11-year-old child",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s039",
+        "s071",
+        "s051"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-4",
+      "category": "family",
+      "type": "preference",
+      "text": "Mother Rosa helps watch kids",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s023",
+        "s061"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-2",
+      "category": "family",
+      "type": "preference",
+      "text": "Has custody paperwork in progress with kids' dad",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.85,
+      "sources": [
+        "s067"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-5",
+      "category": "family",
+      "type": "preference",
+      "text": "Serves broccoli-free meals to 8-year-old",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "s039"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Needs quick Thursday dinners for kids soccer",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "s043",
+        "s045",
+        "s089"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-2",
+      "category": "routine",
+      "type": "preference",
+      "text": "Takes evening walk around block after dinner",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s029",
+        "s063",
+        "s099"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Prefers morning appointments for medical visits",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "s013",
+        "s051",
+        "s095"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Works as school counselor",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s015",
+        "s055"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "home-1",
+      "category": "home",
+      "type": "preference",
+      "text": "Lives in Miami",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "s075",
+        "s097"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.560Z",
+      "last_seen": "2026-11-02T15:17:17.560Z",
+      "last_confirmed": null
+    }
+  ]
+}

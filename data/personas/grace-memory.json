@@ -1,0 +1,226 @@
+{
+  "cards": [
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Wakes at 4:30am for bakery work",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "g001",
+        "g031",
+        "g069"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-2",
+      "category": "work",
+      "type": "preference",
+      "text": "Runs bakery baking sourdough loaves",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "g001",
+        "g045",
+        "g075"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-3",
+      "category": "work",
+      "type": "preference",
+      "text": "Works weekends through holiday market rush",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "g047",
+        "g089"
+      ],
+      "until": "2026-12-20",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Walks dog evenings near park",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "g013",
+        "g051",
+        "g087"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Eats morning oatmeal with blueberries and bananas",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "g019",
+        "g057",
+        "g059"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Cooks at home on Fridays to save money",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "g071",
+        "g021"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Daniel loves cinnamon rolls",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "g025",
+        "g063"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-2",
+      "category": "family",
+      "type": "preference",
+      "text": "Weekly Sunday call with mom at 7pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "g033",
+        "g079"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-3",
+      "category": "family",
+      "type": "preference",
+      "text": "Daniel wants to learn cinnamon roll baking",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "g093"
+      ],
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-4",
+      "category": "family",
+      "type": "preference",
+      "text": "Has kids who visit home",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "g061",
+        "g083"
+      ],
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-5",
+      "category": "family",
+      "type": "preference",
+      "text": "Daniel plays card games",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "g065"
+      ],
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "finance-1",
+      "category": "finance",
+      "type": "preference",
+      "text": "Pays business loan with tight cash flow",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.8,
+      "sources": [
+        "g053"
+      ],
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "hobbies-1",
+      "category": "hobbies",
+      "type": "preference",
+      "text": "Considering gifting handmade mugs this year",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "g085"
+      ],
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.562Z",
+      "last_seen": "2026-11-02T15:17:17.562Z",
+      "last_confirmed": null
+    }
+  ]
+}

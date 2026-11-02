@@ -86,5 +86,155 @@
       }
     ],
     "demoMemory": "data/personas/maria-memory.json"
+  },
+  {
+    "id": "daniel",
+    "name": "Daniel",
+    "about": "Synthetic · Remote software engineer in Atlanta, lives alone, runs mornings",
+    "history": "data/personas/daniel-history.json",
+    "state": "data/profiles/daniel.json",
+    "demoMemory": "data/personas/daniel-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "sofia",
+    "name": "Sofia",
+    "about": "Synthetic · School counselor in Miami, single mom of two",
+    "history": "data/personas/sofia-history.json",
+    "state": "data/profiles/sofia.json",
+    "demoMemory": "data/personas/sofia-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "james",
+    "name": "James",
+    "about": "Synthetic · Retired teacher in Portland, volunteers at the library",
+    "history": "data/personas/james-history.json",
+    "state": "data/profiles/james.json",
+    "demoMemory": "data/personas/james-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "aisha",
+    "name": "Aisha",
+    "about": "Synthetic · Grad student in Seattle, bikes to campus",
+    "history": "data/personas/aisha-history.json",
+    "state": "data/profiles/aisha.json",
+    "demoMemory": "data/personas/aisha-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "luis",
+    "name": "Luis",
+    "about": "Synthetic · Firefighter in Denver on 24-hour shifts, has a dog",
+    "history": "data/personas/luis-history.json",
+    "state": "data/profiles/luis.json",
+    "demoMemory": "data/personas/luis-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "grace",
+    "name": "Grace",
+    "about": "Synthetic · Bakery owner in Boston, up at 4:30am",
+    "history": "data/personas/grace-history.json",
+    "state": "data/profiles/grace.json",
+    "demoMemory": "data/personas/grace-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "ethan",
+    "name": "Ethan",
+    "about": "Synthetic · College senior and barista in Nashville",
+    "history": "data/personas/ethan-history.json",
+    "state": "data/profiles/ethan.json",
+    "demoMemory": "data/personas/ethan-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "fatima",
+    "name": "Fatima",
+    "about": "Synthetic · Physical therapist in Minneapolis, toddler aged 2",
+    "history": "data/personas/fatima-history.json",
+    "state": "data/profiles/fatima.json",
+    "demoMemory": "data/personas/fatima-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "tom",
+    "name": "Tom",
+    "about": "Synthetic · Long-haul truck driver in Columbus, kids on weekends",
+    "history": "data/personas/tom-history.json",
+    "state": "data/profiles/tom.json",
+    "demoMemory": "data/personas/tom-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
+  },
+  {
+    "id": "rosa",
+    "name": "Rosa",
+    "about": "Synthetic · Retired nurse in Santa Fe, gardens and volunteers",
+    "history": "data/personas/rosa-history.json",
+    "state": "data/profiles/rosa.json",
+    "demoMemory": "data/personas/rosa-memory.json",
+    "today": "2026-11-02",
+    "suggestions": [
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
+    ]
   }
 ]

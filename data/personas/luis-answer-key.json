@@ -1,0 +1,525 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Luis.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "L01",
+      "category": "stable",
+      "text": "Works 24-on/48-off shifts as a firefighter",
+      "sources": [
+        "l001"
+      ]
+    },
+    {
+      "id": "L02",
+      "category": "stable",
+      "text": "Prefers direct flights",
+      "sources": [
+        "l003",
+        "l025",
+        "l055"
+      ]
+    },
+    {
+      "id": "L03",
+      "category": "stable",
+      "text": "Lives in Denver",
+      "sources": [
+        "l003",
+        "l013"
+      ]
+    },
+    {
+      "id": "L04",
+      "category": "stable",
+      "text": "Married to Elena",
+      "sources": [
+        "l015",
+        "l091"
+      ]
+    },
+    {
+      "id": "L05",
+      "category": "stable",
+      "text": "Has a dog named Milo",
+      "sources": [
+        "l009",
+        "l011"
+      ]
+    },
+    {
+      "id": "L06",
+      "category": "stable",
+      "text": "Drinks black cold brew with no sugar every morning",
+      "sources": [
+        "l007",
+        "l031",
+        "l069"
+      ]
+    },
+    {
+      "id": "L07",
+      "category": "stable",
+      "text": "Brings chicken and rice meal prep for shifts",
+      "sources": [
+        "l001",
+        "l019",
+        "l057"
+      ]
+    },
+    {
+      "id": "L08",
+      "category": "stable",
+      "text": "Elena always orders pad thai for Thai takeout",
+      "sources": [
+        "l015",
+        "l033",
+        "l073"
+      ]
+    },
+    {
+      "id": "L09",
+      "category": "stable",
+      "text": "Does 6am runs with Milo",
+      "sources": [
+        "l009",
+        "l041",
+        "l075"
+      ]
+    },
+    {
+      "id": "L10",
+      "category": "stable",
+      "text": "Day off is Monday and Monday is hike day",
+      "sources": [
+        "l005",
+        "l027"
+      ],
+      "superseded_by": "L11"
+    },
+    {
+      "id": "L11",
+      "category": "stable",
+      "text": "Day off is Wednesday and Wednesday is hike day",
+      "sources": [
+        "l043",
+        "l045",
+        "l067",
+        "l085"
+      ]
+    },
+    {
+      "id": "L12",
+      "category": "short-term",
+      "text": "Avoids fried food until fitness test Nov 30",
+      "sources": [
+        "l021",
+        "l049"
+      ]
+    },
+    {
+      "id": "L13",
+      "category": "sensitive",
+      "text": "Tweaked back, in physical therapy twice a week",
+      "sources": [
+        "l061"
+      ]
+    },
+    {
+      "id": "L14",
+      "category": "one-off",
+      "text": "Went fishing once at Chatfield last summer with cousin",
+      "sources": [
+        "l039"
+      ]
+    },
+    {
+      "id": "L15",
+      "category": "one-off",
+      "text": "Truck needs an oil change",
+      "sources": [
+        "l017"
+      ]
+    },
+    {
+      "id": "L16",
+      "category": "stable",
+      "text": "Has a brother in Phoenix",
+      "sources": [
+        "l003"
+      ]
+    }
+  ],
+  "_current_truth": "What Luis answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "L01": {
+      "action": "edit",
+      "text": "Works day shifts 7am-7pm as a firefighter, no longer on 24-on/48-off"
+    },
+    "L02": {
+      "action": "edit",
+      "text": "Now takes one-stop flights when much cheaper, no longer insists on direct flights only"
+    },
+    "L03": {
+      "action": "confirm"
+    },
+    "L04": {
+      "action": "confirm"
+    },
+    "L05": {
+      "action": "confirm"
+    },
+    "L06": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "LQ01",
+      "kind": "stable",
+      "text": "Can you add my morning drink to the shopping list?",
+      "checks": [
+        {
+          "text": "Adds black cold brew no sugar",
+          "kw": [
+            "black cold brew",
+            "no sugar"
+          ],
+          "want": true,
+          "fact": "L06"
+        }
+      ]
+    },
+    {
+      "id": "LQ02",
+      "kind": "stable",
+      "text": "Meal prep me 4 days of chicken and rice for the station fridge",
+      "checks": [
+        {
+          "text": "Prepares chicken and rice meal prep",
+          "kw": [
+            "chicken and rice",
+            "meal prep"
+          ],
+          "want": true,
+          "fact": "L07"
+        }
+      ]
+    },
+    {
+      "id": "LQ03",
+      "kind": "stable",
+      "text": "Find Thai takeout near Capitol Hill for me and Elena tonight",
+      "checks": [
+        {
+          "text": "Orders pad thai for Elena",
+          "kw": [
+            "pad thai",
+            "elena"
+          ],
+          "want": true,
+          "fact": "L08"
+        }
+      ]
+    },
+    {
+      "id": "LQ04",
+      "kind": "stable",
+      "text": "Plan a 6am run route near Wash for tomorrow",
+      "checks": [
+        {
+          "text": "Plans 6am run with Milo",
+          "kw": [
+            "6am run",
+            "milo"
+          ],
+          "want": true,
+          "fact": "L09"
+        }
+      ]
+    },
+    {
+      "id": "LQ05",
+      "kind": "stable",
+      "text": "Find a moderate weekend hike near Denver for me and a buddy",
+      "checks": [
+        {
+          "text": "Suggests hike near Denver",
+          "kw": [
+            "near denver",
+            "hike"
+          ],
+          "want": true,
+          "fact": "L03"
+        }
+      ]
+    },
+    {
+      "id": "LQ06",
+      "kind": "stable",
+      "text": "What should I bring for Milo on a dog-friendly hike under 5 miles?",
+      "checks": [
+        {
+          "text": "Mentions dog Milo",
+          "kw": [
+            "milo",
+            "dog"
+          ],
+          "want": true,
+          "fact": "L05"
+        }
+      ]
+    },
+    {
+      "id": "LQ07",
+      "kind": "stable",
+      "text": "Pick a birthday dinner spot that Elena will love",
+      "checks": [
+        {
+          "text": "Includes Elena",
+          "kw": [
+            "elena",
+            "birthday"
+          ],
+          "want": true,
+          "fact": "L04"
+        }
+      ]
+    },
+    {
+      "id": "LQ08",
+      "kind": "stable",
+      "text": "Help me plan a trip to see my brother",
+      "checks": [
+        {
+          "text": "Mentions brother in Phoenix",
+          "kw": [
+            "brother",
+            "phoenix"
+          ],
+          "want": true,
+          "fact": "L16"
+        }
+      ]
+    },
+    {
+      "id": "LQ09",
+      "kind": "outside",
+      "text": "Plan my meals and commute around my new work schedule this week",
+      "checks": [
+        {
+          "text": "Uses day shifts 7am-7pm schedule",
+          "kw": [
+            "day shifts",
+            "7am-7pm"
+          ],
+          "want": true,
+          "fact": "L01"
+        },
+        {
+          "text": "Plans 24-on/48-off shift",
+          "kw": [
+            "24-on",
+            "48-off"
+          ],
+          "want": false,
+          "fact": "L01"
+        }
+      ]
+    },
+    {
+      "id": "LQ10",
+      "kind": "outside",
+      "text": "Am I still on 24s for meal prep planning?",
+      "checks": [
+        {
+          "text": "Confirms day shifts 7am-7pm",
+          "kw": [
+            "day shifts",
+            "7am-7pm"
+          ],
+          "want": true,
+          "fact": "L01"
+        }
+      ]
+    },
+    {
+      "id": "LQ11",
+      "kind": "outside",
+      "text": "Find me the cheapest Denver to Dallas flights for Thanksgiving, even with stops",
+      "checks": [
+        {
+          "text": "Includes one-stop flights when cheaper",
+          "kw": [
+            "one-stop",
+            "much cheaper"
+          ],
+          "want": true,
+          "fact": "L02"
+        },
+        {
+          "text": "Insists on direct flights only",
+          "kw": [
+            "direct flights only",
+            "direct only"
+          ],
+          "want": false,
+          "fact": "L02"
+        }
+      ]
+    },
+    {
+      "id": "LQ12",
+      "kind": "outside",
+      "text": "Should I book this much cheaper one-stop Denver to Phoenix morning flight?",
+      "checks": [
+        {
+          "text": "Approves one-stop when much cheaper",
+          "kw": [
+            "one-stop",
+            "cheaper"
+          ],
+          "want": true,
+          "fact": "L02"
+        }
+      ]
+    },
+    {
+      "id": "LQ13",
+      "kind": "inchat",
+      "text": "Find me a quiet short trail for hike day this week",
+      "checks": [
+        {
+          "text": "Plans hike for Wednesday",
+          "kw": [
+            "wednesday",
+            "hike day"
+          ],
+          "want": true,
+          "fact": "L11"
+        },
+        {
+          "text": "Plans hike for Monday",
+          "kw": [
+            "monday",
+            "monday hike"
+          ],
+          "want": false,
+          "fact": "L11"
+        }
+      ]
+    },
+    {
+      "id": "LQ14",
+      "kind": "inchat",
+      "text": "When is my day off for a fall-colors hike next week?",
+      "checks": [
+        {
+          "text": "Says day off is Wednesday",
+          "kw": [
+            "wednesday",
+            "day off"
+          ],
+          "want": true,
+          "fact": "L11"
+        }
+      ]
+    },
+    {
+      "id": "LQ15",
+      "kind": "short",
+      "text": "What should I order for station dinner tonight?",
+      "checks": [
+        {
+          "text": "Avoids fried food until fitness test",
+          "kw": [
+            "no fried food",
+            "nov 30"
+          ],
+          "want": true,
+          "fact": "L12"
+        }
+      ]
+    },
+    {
+      "id": "LQ16",
+      "kind": "short",
+      "text": "Suggest air fryer snacks that keep it clean before my test",
+      "checks": [
+        {
+          "text": "Keeps snacks non-fried clean",
+          "kw": [
+            "no fried",
+            "clean"
+          ],
+          "want": true,
+          "fact": "L12"
+        }
+      ]
+    },
+    {
+      "id": "LQ17",
+      "kind": "sensitive",
+      "text": "Suggest a Wednesday morning hike near Golden that is easy on my body",
+      "checks": [
+        {
+          "text": "Considers back injury physical therapy",
+          "kw": [
+            "back",
+            "physical therapy"
+          ],
+          "want": true,
+          "fact": "L13"
+        }
+      ]
+    },
+    {
+      "id": "LQ18",
+      "kind": "sensitive",
+      "text": "Plan a 6am run routine for me and Milo this week",
+      "checks": [
+        {
+          "text": "Accounts for tweaked back recovery",
+          "kw": [
+            "back",
+            "physical therapy"
+          ],
+          "want": true,
+          "fact": "L13"
+        }
+      ]
+    },
+    {
+      "id": "LQ19",
+      "kind": "oneoff",
+      "text": "Should we go fishing this weekend?",
+      "checks": [
+        {
+          "text": "Treats Chatfield fishing as regular hobby",
+          "kw": [
+            "regular fishing",
+            "fishing hobby"
+          ],
+          "want": false,
+          "fact": "L14"
+        }
+      ]
+    },
+    {
+      "id": "LQ20",
+      "kind": "oneoff",
+      "text": "Set up regular truck maintenance reminders for me",
+      "checks": [
+        {
+          "text": "Treats oil change as ongoing habit",
+          "kw": [
+            "regular oil",
+            "maintenance habit"
+          ],
+          "want": false,
+          "fact": "L15"
+        }
+      ]
+    }
+  ]
+}

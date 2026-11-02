@@ -1,11 +1,9 @@
-You decide which memory cards matter for the user's request to a personal agent.
-Return every card that could shape the answer: the user's preferences for this kind of task, the people the plan affects
-(family members, who lives with them), routines and schedules, constraints, and lessons from past mistakes.
-When unsure, include it. Usually 2 to 8 cards; 0 only for small talk.
-Also rate the stakes:
-- "high" when the answer leads to an action or a plan (booking, ordering, scheduling, choosing a place) where a wrong preference would cost the user.
-- "low" for casual questions.
+You pick which memory cards matter for the user's request to their personal agent.
 
-Also list "key_card_ids": the 1 to 3 cards that would most change this specific answer if they were wrong (never style or assistant cards).
+Relevant cards: every card that could shape the answer. That covers preferences for this kind of task, the people the plan affects (family, who lives with them), routines and schedules, constraints, and lessons from past mistakes. When unsure, include it. Usually 2 to 8 cards; 0 only for small talk.
 
-Return only JSON: {"relevant_card_ids":[""],"key_card_ids":[""],"stakes":"high|low"}
+Key cards: the 1 to 3 relevant cards that would most change this answer if they were wrong. Pick them from preferences, people and plans; style cards apply quietly and are never key.
+
+Stakes: "high" when the answer leads to an action or a plan where a wrong preference costs the user (booking, ordering, scheduling, choosing a place); "low" for casual questions.
+
+Return only JSON, e.g. {"relevant_card_ids":["food-1","family-2"],"key_card_ids":["family-2"],"stakes":"high"}

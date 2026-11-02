@@ -1,0 +1,536 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Tom.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "T01",
+      "category": "travel",
+      "text": "Prefers direct routes and avoids tolls",
+      "sources": [
+        "t001",
+        "t025"
+      ]
+    },
+    {
+      "id": "T02",
+      "category": "entertainment",
+      "text": "Listens to long 10+ hour audiobooks, likes mystery",
+      "sources": [
+        "t003",
+        "t019"
+      ]
+    },
+    {
+      "id": "T03",
+      "category": "food",
+      "text": "Drinks black coffee with no sugar from big red thermos",
+      "sources": [
+        "t005",
+        "t017"
+      ]
+    },
+    {
+      "id": "T04",
+      "category": "family",
+      "text": "Has kids every weekend with Friday 6pm pickup at their mom's",
+      "sources": [
+        "t007",
+        "t029"
+      ]
+    },
+    {
+      "id": "T05",
+      "category": "family",
+      "text": "Calls kids Sunday evenings around 7",
+      "sources": [
+        "t009",
+        "t027"
+      ]
+    },
+    {
+      "id": "T06",
+      "category": "health",
+      "text": "Does 15 min morning stretch and walk around the rig for back pain",
+      "sources": [
+        "t011",
+        "t023"
+      ]
+    },
+    {
+      "id": "T07",
+      "category": "family",
+      "text": "Tuesday is homework-help day after dinner when home",
+      "sources": [
+        "t013",
+        "t031"
+      ],
+      "superseded_by": "T08"
+    },
+    {
+      "id": "T08",
+      "category": "family",
+      "text": "Wednesday is homework-help day after dinner when home, not Tuesday",
+      "sources": [
+        "t043",
+        "t047",
+        "t049",
+        "t087"
+      ]
+    },
+    {
+      "id": "T09",
+      "category": "food",
+      "text": "Ethan wants pepperoni pizza for Friday dinner",
+      "sources": [
+        "t015",
+        "t035"
+      ]
+    },
+    {
+      "id": "T10",
+      "category": "food",
+      "text": "Needs coffee beans for thermos",
+      "sources": [
+        "t017"
+      ]
+    },
+    {
+      "id": "T11",
+      "category": "health",
+      "text": "No late-night snacks while driving until Nov 28 on doctor's orders",
+      "sources": [
+        "t021",
+        "t055"
+      ]
+    },
+    {
+      "id": "T12",
+      "category": "event",
+      "text": "Went to car show in Dublin last weekend with buddy as one-time thing",
+      "sources": [
+        "t033"
+      ]
+    },
+    {
+      "id": "T13",
+      "category": "finance",
+      "text": "Child support $850 comes out on the 1st",
+      "sources": [
+        "t037"
+      ]
+    },
+    {
+      "id": "T14",
+      "category": "family",
+      "text": "Maya needs extra midweek math help and wants stars science project",
+      "sources": [
+        "t031",
+        "t045",
+        "t051",
+        "t053"
+      ]
+    },
+    {
+      "id": "T15",
+      "category": "event",
+      "text": "Maya was astronaut for Halloween, Ethan is 13 and too old for costumes",
+      "sources": [
+        "t081",
+        "t083"
+      ]
+    }
+  ],
+  "_current_truth": "What Tom answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "T04": {
+      "action": "edit",
+      "text": "Has the kids every other weekend now, not every weekend"
+    },
+    "T02": {
+      "action": "edit",
+      "text": "Switched from audiobooks to podcasts"
+    },
+    "T03": {
+      "action": "confirm"
+    },
+    "T05": {
+      "action": "confirm"
+    },
+    "T06": {
+      "action": "confirm"
+    },
+    "T08": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "TQ01",
+      "kind": "stable",
+      "text": "Find me a direct route to Cleveland with no tolls",
+      "checks": [
+        {
+          "text": "Plans a direct route avoiding tolls",
+          "kw": [
+            "direct",
+            "no tolls",
+            "avoid tolls"
+          ],
+          "want": true,
+          "fact": "T01"
+        }
+      ]
+    },
+    {
+      "id": "TQ02",
+      "kind": "stable",
+      "text": "Fill my big red thermos before I leave, how do I take it?",
+      "checks": [
+        {
+          "text": "Prepares black coffee with no sugar",
+          "kw": [
+            "black",
+            "no sugar",
+            "red thermos"
+          ],
+          "want": true,
+          "fact": "T03"
+        }
+      ]
+    },
+    {
+      "id": "TQ03",
+      "kind": "stable",
+      "text": "Remind me to call the kids this Sunday evening",
+      "checks": [
+        {
+          "text": "Reminds to call Sunday around 7",
+          "kw": [
+            "sunday",
+            "call",
+            "7"
+          ],
+          "want": true,
+          "fact": "T05"
+        }
+      ]
+    },
+    {
+      "id": "TQ04",
+      "kind": "stable",
+      "text": "Remind me to do my morning routine for my back",
+      "checks": [
+        {
+          "text": "Reminds morning stretch and walk around rig",
+          "kw": [
+            "stretch",
+            "walk",
+            "morning"
+          ],
+          "want": true,
+          "fact": "T06"
+        }
+      ]
+    },
+    {
+      "id": "TQ05",
+      "kind": "stable",
+      "text": "What day am I doing homework help this week?",
+      "checks": [
+        {
+          "text": "Says Wednesday homework help after dinner",
+          "kw": [
+            "wednesday",
+            "homework",
+            "dinner"
+          ],
+          "want": true,
+          "fact": "T08"
+        }
+      ]
+    },
+    {
+      "id": "TQ06",
+      "kind": "stable",
+      "text": "What should I get for Friday dinner with Ethan?",
+      "checks": [
+        {
+          "text": "Suggests pepperoni pizza",
+          "kw": [
+            "pepperoni",
+            "pizza",
+            "friday"
+          ],
+          "want": true,
+          "fact": "T09"
+        }
+      ]
+    },
+    {
+      "id": "TQ07",
+      "kind": "stable",
+      "text": "Add coffee supplies to my grocery list",
+      "checks": [
+        {
+          "text": "Adds coffee beans for thermos",
+          "kw": [
+            "beans",
+            "coffee",
+            "thermos"
+          ],
+          "want": true,
+          "fact": "T10"
+        }
+      ]
+    },
+    {
+      "id": "TQ08",
+      "kind": "stable",
+      "text": "Help Maya with math homework midweek",
+      "checks": [
+        {
+          "text": "Helps Maya with math midweek stars",
+          "kw": [
+            "maya",
+            "math",
+            "midweek"
+          ],
+          "want": true,
+          "fact": "T14"
+        }
+      ]
+    },
+    {
+      "id": "TQ09",
+      "kind": "outside",
+      "text": "Suggest something for my long haul tomorrow, I switched from audiobooks",
+      "checks": [
+        {
+          "text": "Recommends podcasts",
+          "kw": [
+            "podcast",
+            "episode",
+            "series"
+          ],
+          "want": true,
+          "fact": "T02"
+        },
+        {
+          "text": "Recommends an audiobook",
+          "kw": [
+            "audiobook",
+            "audible",
+            "book"
+          ],
+          "want": false,
+          "fact": "T02"
+        }
+      ]
+    },
+    {
+      "id": "TQ10",
+      "kind": "outside",
+      "text": "Need a 10+ hour listen for driving, what genre?",
+      "checks": [
+        {
+          "text": "Offers podcast options",
+          "kw": [
+            "podcast",
+            "episode",
+            "listen"
+          ],
+          "want": true,
+          "fact": "T02"
+        }
+      ]
+    },
+    {
+      "id": "TQ11",
+      "kind": "outside",
+      "text": "Am I picking up the kids this Friday at 6pm?",
+      "checks": [
+        {
+          "text": "Notes every other weekend schedule",
+          "kw": [
+            "every other",
+            "alternate",
+            "weekend"
+          ],
+          "want": true,
+          "fact": "T04"
+        },
+        {
+          "text": "Says every weekend pickup",
+          "kw": [
+            "every weekend",
+            "each weekend"
+          ],
+          "want": false,
+          "fact": "T04"
+        }
+      ]
+    },
+    {
+      "id": "TQ12",
+      "kind": "outside",
+      "text": "Plan Friday pizza night with the kids",
+      "checks": [
+        {
+          "text": "Checks if it is his custody weekend",
+          "kw": [
+            "other weekend",
+            "custody",
+            "your weekend"
+          ],
+          "want": true,
+          "fact": "T04"
+        }
+      ]
+    },
+    {
+      "id": "TQ13",
+      "kind": "inchat",
+      "text": "Put homework help on my calendar for next week",
+      "checks": [
+        {
+          "text": "Schedules Wednesday homework help",
+          "kw": [
+            "wednesday",
+            "homework",
+            "dinner"
+          ],
+          "want": true,
+          "fact": "T08"
+        },
+        {
+          "text": "Schedules Tuesday homework help",
+          "kw": [
+            "tuesday",
+            "homework"
+          ],
+          "want": false,
+          "fact": "T07"
+        }
+      ]
+    },
+    {
+      "id": "TQ14",
+      "kind": "inchat",
+      "text": "Confirm I'm home for homework help, Tuesday or Wednesday?",
+      "checks": [
+        {
+          "text": "Confirms Wednesday not Tuesday",
+          "kw": [
+            "wednesday",
+            "not tuesday",
+            "wed"
+          ],
+          "want": true,
+          "fact": "T08"
+        }
+      ]
+    },
+    {
+      "id": "TQ15",
+      "kind": "short",
+      "text": "I'm starving on a night drive, should I grab snacks?",
+      "checks": [
+        {
+          "text": "Reminds no late-night snacks until Nov 28",
+          "kw": [
+            "no snacks",
+            "nov 28",
+            "gum"
+          ],
+          "want": true,
+          "fact": "T11"
+        }
+      ]
+    },
+    {
+      "id": "TQ16",
+      "kind": "short",
+      "text": "Plan my food stops for tonight's haul",
+      "checks": [
+        {
+          "text": "Respects no late-night snacks rule",
+          "kw": [
+            "no snacks",
+            "doctor",
+            "nov 28"
+          ],
+          "want": true,
+          "fact": "T11"
+        }
+      ]
+    },
+    {
+      "id": "TQ17",
+      "kind": "sensitive",
+      "text": "Set up autopay reminder for my monthly bills on the 1st",
+      "checks": [
+        {
+          "text": "Handles $850 child support discreetly",
+          "kw": [
+            "850",
+            "child support",
+            "1st"
+          ],
+          "want": true,
+          "fact": "T13"
+        }
+      ]
+    },
+    {
+      "id": "TQ18",
+      "kind": "sensitive",
+      "text": "Suggest a morning exercise routine for my back pain",
+      "checks": [
+        {
+          "text": "Suggests stretch and walk around rig",
+          "kw": [
+            "stretch",
+            "walk",
+            "15 min"
+          ],
+          "want": true,
+          "fact": "T06"
+        }
+      ]
+    },
+    {
+      "id": "TQ19",
+      "kind": "oneoff",
+      "text": "Any car events this weekend?",
+      "checks": [
+        {
+          "text": "Treats Dublin car show as regular interest",
+          "kw": [
+            "car show",
+            "dublin",
+            "weekly"
+          ],
+          "want": false,
+          "fact": "T12"
+        }
+      ]
+    },
+    {
+      "id": "TQ20",
+      "kind": "oneoff",
+      "text": "What costume should Maya wear?",
+      "checks": [
+        {
+          "text": "Treats astronaut Halloween as ongoing preference",
+          "kw": [
+            "astronaut",
+            "costume",
+            "halloween"
+          ],
+          "want": false,
+          "fact": "T15"
+        }
+      ]
+    }
+  ]
+}

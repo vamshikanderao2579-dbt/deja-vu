@@ -972,3 +972,4 @@ body.touring #modelChip, body.touring #memChip { display: none; }
 .demo-end .end-grid button { border-radius: 999px; padding: 10px 16px; font-size: 15px; }
 .land-demo { margin-top: 8px; border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); color: var(--accent); background: transparent; border-radius: 999px; padding: 12px; font-weight: 600; }
 .eval-note a { color: var(--accent); }
+.held-h { margin: 22px 0 2px; font-size: 16px; }

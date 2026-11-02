@@ -1,0 +1,238 @@
+{
+  "cards": [
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "preference",
+      "text": "Prefers toll-free routes when driving",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "t001",
+        "t025"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null,
+      "updated": "2026-11-02T15:17:17.563Z"
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Home Wednesdays to help kids with homework",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "t043",
+        "t047",
+        "t049",
+        "t087"
+      ],
+      "sub": "homework",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-2",
+      "category": "family",
+      "type": "preference",
+      "text": "Picks up kids Fridays 6pm at mom's",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "t007",
+        "t030"
+      ],
+      "sub": "custody",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-3",
+      "category": "family",
+      "type": "preference",
+      "text": "Calls kids Sundays around 7pm",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "t009",
+        "t027"
+      ],
+      "sub": "routine",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-4",
+      "category": "family",
+      "type": "preference",
+      "text": "Ethan likes pepperoni pizza for Friday dinner",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "t015",
+        "t035"
+      ],
+      "sub": "meals",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-5",
+      "category": "family",
+      "type": "preference",
+      "text": "Maya loves stars and space",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "t053",
+        "t081"
+      ],
+      "sub": "interests",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "finance-1",
+      "category": "finance",
+      "type": "preference",
+      "text": "Pays $850 child support on the 1st",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.9,
+      "sources": [
+        "t037"
+      ],
+      "sub": "support",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "work-1",
+      "category": "work",
+      "type": "preference",
+      "text": "Works as truck driver, often on road",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "t011",
+        "t027",
+        "t043"
+      ],
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "entertainment-1",
+      "category": "entertainment",
+      "type": "preference",
+      "text": "Prefers 10+ hour audiobooks for drives",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "t003"
+      ],
+      "sub": "audiobooks",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "entertainment-2",
+      "category": "entertainment",
+      "type": "preference",
+      "text": "Enjoys mystery audiobooks for driving",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "t019"
+      ],
+      "sub": "audiobooks",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks black coffee on drives",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "t005",
+        "t017"
+      ],
+      "sub": "coffee",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Skips late-night snacks while driving",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.9,
+      "sources": [
+        "t021",
+        "t055"
+      ],
+      "sub": "diet",
+      "until": "2026-11-28",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-2",
+      "category": "health",
+      "type": "preference",
+      "text": "Does morning 15-min stretch and walk for back",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.85,
+      "sources": [
+        "t011",
+        "t023"
+      ],
+      "sub": "mobility",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.563Z",
+      "last_seen": "2026-11-02T15:17:17.563Z",
+      "last_confirmed": null
+    }
+  ]
+}

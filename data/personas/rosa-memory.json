@@ -1,0 +1,259 @@
+{
+  "cards": [
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Eats oatmeal with cinnamon for breakfast daily",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "r015",
+        "r033",
+        "r081"
+      ],
+      "sub": "meals",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Cooks beans and rice weekly",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "r013",
+        "r045",
+        "r075"
+      ],
+      "sub": "meals",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-3",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks calming herbal tea in evenings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "r003",
+        "r031",
+        "r069"
+      ],
+      "sub": "drinks",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-4",
+      "category": "food",
+      "type": "preference",
+      "text": "Prefers easy one-pot meals",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "r061"
+      ],
+      "sub": "meals",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "community-1",
+      "category": "community",
+      "type": "preference",
+      "text": "Volunteers at food bank Wednesday mornings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "r055",
+        "r091"
+      ],
+      "sub": "volunteering",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Walks 3 miles daily",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "r009",
+        "r027",
+        "r073"
+      ],
+      "sub": "fitness",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-2",
+      "category": "health",
+      "type": "preference",
+      "text": "Has hand arthritis, uses grip aids",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.95,
+      "sources": [
+        "r061"
+      ],
+      "sub": "hands",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-3",
+      "category": "health",
+      "type": "lesson",
+      "text": "Knees ache on long walks",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.8,
+      "sources": [
+        "r073"
+      ],
+      "sub": "mobility",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-4",
+      "category": "health",
+      "type": "preference",
+      "text": "Listens to podcasts while walking",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.7,
+      "sources": [
+        "r011"
+      ],
+      "sub": "fitness",
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "gardening-1",
+      "category": "gardening",
+      "type": "preference",
+      "text": "Gardens in morning before heat",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "r001",
+        "r025",
+        "r067"
+      ],
+      "sub": "routine",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "gardening-2",
+      "category": "gardening",
+      "type": "preference",
+      "text": "Grows roses, tomatoes, and peppers",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "r001",
+        "r025",
+        "r067"
+      ],
+      "sub": "plants",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "pets-1",
+      "category": "pets",
+      "type": "preference",
+      "text": "Has a cat",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.8,
+      "sources": [
+        "r005"
+      ],
+      "sub": "cat",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "family-1",
+      "category": "family",
+      "type": "preference",
+      "text": "Grandson Mateo loves cheese quesadillas",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "r019",
+        "r051",
+        "r085"
+      ],
+      "sub": "grandson",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "hobbies-1",
+      "category": "hobbies",
+      "type": "preference",
+      "text": "Does evening crossword puzzles",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "r021",
+        "r063",
+        "r087"
+      ],
+      "sub": "puzzles",
+      "priority": 3,
+      "created": "2026-11-02T15:17:17.564Z",
+      "last_seen": "2026-11-02T15:17:17.564Z",
+      "last_confirmed": null
+    }
+  ]
+}

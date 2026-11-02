@@ -183,7 +183,8 @@ route('POST', '/api/chat', async (body) => {
   const actions = stakes === 'high' && ACTION_WORDS.test(message);
   // The chat's model picker: only allowed models and effort levels; the default otherwise.
   const model = config.answerModels.includes(body.model) && body.model !== config.providers.main.model ? body.model : null;
-  const effort = ['medium', 'high'].includes(body.effort) ? body.effort : 'low';
+  // A redo after a change thinks a little harder, so it switches to what the user now wants.
+  const effort = ['medium', 'high'].includes(body.effort) ? body.effort : skipCue ? 'medium' : 'low';
   const res = await answer(message, mode, relevant, { recent: prior, actions, redo: skipCue, model, effort });
   const used = relevant.filter(usable);
   for (const c of used) c.last_used = new Date().toISOString();

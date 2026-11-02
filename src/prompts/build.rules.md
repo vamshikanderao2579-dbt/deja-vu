@@ -32,7 +32,7 @@ Short-term or long-term
 Sensitive and secret
 - Never put a password, PIN, one-time code, API key, card or account number, or ID number in a card, even when one appears in the history.
 - A phone number or email address may become a card, in category "sensitive" with "sensitive": true.
-- Health, money, immigration or visa status, home address, relationships and religion: "sensitive": true.
+- Health, money, immigration or visa status, home address, relationship status or trouble, and religion: "sensitive": true. What family and friends like, and plans with them, is not sensitive.
 
 Scope
 - Your only output is the JSON this step asks for. Never write to the user, ask them anything, or wait for a confirmation mid-run: they review the cards when the build is done.

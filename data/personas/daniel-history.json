@@ -1,0 +1,618 @@
+{
+  "user": {
+    "name": "Daniel"
+  },
+  "conversations": [
+    {
+      "id": "dc01",
+      "date": "2026-10-20",
+      "time": "07:40",
+      "title": "morning run stuff",
+      "messages": [
+        {
+          "id": "d001",
+          "role": "user",
+          "text": "just finished my morning run, can u order me a large black coffee, no sugar from the spot on 5th?"
+        },
+        {
+          "id": "d002",
+          "role": "assistant",
+          "text": "got it, ordering a large black coffee with no sugar for pickup."
+        },
+        {
+          "id": "d003",
+          "role": "user",
+          "text": "also need a quick overnight oats with peanut butter recipe for weekday breakfasts"
+        },
+        {
+          "id": "d004",
+          "role": "assistant",
+          "text": "sure, i'll send a simple oats and peanut butter recipe."
+        },
+        {
+          "id": "d005",
+          "role": "user",
+          "text": "give me a quick journal prompt for my 10 mins journaling after my run"
+        },
+        {
+          "id": "d006",
+          "role": "assistant",
+          "text": "here's one: what gave you energy today?"
+        },
+        {
+          "id": "d007",
+          "role": "user",
+          "text": "book me a gym session for this evening around 7pm pls"
+        },
+        {
+          "id": "d008",
+          "role": "assistant",
+          "text": "done, you're booked for 7pm tonight."
+        }
+      ]
+    },
+    {
+      "id": "dc02",
+      "date": "2026-10-21",
+      "time": "12:15",
+      "title": "flights and weekend",
+      "messages": [
+        {
+          "id": "d009",
+          "role": "user",
+          "text": "find me a direct flight to dallas next month, i hate layovers"
+        },
+        {
+          "id": "d010",
+          "role": "assistant",
+          "text": "looking up direct flights to dallas for you."
+        },
+        {
+          "id": "d011",
+          "role": "user",
+          "text": "need a grocery list for cooking jollof rice on sunday"
+        },
+        {
+          "id": "d012",
+          "role": "assistant",
+          "text": "ok, making a jollof rice grocery list for sunday."
+        },
+        {
+          "id": "d013",
+          "role": "user",
+          "text": "my sister amara is visiting, shes vegetarian, find a good margherita pizza place near me"
+        },
+        {
+          "id": "d014",
+          "role": "assistant",
+          "text": "found a few veggie-friendly pizza spots nearby."
+        },
+        {
+          "id": "d015",
+          "role": "user",
+          "text": "lol my code just broke again, can u check this error later"
+        },
+        {
+          "id": "d016",
+          "role": "assistant",
+          "text": "yeah send the error and i'll take a look."
+        }
+      ]
+    },
+    {
+      "id": "dc03",
+      "date": "2026-10-22",
+      "time": "18:20",
+      "title": "race prep",
+      "messages": [
+        {
+          "id": "d017",
+          "role": "user",
+          "text": "no alcohol for me until my 10k race on dec 6, gotta stay clean"
+        },
+        {
+          "id": "d018",
+          "role": "assistant",
+          "text": "noted, no alcohol until dec 6. good luck training."
+        },
+        {
+          "id": "d019",
+          "role": "user",
+          "text": "tried rock climbing once with friends last weekend, my arms are still dead lol was fun tho one-time thing"
+        },
+        {
+          "id": "d020",
+          "role": "assistant",
+          "text": "haha nice, sounds like a solid one-time workout."
+        },
+        {
+          "id": "d021",
+          "role": "user",
+          "text": "whats good for sore forearms btw"
+        },
+        {
+          "id": "d022",
+          "role": "assistant",
+          "text": "rest and light stretching should help."
+        }
+      ]
+    },
+    {
+      "id": "dc04",
+      "date": "2026-10-23",
+      "time": "08:05",
+      "title": "slow morning",
+      "messages": [
+        {
+          "id": "d023",
+          "role": "user",
+          "text": "morning run was slow today, legs tired"
+        },
+        {
+          "id": "d024",
+          "role": "assistant",
+          "text": "take it easy, slow runs still count."
+        },
+        {
+          "id": "d025",
+          "role": "user",
+          "text": "any good lofi playlists for coding today"
+        },
+        {
+          "id": "d026",
+          "role": "assistant",
+          "text": "yeah, i'll find a chill lofi mix for you."
+        },
+        {
+          "id": "d027",
+          "role": "user",
+          "text": "also remind me to water my plants lol"
+        },
+        {
+          "id": "d028",
+          "role": "assistant",
+          "text": "ok, reminder set to water your plants."
+        }
+      ]
+    },
+    {
+      "id": "dc05",
+      "date": "2026-10-24",
+      "time": "17:30",
+      "title": "gym after work",
+      "messages": [
+        {
+          "id": "d029",
+          "role": "user",
+          "text": "can u book gym again for evenings this week, like 7:30pm"
+        },
+        {
+          "id": "d030",
+          "role": "assistant",
+          "text": "sure, booking your evening gym slots."
+        },
+        {
+          "id": "d031",
+          "role": "user",
+          "text": "what should i make for dinner, something quick"
+        },
+        {
+          "id": "d032",
+          "role": "assistant",
+          "text": "how about chicken stir fry with rice?"
+        },
+        {
+          "id": "d033",
+          "role": "user",
+          "text": "meh maybe just eggs and toast tbh"
+        },
+        {
+          "id": "d034",
+          "role": "assistant",
+          "text": "easy and quick, go for it."
+        }
+      ]
+    },
+    {
+      "id": "dc06",
+      "date": "2026-10-25",
+      "time": "09:10",
+      "title": "sunday prep",
+      "messages": [
+        {
+          "id": "d035",
+          "role": "user",
+          "text": "grabbing my usual black coffee no sugar before errands"
+        },
+        {
+          "id": "d036",
+          "role": "assistant",
+          "text": "nice, enjoy your coffee."
+        },
+        {
+          "id": "d037",
+          "role": "user",
+          "text": "need to fix my wifi, its dropping again"
+        },
+        {
+          "id": "d038",
+          "role": "assistant",
+          "text": "try restarting your router first."
+        },
+        {
+          "id": "d039",
+          "role": "user",
+          "text": "remind me to take my anxiety medication every night at 10pm"
+        },
+        {
+          "id": "d040",
+          "role": "assistant",
+          "text": "ok, i'll remind you at 10pm nightly."
+        },
+        {
+          "id": "d041",
+          "role": "user",
+          "text": "also what time does the grocery store close"
+        },
+        {
+          "id": "d042",
+          "role": "assistant",
+          "text": "most close around 10pm on sundays."
+        }
+      ]
+    },
+    {
+      "id": "dc07",
+      "date": "2026-10-26",
+      "time": "13:00",
+      "title": "sister visit",
+      "messages": [
+        {
+          "id": "d043",
+          "role": "user",
+          "text": "amara coming over friday, any fun movie ideas"
+        },
+        {
+          "id": "d044",
+          "role": "assistant",
+          "text": "comedy night could be fun for you two."
+        },
+        {
+          "id": "d045",
+          "role": "user",
+          "text": "shes still vegetarian so thinking margherita pizza for her, she loves that stuff"
+        },
+        {
+          "id": "d046",
+          "role": "assistant",
+          "text": "perfect, pizza night sounds easy."
+        },
+        {
+          "id": "d047",
+          "role": "user",
+          "text": "cool, order extra cheese on mine"
+        },
+        {
+          "id": "d048",
+          "role": "assistant",
+          "text": "noted, extra cheese on yours."
+        }
+      ]
+    },
+    {
+      "id": "dc08",
+      "date": "2026-10-27",
+      "time": "11:45",
+      "title": "travel check",
+      "messages": [
+        {
+          "id": "d049",
+          "role": "user",
+          "text": "look for direct flights to chicago for thanksgiving, hate layovers so no stops pls"
+        },
+        {
+          "id": "d050",
+          "role": "assistant",
+          "text": "searching direct flights to chicago with no stops."
+        },
+        {
+          "id": "d051",
+          "role": "user",
+          "text": "ugh standup ran long today"
+        },
+        {
+          "id": "d052",
+          "role": "assistant",
+          "text": "rough, hope the rest of the day is quiet."
+        },
+        {
+          "id": "d053",
+          "role": "user",
+          "text": "send me that bug fix article u mentioned"
+        },
+        {
+          "id": "d054",
+          "role": "assistant",
+          "text": "sending it over now."
+        }
+      ]
+    },
+    {
+      "id": "dc09",
+      "date": "2026-10-28",
+      "time": "19:10",
+      "title": "schedule switch",
+      "messages": [
+        {
+          "id": "d055",
+          "role": "user",
+          "text": "hey switch my gym to 6am mornings, my meetings moved to evenings now so dont do the old one anymore"
+        },
+        {
+          "id": "d056",
+          "role": "assistant",
+          "text": "got it, moved your gym to 6am and cancelled evenings."
+        },
+        {
+          "id": "d057",
+          "role": "user",
+          "text": "need more peanut butter for my overnight oats btw"
+        },
+        {
+          "id": "d058",
+          "role": "assistant",
+          "text": "adding peanut butter to your grocery list."
+        },
+        {
+          "id": "d059",
+          "role": "user",
+          "text": "morning runs still on tho, just earlier now"
+        },
+        {
+          "id": "d060",
+          "role": "assistant",
+          "text": "nice, early run then gym sounds solid."
+        },
+        {
+          "id": "d061",
+          "role": "user",
+          "text": "yeah hope i can wake up lol"
+        },
+        {
+          "id": "d062",
+          "role": "assistant",
+          "text": "you'll adjust in a few days."
+        }
+      ]
+    },
+    {
+      "id": "dc10",
+      "date": "2026-10-29",
+      "time": "20:00",
+      "title": "friday plans",
+      "messages": [
+        {
+          "id": "d063",
+          "role": "user",
+          "text": "friends wanna go out for drinks friday but im doing no alcohol until dec 6 for my 10k race"
+        },
+        {
+          "id": "d064",
+          "role": "assistant",
+          "text": "good call sticking to your race goal."
+        },
+        {
+          "id": "d065",
+          "role": "user",
+          "text": "need a journal prompt again for my 10 mins after run tomorrow"
+        },
+        {
+          "id": "d066",
+          "role": "assistant",
+          "text": "try: what are you looking forward to tomorrow?"
+        },
+        {
+          "id": "d067",
+          "role": "user",
+          "text": "cool thx"
+        },
+        {
+          "id": "d068",
+          "role": "assistant",
+          "text": "anytime."
+        }
+      ]
+    },
+    {
+      "id": "dc11",
+      "date": "2026-10-30",
+      "time": "10:30",
+      "title": "sunday cooking",
+      "messages": [
+        {
+          "id": "d069",
+          "role": "user",
+          "text": "planning to cook jollof rice on sunday again, need tomatoes"
+        },
+        {
+          "id": "d070",
+          "role": "assistant",
+          "text": "added tomatoes to your sunday list."
+        },
+        {
+          "id": "d071",
+          "role": "user",
+          "text": "my laptop fan is loud af"
+        },
+        {
+          "id": "d072",
+          "role": "assistant",
+          "text": "might need a quick dust clean."
+        },
+        {
+          "id": "d073",
+          "role": "user",
+          "text": "whatever ill deal with it later"
+        },
+        {
+          "id": "d074",
+          "role": "assistant",
+          "text": "ok, let me know if you need help."
+        }
+      ]
+    },
+    {
+      "id": "dc12",
+      "date": "2026-10-30",
+      "time": "16:50",
+      "title": "coffee break",
+      "messages": [
+        {
+          "id": "d075",
+          "role": "user",
+          "text": "need a break, getting a black coffee no sugar"
+        },
+        {
+          "id": "d076",
+          "role": "assistant",
+          "text": "enjoy your break."
+        },
+        {
+          "id": "d077",
+          "role": "user",
+          "text": "any new shows to watch tonight"
+        },
+        {
+          "id": "d078",
+          "role": "assistant",
+          "text": "there's a new comedy series out."
+        },
+        {
+          "id": "d079",
+          "role": "user",
+          "text": "meh maybe just youtube"
+        },
+        {
+          "id": "d080",
+          "role": "assistant",
+          "text": "youtube rabbit hole it is."
+        }
+      ]
+    },
+    {
+      "id": "dc13",
+      "date": "2026-10-31",
+      "time": "12:00",
+      "title": "halloween plans",
+      "messages": [
+        {
+          "id": "d081",
+          "role": "user",
+          "text": "amara wants to come over for halloween movies"
+        },
+        {
+          "id": "d082",
+          "role": "assistant",
+          "text": "fun, hope you two have a good night."
+        },
+        {
+          "id": "d083",
+          "role": "user",
+          "text": "grabbing margherita pizza for her since shes vegetarian and loves it"
+        },
+        {
+          "id": "d084",
+          "role": "assistant",
+          "text": "great plan, she'll love that."
+        },
+        {
+          "id": "d085",
+          "role": "user",
+          "text": "im too old for costumes lol"
+        },
+        {
+          "id": "d086",
+          "role": "assistant",
+          "text": "haha same, comfy night in is best."
+        }
+      ]
+    },
+    {
+      "id": "dc14",
+      "date": "2026-11-01",
+      "time": "09:20",
+      "title": "morning errands",
+      "messages": [
+        {
+          "id": "d087",
+          "role": "user",
+          "text": "check direct flights to nyc in december, i hate layovers"
+        },
+        {
+          "id": "d088",
+          "role": "assistant",
+          "text": "looking for direct flights to nyc now."
+        },
+        {
+          "id": "d089",
+          "role": "user",
+          "text": "6am gym was brutal today ngl"
+        },
+        {
+          "id": "d090",
+          "role": "assistant",
+          "text": "early sessions are tough at first."
+        },
+        {
+          "id": "d091",
+          "role": "user",
+          "text": "but better than evenings with all these meetings"
+        },
+        {
+          "id": "d092",
+          "role": "assistant",
+          "text": "yeah mornings free you up."
+        }
+      ]
+    },
+    {
+      "id": "dc15",
+      "date": "2026-11-01",
+      "time": "18:05",
+      "title": "chill night",
+      "messages": [
+        {
+          "id": "d093",
+          "role": "user",
+          "text": "morning run done, now just coding"
+        },
+        {
+          "id": "d094",
+          "role": "assistant",
+          "text": "solid start to the day."
+        },
+        {
+          "id": "d095",
+          "role": "user",
+          "text": "whats the weather like tomorrow"
+        },
+        {
+          "id": "d096",
+          "role": "assistant",
+          "text": "looks sunny and cool tomorrow."
+        },
+        {
+          "id": "d097",
+          "role": "user",
+          "text": "perfect for a run"
+        },
+        {
+          "id": "d098",
+          "role": "assistant",
+          "text": "enjoy it."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Daniel, 29, Atlanta. Remote software engineer, lives alone, runs mornings."
+}

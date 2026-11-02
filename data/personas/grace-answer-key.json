@@ -1,0 +1,568 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for Grace.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "G01",
+      "category": "stable",
+      "text": "Wakes up at 4:30am for bakery work",
+      "sources": [
+        "g001",
+        "g031",
+        "g069"
+      ]
+    },
+    {
+      "id": "G02",
+      "category": "stable",
+      "text": "Owns a bakery in Boston and bakes sourdough",
+      "sources": [
+        "g045"
+      ]
+    },
+    {
+      "id": "G03",
+      "category": "stable",
+      "text": "Husband Daniel loves cinnamon rolls",
+      "sources": [
+        "g025",
+        "g063"
+      ]
+    },
+    {
+      "id": "G04",
+      "category": "stable",
+      "text": "Has a Sunday call with mom at 7pm",
+      "sources": [
+        "g033",
+        "g079"
+      ]
+    },
+    {
+      "id": "G05",
+      "category": "stable",
+      "text": "Eats morning oatmeal with blueberries",
+      "sources": [
+        "g019",
+        "g057"
+      ]
+    },
+    {
+      "id": "G06",
+      "category": "stable",
+      "text": "Takes an evening dog walk on a short loop near the park",
+      "sources": [
+        "g013"
+      ]
+    },
+    {
+      "id": "G07",
+      "category": "stable",
+      "text": "Orders tea for the bakery back room",
+      "sources": [
+        "g007",
+        "g039",
+        "g041",
+        "g081"
+      ]
+    },
+    {
+      "id": "G08",
+      "category": "stable",
+      "text": "Works weekends with no weekends off until holiday market ends Dec 20",
+      "sources": [
+        "g047",
+        "g089"
+      ]
+    },
+    {
+      "id": "G09",
+      "category": "stable",
+      "text": "Friday takeout near the bakery",
+      "sources": [
+        "g009",
+        "g021"
+      ],
+      "superseded_by": "G10"
+    },
+    {
+      "id": "G10",
+      "category": "stable",
+      "text": "Cooks at home on Fridays for budget instead of takeout",
+      "sources": [
+        "g071"
+      ]
+    },
+    {
+      "id": "G11",
+      "category": "sensitive",
+      "text": "Stressed about business loan payments and tight cash flow",
+      "sources": [
+        "g053"
+      ]
+    },
+    {
+      "id": "G12",
+      "category": "short",
+      "text": "Needs blueberries and bananas on the grocery list",
+      "sources": [
+        "g059"
+      ]
+    },
+    {
+      "id": "G13",
+      "category": "short",
+      "text": "Kids coming home next month",
+      "sources": [
+        "g061"
+      ]
+    },
+    {
+      "id": "G14",
+      "category": "oneoff",
+      "text": "Daniel's brother stopped by the shop around noon Oct 24",
+      "sources": [
+        "g027"
+      ]
+    },
+    {
+      "id": "G15",
+      "category": "oneoff",
+      "text": "Took a pottery class last spring",
+      "sources": [
+        "g085"
+      ]
+    },
+    {
+      "id": "G16",
+      "category": "oneoff",
+      "text": "Daniel brought cinnamon rolls to his card game Oct 29",
+      "sources": [
+        "g065"
+      ]
+    },
+    {
+      "id": "G17",
+      "category": "oneoff",
+      "text": "Needed cookies for kids trick or treating Oct 31",
+      "sources": [
+        "g083"
+      ]
+    }
+  ],
+  "_current_truth": "What Grace answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "G07": {
+      "action": "edit",
+      "text": "Switched from tea to coffee, now orders coffee for the back room"
+    },
+    "G08": {
+      "action": "edit",
+      "text": "Hired a manager so Sundays are off now"
+    },
+    "G01": {
+      "action": "confirm"
+    },
+    "G03": {
+      "action": "confirm"
+    },
+    "G04": {
+      "action": "confirm"
+    },
+    "G05": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "GQ01",
+      "kind": "stable",
+      "text": "Can you set my alarm for tomorrow morning?",
+      "checks": [
+        {
+          "text": "Sets alarm for 4:30am",
+          "kw": [
+            "4:30",
+            "430am",
+            "early"
+          ],
+          "want": true,
+          "fact": "G01"
+        }
+      ]
+    },
+    {
+      "id": "GQ02",
+      "kind": "stable",
+      "text": "What should I bake more of this week?",
+      "checks": [
+        {
+          "text": "Suggests sourdough loaves",
+          "kw": [
+            "sourdough",
+            "loaves",
+            "bake"
+          ],
+          "want": true,
+          "fact": "G02"
+        }
+      ]
+    },
+    {
+      "id": "GQ03",
+      "kind": "stable",
+      "text": "What treat should I save for Daniel tonight?",
+      "checks": [
+        {
+          "text": "Saves cinnamon rolls for Daniel",
+          "kw": [
+            "cinnamon rolls",
+            "daniel",
+            "save"
+          ],
+          "want": true,
+          "fact": "G03"
+        }
+      ]
+    },
+    {
+      "id": "GQ04",
+      "kind": "stable",
+      "text": "Remind me about my call with mom this weekend?",
+      "checks": [
+        {
+          "text": "Reminds about Sunday 7pm call with mom",
+          "kw": [
+            "sunday",
+            "7pm",
+            "mom"
+          ],
+          "want": true,
+          "fact": "G04"
+        }
+      ]
+    },
+    {
+      "id": "GQ05",
+      "kind": "stable",
+      "text": "What should I make for breakfast tomorrow?",
+      "checks": [
+        {
+          "text": "Suggests oatmeal with blueberries",
+          "kw": [
+            "oatmeal",
+            "blueberries",
+            "morning"
+          ],
+          "want": true,
+          "fact": "G05"
+        }
+      ]
+    },
+    {
+      "id": "GQ06",
+      "kind": "stable",
+      "text": "Plan my evening dog walk for tonight?",
+      "checks": [
+        {
+          "text": "Plans short park loop walk",
+          "kw": [
+            "park loop",
+            "dog walk",
+            "evening"
+          ],
+          "want": true,
+          "fact": "G06"
+        }
+      ]
+    },
+    {
+      "id": "GQ07",
+      "kind": "stable",
+      "text": "Find me a cheap apron for Daniel to bake?",
+      "checks": [
+        {
+          "text": "Finds cheap apron for Daniel",
+          "kw": [
+            "apron",
+            "daniel",
+            "cheap"
+          ],
+          "want": true,
+          "fact": "G03"
+        }
+      ]
+    },
+    {
+      "id": "GQ08",
+      "kind": "stable",
+      "text": "Save me the cinnamon roll recipe?",
+      "checks": [
+        {
+          "text": "Saves cinnamon roll recipe for Daniel",
+          "kw": [
+            "cinnamon",
+            "recipe",
+            "daniel"
+          ],
+          "want": true,
+          "fact": "G03"
+        }
+      ]
+    },
+    {
+      "id": "GQ09",
+      "kind": "outside",
+      "text": "Order more drinks for the back room?",
+      "checks": [
+        {
+          "text": "Orders coffee for back room",
+          "kw": [
+            "coffee",
+            "back room",
+            "order"
+          ],
+          "want": true,
+          "fact": "G07"
+        },
+        {
+          "text": "Orders tea for back room",
+          "kw": [
+            "tea",
+            "back room",
+            "order"
+          ],
+          "want": false,
+          "fact": "G07"
+        }
+      ]
+    },
+    {
+      "id": "GQ10",
+      "kind": "outside",
+      "text": "What bulk drink should I stock for staff?",
+      "checks": [
+        {
+          "text": "Recommends bulk coffee",
+          "kw": [
+            "coffee",
+            "bulk",
+            "staff"
+          ],
+          "want": true,
+          "fact": "G07"
+        }
+      ]
+    },
+    {
+      "id": "GQ11",
+      "kind": "outside",
+      "text": "Can I schedule extra staff for this Sunday?",
+      "checks": [
+        {
+          "text": "Notes Sundays are off now",
+          "kw": [
+            "sundays off",
+            "manager",
+            "sunday"
+          ],
+          "want": true,
+          "fact": "G08"
+        },
+        {
+          "text": "Plans full weekend work with no days off",
+          "kw": [
+            "no weekends off",
+            "full weekends",
+            "work"
+          ],
+          "want": false,
+          "fact": "G08"
+        }
+      ]
+    },
+    {
+      "id": "GQ12",
+      "kind": "outside",
+      "text": "Plan my bake schedule for next Sunday?",
+      "checks": [
+        {
+          "text": "Keeps Sunday off",
+          "kw": [
+            "sunday off",
+            "manager",
+            "rest"
+          ],
+          "want": true,
+          "fact": "G08"
+        }
+      ]
+    },
+    {
+      "id": "GQ13",
+      "kind": "inchat",
+      "text": "What should we do for Friday dinner this week?",
+      "checks": [
+        {
+          "text": "Suggests cooking pasta at home",
+          "kw": [
+            "cook at home",
+            "pasta",
+            "home"
+          ],
+          "want": true,
+          "fact": "G10"
+        },
+        {
+          "text": "Suggests Friday takeout noodles",
+          "kw": [
+            "takeout",
+            "noodles",
+            "dumpling"
+          ],
+          "want": false,
+          "fact": "G09"
+        }
+      ]
+    },
+    {
+      "id": "GQ14",
+      "kind": "inchat",
+      "text": "Find a late dumpling spot for Friday?",
+      "checks": [
+        {
+          "text": "Reminds she cooks at home Fridays for budget",
+          "kw": [
+            "cook at home",
+            "budget",
+            "fridays"
+          ],
+          "want": true,
+          "fact": "G10"
+        }
+      ]
+    },
+    {
+      "id": "GQ15",
+      "kind": "short",
+      "text": "What's left on my grocery list?",
+      "checks": [
+        {
+          "text": "Lists blueberries and bananas",
+          "kw": [
+            "blueberries",
+            "bananas",
+            "grocery"
+          ],
+          "want": true,
+          "fact": "G12"
+        }
+      ]
+    },
+    {
+      "id": "GQ16",
+      "kind": "short",
+      "text": "Anything special coming up with the kids?",
+      "checks": [
+        {
+          "text": "Mentions kids coming home next month",
+          "kw": [
+            "kids coming",
+            "next month",
+            "home"
+          ],
+          "want": true,
+          "fact": "G13"
+        }
+      ]
+    },
+    {
+      "id": "GQ17",
+      "kind": "sensitive",
+      "text": "Can you help me plan a big bakery expansion?",
+      "checks": [
+        {
+          "text": "Takes tight cash flow and loan stress into account",
+          "kw": [
+            "cash flow",
+            "loan",
+            "budget"
+          ],
+          "want": true,
+          "fact": "G11"
+        }
+      ]
+    },
+    {
+      "id": "GQ18",
+      "kind": "sensitive",
+      "text": "Suggest a cheap Friday meal for us?",
+      "checks": [
+        {
+          "text": "Suggests cheap meal respecting tight budget",
+          "kw": [
+            "cheap",
+            "budget",
+            "tight"
+          ],
+          "want": true,
+          "fact": "G11"
+        }
+      ]
+    },
+    {
+      "id": "GQ19",
+      "kind": "oneoff",
+      "text": "Should I keep holding rolls for Daniel's brother?",
+      "checks": [
+        {
+          "text": "Treats brother noon visit as one-time visit",
+          "kw": [
+            "one time",
+            "that visit",
+            "october"
+          ],
+          "want": true,
+          "fact": "G14"
+        },
+        {
+          "text": "Plans regular weekly rolls for brother",
+          "kw": [
+            "every week",
+            "regular",
+            "brother"
+          ],
+          "want": false,
+          "fact": "G14"
+        }
+      ]
+    },
+    {
+      "id": "GQ20",
+      "kind": "oneoff",
+      "text": "Should I start selling my pottery mugs at the bakery?",
+      "checks": [
+        {
+          "text": "Treats pottery class as one-time class",
+          "kw": [
+            "one class",
+            "once",
+            "last spring"
+          ],
+          "want": true,
+          "fact": "G15"
+        },
+        {
+          "text": "Plans regular pottery hobby schedule",
+          "kw": [
+            "regular",
+            "weekly class",
+            "hobby"
+          ],
+          "want": false,
+          "fact": "G15"
+        }
+      ]
+    }
+  ]
+}

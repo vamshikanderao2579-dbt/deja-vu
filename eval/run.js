@@ -18,7 +18,7 @@
 // Without an API key this runs in mock mode with a keyword judge, which only
 // checks the plumbing. Real numbers need MAIN_API_KEY.
 
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -35,6 +35,14 @@ const PERSONAS = {
   nidhi: { history: 'data/private/nidhi-history.json', key: 'data/private/nidhi-answer-key.json', private: true },
   vamshi: { history: 'data/private/vamshi-history.json', key: 'data/private/vamshi-answer-key.json', private: true },
 };
+// Any other synthetic persona dropped in as data/personas/<id>-history.json plus
+// <id>-answer-key.json is picked up too (see eval/PERSONA_BRIEF.md).
+for (const f of readdirSync(join(ROOT, 'data', 'personas'))) {
+  const id = f.match(/^(.+)-history\.json$/)?.[1];
+  if (id && !PERSONAS[id] && existsSync(join(ROOT, 'data', 'personas', `${id}-answer-key.json`))) {
+    PERSONAS[id] = { history: `data/personas/${id}-history.json`, key: `data/personas/${id}-answer-key.json` };
+  }
+}
 const PERSONA = arg('persona', 'alex');
 const P = PERSONAS[PERSONA];
 if (!P) throw new Error(`Unknown persona "${PERSONA}". Try: ${Object.keys(PERSONAS).join(', ')}`);
@@ -273,9 +281,10 @@ result.persona = PERSONA;
 const dir = join(ROOT, P.private ? 'data/private/eval' : 'eval/results');
 mkdirSync(dir, { recursive: true });
 const stamp = result.generated.replace(/[:.]/g, '-');
-writeFileSync(join(dir, `${PERSONA}-latest.json`), JSON.stringify(result, null, 2));
+// A mock run (format check) never replaces a real result.
+if (!config.mock) writeFileSync(join(dir, `${PERSONA}-latest.json`), JSON.stringify(result, null, 2));
 writeFileSync(join(dir, `${PERSONA}-${stamp}${config.mock ? '-mock' : ''}.json`), JSON.stringify(result, null, 2));
-if (PERSONA === 'alex') writeFileSync(join(ROOT, 'eval/results/latest.json'), JSON.stringify(result, null, 2));
+if (PERSONA === 'alex' && !config.mock) writeFileSync(join(ROOT, 'eval/results/latest.json'), JSON.stringify(result, null, 2));
 
 log('');
 console.table(
@@ -295,4 +304,4 @@ console.table(
   )
 );
 log(`Projection at ${CONV_PER_DAY} chats/day: 12 months of full history ≈ ${projection[3].fullHistory.toLocaleString()} tokens per prompt; confirmed cards ≈ ${confirmedAvg} per question (ceiling ${cardCeiling}).`);
-log(`Saved ${P.private ? 'data/private/eval' : 'eval/results'}/${PERSONA}-latest.json${config.mock ? '  (MOCK: not real results)' : ''}\n`);
+log(config.mock ? `Mock run: the files read fine. Real results were left as they are.\n` : `Saved ${P.private ? 'data/private/eval' : 'eval/results'}/${PERSONA}-latest.json\n`);

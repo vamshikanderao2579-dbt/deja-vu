@@ -42,18 +42,21 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
 
 Every step is visible to the person: **Why?** on each card opens the exact message and time it came from; ⓘ under each answer shows the cards used and what the loop decided (checked X, or *no check: nothing at stake*); Insights totals it all.
 
-## Results (Nov 2 eval, 4 people, 42 questions, 76 checks)
+## Results (Nov 2 eval, 14 people, 242 questions, 312 checks)
 
-Memory built by the staged build (Muse Spark writes, Muse Wonder grades), one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. Pooled over every check.
+Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every card used in answers, one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. Pooled over every check. Two sets, reported apart:
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| Accuracy | **86.8%** | 73.7% | 75% |
-| Preferences that changed outside chat | **91.7%** | 41.7% | 33.3% |
-| Stale answers | **2** | **2** | 3 |
-| Memory tokens per question | **~143** | ~472 | ~39,000 (up to 113,619) |
+| **Main set: 4 people** (2 synthetic, 2 real histories), 76 checks | **88.2%** | 78.9% | 73.7% |
+| … preferences that changed outside chat | **91.7%** | 58.3% | 41.7% |
+| … stale answers | **0** | 4 | 4 |
+| **Held out: 10 more synthetic people**, 236 checks | **79.7%** | 69.5% | 69.5% |
+| … preferences that changed outside chat | **81.3%** | 48.2% | 49.1% |
+| … stale answers | **7** | 13 | 11 |
+| Memory tokens per question | **~138–153** | ~395–486 | ~1,650–39,000 |
 
-Per person (Déjà Vu / summary / full): Alex 93 / 72 / 76, Maria 95 / 75 / 65, real history A 71 / 86 / 86, real history B 77 / 62 / 77. Honest caveat: on real history A the summary still scores higher; its build kept only 11 cards from 194 messages, which is the next thing to improve. Two changes since Oct 31 moved the numbers: every card is used in answers (private and unconfirmed ones too; a check is never a gate), and the builder keeps small steady likes and the people you plan for. Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md).
+The held-out people (each a week of chats, 20 questions) were written after the engine was built. Their first, untouched run: 72.5% vs 69.5%, with Déjà Vu losing on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards. We then fixed the builder (a second pass for missed facts; the grader rewords instead of rejecting), so the numbers above are after a fix made by reading two of their builds: no longer fully held out. Per person Déjà Vu is now best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the held-out personas are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
 
 ## Building memory from a whole history
 
@@ -120,7 +123,7 @@ Requires Node 18+. No dependencies.
 cp .env.example .env     # add MAIN_API_KEY from dev.meta.ai
 npm run check-api        # lists your models, makes one test call
 npm run dev              # http://localhost:3000
-npm test                 # 62 tests, mock mode, no cost
+npm test                 # 65 tests, mock mode, no cost
 ```
 
 Without an API key the app runs in **mock mode** on a hand-written fixture, so the UI works offline. Recorded demos replay instantly with `MUSE_ENABLED=false`. A daily spend cap (`SPEND_CAP_USD`) stops model calls once reached; today's spend is in `data/spend.json`.

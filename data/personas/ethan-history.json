@@ -1,0 +1,636 @@
+{
+  "user": {
+    "name": "Ethan"
+  },
+  "conversations": [
+    {
+      "id": "ec01",
+      "date": "2026-10-20",
+      "time": "07:40",
+      "title": "study fuel",
+      "messages": [
+        {
+          "id": "e001",
+          "role": "user",
+          "text": "need a good cold brew ratio for studying tonight"
+        },
+        {
+          "id": "e002",
+          "role": "assistant",
+          "text": "Try 1 to 4 coffee to water, steep overnight."
+        },
+        {
+          "id": "e003",
+          "role": "user",
+          "text": "also drop a lo-fi playlist to study to, exam week ugh"
+        },
+        {
+          "id": "e004",
+          "role": "assistant",
+          "text": "Got you, I'll find a chill multi-hour mix."
+        },
+        {
+          "id": "e005",
+          "role": "user",
+          "text": "i usually work nights at the cafe so i study late"
+        },
+        {
+          "id": "e006",
+          "role": "assistant",
+          "text": "Makes sense, late nights work for that schedule."
+        }
+      ]
+    },
+    {
+      "id": "ec02",
+      "date": "2026-10-21",
+      "time": "12:15",
+      "title": "lunch cheap",
+      "messages": [
+        {
+          "id": "e007",
+          "role": "user",
+          "text": "whats some cheap eats near campus for lunch"
+        },
+        {
+          "id": "e008",
+          "role": "assistant",
+          "text": "I'll pull a few budget spots near you."
+        },
+        {
+          "id": "e009",
+          "role": "user",
+          "text": "i bike everywhere so like within 15 min ride"
+        },
+        {
+          "id": "e010",
+          "role": "assistant",
+          "text": "Perfect, I'll keep it close by."
+        },
+        {
+          "id": "e011",
+          "role": "user",
+          "text": "craving that spicy instant ramen i always make around midnight too lol"
+        },
+        {
+          "id": "e012",
+          "role": "assistant",
+          "text": "Classic late night fix, easy to stock up."
+        }
+      ]
+    },
+    {
+      "id": "ec03",
+      "date": "2026-10-22",
+      "time": "16:02",
+      "title": "roommate drink",
+      "messages": [
+        {
+          "id": "e013",
+          "role": "user",
+          "text": "how do i make a matcha latte like my roommate maya likes"
+        },
+        {
+          "id": "e014",
+          "role": "assistant",
+          "text": "Whisk matcha with hot water then add milk."
+        },
+        {
+          "id": "e015",
+          "role": "user",
+          "text": "she's picky about it being not too sweet"
+        },
+        {
+          "id": "e016",
+          "role": "assistant",
+          "text": "Got it, I'll keep the sugar light."
+        },
+        {
+          "id": "e017",
+          "role": "user",
+          "text": "need snack ideas for our sunday movie night with the roommates"
+        },
+        {
+          "id": "e018",
+          "role": "assistant",
+          "text": "Popcorn and easy shareable snacks work great."
+        }
+      ]
+    },
+    {
+      "id": "ec04",
+      "date": "2026-10-23",
+      "time": "08:10",
+      "title": "morning brew",
+      "messages": [
+        {
+          "id": "e019",
+          "role": "user",
+          "text": "my cold brew came out too bitter, what did i do wrong"
+        },
+        {
+          "id": "e020",
+          "role": "assistant",
+          "text": "Probably ground too fine or steeped too long."
+        },
+        {
+          "id": "e021",
+          "role": "user",
+          "text": "btw any cheap eats for dinner, broke college senior life"
+        },
+        {
+          "id": "e022",
+          "role": "assistant",
+          "text": "Yeah, I'll find low-cost options."
+        },
+        {
+          "id": "e023",
+          "role": "user",
+          "text": "like under 10 bucks if possible"
+        },
+        {
+          "id": "e024",
+          "role": "assistant",
+          "text": "On it, filtering for under ten."
+        }
+      ]
+    },
+    {
+      "id": "ec05",
+      "date": "2026-10-23",
+      "time": "21:45",
+      "title": "study late",
+      "messages": [
+        {
+          "id": "e025",
+          "role": "user",
+          "text": "need more lo-fi to study to, can't focus"
+        },
+        {
+          "id": "e026",
+          "role": "assistant",
+          "text": "I'll queue up something mellow for you."
+        },
+        {
+          "id": "e027",
+          "role": "user",
+          "text": "trying no takeout spending until the semester ends dec 10 so i gotta cook"
+        },
+        {
+          "id": "e028",
+          "role": "assistant",
+          "text": "Good plan, home cooking will save a lot."
+        },
+        {
+          "id": "e029",
+          "role": "user",
+          "text": "any easy grocery meals"
+        },
+        {
+          "id": "e030",
+          "role": "assistant",
+          "text": "Rice, beans and frozen veggies are solid."
+        },
+        {
+          "id": "e031",
+          "role": "user",
+          "text": "yeah i bike everywhere to the store anyway"
+        },
+        {
+          "id": "e032",
+          "role": "assistant",
+          "text": "Nice, quick trip then."
+        }
+      ]
+    },
+    {
+      "id": "ec06",
+      "date": "2026-10-25",
+      "time": "10:30",
+      "title": "shift stuff",
+      "messages": [
+        {
+          "id": "e033",
+          "role": "user",
+          "text": "i'm still on nights at the cafe this week, so tired"
+        },
+        {
+          "id": "e034",
+          "role": "assistant",
+          "text": "Night shifts can be rough, hope you rest."
+        },
+        {
+          "id": "e035",
+          "role": "user",
+          "text": "what helps stay awake without more caffeine lol"
+        },
+        {
+          "id": "e036",
+          "role": "assistant",
+          "text": "Short walk and water usually help."
+        },
+        {
+          "id": "e037",
+          "role": "user",
+          "text": "might just do my usual spicy instant ramen at midnight after"
+        },
+        {
+          "id": "e038",
+          "role": "assistant",
+          "text": "Sounds cozy for after work."
+        }
+      ]
+    },
+    {
+      "id": "ec07",
+      "date": "2026-10-25",
+      "time": "19:12",
+      "title": "weekend story",
+      "messages": [
+        {
+          "id": "e039",
+          "role": "user",
+          "text": "went to a music festival last summer with my cousins, was so muddy"
+        },
+        {
+          "id": "e040",
+          "role": "assistant",
+          "text": "Haha sounds messy but fun."
+        },
+        {
+          "id": "e041",
+          "role": "user",
+          "text": "anyway need to clean my room, its a mess"
+        },
+        {
+          "id": "e042",
+          "role": "assistant",
+          "text": "Start with laundry, then surfaces."
+        }
+      ]
+    },
+    {
+      "id": "ec08",
+      "date": "2026-10-26",
+      "time": "14:20",
+      "title": "stressed",
+      "messages": [
+        {
+          "id": "e043",
+          "role": "user",
+          "text": "honestly kinda worried about student loan debt after i graduate"
+        },
+        {
+          "id": "e044",
+          "role": "assistant",
+          "text": "That's really understandable, lots to think about."
+        },
+        {
+          "id": "e045",
+          "role": "user",
+          "text": "like how do people even budget for that"
+        },
+        {
+          "id": "e046",
+          "role": "assistant",
+          "text": "Tracking spending and small savings help."
+        },
+        {
+          "id": "e047",
+          "role": "user",
+          "text": "yeah idk, just thinking out loud"
+        },
+        {
+          "id": "e048",
+          "role": "assistant",
+          "text": "Totally get it, here if you need."
+        }
+      ]
+    },
+    {
+      "id": "ec09",
+      "date": "2026-10-27",
+      "time": "09:05",
+      "title": "new shifts",
+      "messages": [
+        {
+          "id": "e049",
+          "role": "user",
+          "text": "so my cafe shifts switched from nights to mornings now"
+        },
+        {
+          "id": "e050",
+          "role": "assistant",
+          "text": "Oh nice, how are you liking it?"
+        },
+        {
+          "id": "e051",
+          "role": "user",
+          "text": "mornings are busy for me now cause of the opening shift, don't do the old one anymore"
+        },
+        {
+          "id": "e052",
+          "role": "assistant",
+          "text": "Got it, I'll keep that timing in mind."
+        },
+        {
+          "id": "e053",
+          "role": "user",
+          "text": "yeah manager needed morning coverage so i said yes"
+        },
+        {
+          "id": "e054",
+          "role": "assistant",
+          "text": "Makes sense, extra hours are good."
+        },
+        {
+          "id": "e055",
+          "role": "user",
+          "text": "need an alarm routine that actually works lol"
+        },
+        {
+          "id": "e056",
+          "role": "assistant",
+          "text": "Try two alarms and phone across the room."
+        }
+      ]
+    },
+    {
+      "id": "ec10",
+      "date": "2026-10-28",
+      "time": "07:55",
+      "title": "before work",
+      "messages": [
+        {
+          "id": "e057",
+          "role": "user",
+          "text": "quick cold brew question before my morning shift, can i heat it up"
+        },
+        {
+          "id": "e058",
+          "role": "assistant",
+          "text": "Yep, just dilute with hot water."
+        },
+        {
+          "id": "e059",
+          "role": "user",
+          "text": "maya wants me to grab her matcha latte stuff from the store"
+        },
+        {
+          "id": "e060",
+          "role": "assistant",
+          "text": "Nice, sweet of you to grab it."
+        },
+        {
+          "id": "e061",
+          "role": "user",
+          "text": "what brand is good but cheap"
+        },
+        {
+          "id": "e062",
+          "role": "assistant",
+          "text": "Store brand powder is usually fine."
+        }
+      ]
+    },
+    {
+      "id": "ec11",
+      "date": "2026-10-29",
+      "time": "18:40",
+      "title": "cheap dinner study",
+      "messages": [
+        {
+          "id": "e063",
+          "role": "user",
+          "text": "any cheap eats open late near me"
+        },
+        {
+          "id": "e064",
+          "role": "assistant",
+          "text": "I'll check late spots with low prices."
+        },
+        {
+          "id": "e065",
+          "role": "user",
+          "text": "put on some lo-fi to study to while i wait"
+        },
+        {
+          "id": "e066",
+          "role": "assistant",
+          "text": "Good call for focus time."
+        },
+        {
+          "id": "e067",
+          "role": "user",
+          "text": "planning snacks for sunday movie night again"
+        },
+        {
+          "id": "e068",
+          "role": "assistant",
+          "text": "Fun, got any theme picked?"
+        },
+        {
+          "id": "e069",
+          "role": "user",
+          "text": "probably horror since its halloween week"
+        },
+        {
+          "id": "e070",
+          "role": "assistant",
+          "text": "Perfect timing for that."
+        }
+      ]
+    },
+    {
+      "id": "ec12",
+      "date": "2026-10-29",
+      "time": "22:10",
+      "title": "bike ride",
+      "messages": [
+        {
+          "id": "e071",
+          "role": "user",
+          "text": "just biked everywhere today, legs dead"
+        },
+        {
+          "id": "e072",
+          "role": "assistant",
+          "text": "Long day, stretch a bit tonight."
+        },
+        {
+          "id": "e073",
+          "role": "user",
+          "text": "fr, nashville hills are no joke"
+        },
+        {
+          "id": "e074",
+          "role": "assistant",
+          "text": "Yeah those climbs add up fast."
+        },
+        {
+          "id": "e075",
+          "role": "user",
+          "text": "rewarding myself with spicy instant ramen at midnight"
+        },
+        {
+          "id": "e076",
+          "role": "assistant",
+          "text": "You earned it, enjoy."
+        }
+      ]
+    },
+    {
+      "id": "ec13",
+      "date": "2026-10-30",
+      "time": "13:30",
+      "title": "no spending",
+      "messages": [
+        {
+          "id": "e077",
+          "role": "user",
+          "text": "reminding myself no takeout spending until semester ends dec 10"
+        },
+        {
+          "id": "e078",
+          "role": "assistant",
+          "text": "Staying strong, you've got this."
+        },
+        {
+          "id": "e079",
+          "role": "user",
+          "text": "its hard when everyone wants pizza"
+        },
+        {
+          "id": "e080",
+          "role": "assistant",
+          "text": "Yeah peer pressure is real."
+        },
+        {
+          "id": "e081",
+          "role": "user",
+          "text": "maya said she'll make matcha lattes at home instead of starbucks so that helps"
+        },
+        {
+          "id": "e082",
+          "role": "assistant",
+          "text": "Smart swap, home version is cheaper."
+        }
+      ]
+    },
+    {
+      "id": "ec14",
+      "date": "2026-10-31",
+      "time": "17:00",
+      "title": "halloween plans",
+      "messages": [
+        {
+          "id": "e083",
+          "role": "user",
+          "text": "we doing sunday movie night tomorrow, need a good comedy"
+        },
+        {
+          "id": "e084",
+          "role": "assistant",
+          "text": "I'll suggest a few light ones."
+        },
+        {
+          "id": "e085",
+          "role": "user",
+          "text": "house is sharing candy duty tonight"
+        },
+        {
+          "id": "e086",
+          "role": "assistant",
+          "text": "Fun, hope you get lots of kids."
+        },
+        {
+          "id": "e087",
+          "role": "user",
+          "text": "i got morning shift tomorrow so can't stay up too late"
+        },
+        {
+          "id": "e088",
+          "role": "assistant",
+          "text": "Good to pace yourself then."
+        }
+      ]
+    },
+    {
+      "id": "ec15",
+      "date": "2026-11-01",
+      "time": "08:20",
+      "title": "sunday reset",
+      "messages": [
+        {
+          "id": "e089",
+          "role": "user",
+          "text": "mornings are busy now with the cafe, need quick breakfast ideas"
+        },
+        {
+          "id": "e090",
+          "role": "assistant",
+          "text": "Overnight oats or toast work fast."
+        },
+        {
+          "id": "e091",
+          "role": "user",
+          "text": "something i can eat before my shift"
+        },
+        {
+          "id": "e092",
+          "role": "assistant",
+          "text": "Banana and peanut butter is quick."
+        },
+        {
+          "id": "e093",
+          "role": "user",
+          "text": "btw my barista latte art still sucks lol"
+        },
+        {
+          "id": "e094",
+          "role": "assistant",
+          "text": "Practice makes perfect, keep at it."
+        }
+      ]
+    },
+    {
+      "id": "ec16",
+      "date": "2026-11-01",
+      "time": "20:15",
+      "title": "chill night",
+      "messages": [
+        {
+          "id": "e095",
+          "role": "user",
+          "text": "too tired to go out, just chilling in the shared house"
+        },
+        {
+          "id": "e096",
+          "role": "assistant",
+          "text": "Chill nights are the best sometimes."
+        },
+        {
+          "id": "e097",
+          "role": "user",
+          "text": "roommates are loud in the living room again"
+        },
+        {
+          "id": "e098",
+          "role": "assistant",
+          "text": "Classic shared house life."
+        },
+        {
+          "id": "e099",
+          "role": "user",
+          "text": "gonna make tea and call it early, morning shift"
+        },
+        {
+          "id": "e100",
+          "role": "assistant",
+          "text": "Good plan, rest up well."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Ethan, 22, Nashville. College senior and part-time barista in a shared house."
+}

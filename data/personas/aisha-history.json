@@ -1,0 +1,646 @@
+{
+  "user": {
+    "name": "Aisha"
+  },
+  "conversations": [
+    {
+      "id": "ac01",
+      "date": "2026-10-20",
+      "time": "07:40",
+      "title": "bus and morning chai",
+      "messages": [
+        {
+          "id": "a001",
+          "role": "user",
+          "text": "hey can u check bus times to uw campus for 9am? i hate driving in traffic"
+        },
+        {
+          "id": "a002",
+          "role": "assistant",
+          "text": "sure, the 49 should get you there by 8:45."
+        },
+        {
+          "id": "a003",
+          "role": "user",
+          "text": "perfect, also any good oat milk chai near campus? im craving my usual morning chai"
+        },
+        {
+          "id": "a004",
+          "role": "assistant",
+          "text": "yep, miro tea has a good one."
+        },
+        {
+          "id": "a005",
+          "role": "user",
+          "text": "lol my bike has a flat so bus it is this week"
+        },
+        {
+          "id": "a006",
+          "role": "assistant",
+          "text": "ugh flats are the worst, bus is a solid backup."
+        }
+      ]
+    },
+    {
+      "id": "ac02",
+      "date": "2026-10-20",
+      "time": "19:15",
+      "title": "sunday prep planning",
+      "messages": [
+        {
+          "id": "a007",
+          "role": "user",
+          "text": "need a grocery list for my sunday lentil soup meal prep, running low on red lentils"
+        },
+        {
+          "id": "a008",
+          "role": "assistant",
+          "text": "got it, adding red lentils, carrots, and cumin."
+        },
+        {
+          "id": "a009",
+          "role": "user",
+          "text": "thanks, also remind me to do my evening walk after dinner to unwind"
+        },
+        {
+          "id": "a010",
+          "role": "assistant",
+          "text": "will do, 20 mins after dinner right?"
+        },
+        {
+          "id": "a011",
+          "role": "user",
+          "text": "yeah exactly, helps me sleep lol"
+        },
+        {
+          "id": "a012",
+          "role": "assistant",
+          "text": "totally makes sense."
+        }
+      ]
+    },
+    {
+      "id": "ac03",
+      "date": "2026-10-21",
+      "time": "21:05",
+      "title": "library late night",
+      "messages": [
+        {
+          "id": "a013",
+          "role": "user",
+          "text": "im gonna study late at the library tonight, can u quiz me on epi terms around 11?"
+        },
+        {
+          "id": "a014",
+          "role": "assistant",
+          "text": "yes, ping me at 11 and I'll quiz you."
+        },
+        {
+          "id": "a015",
+          "role": "user",
+          "text": "also is the odegaard open till 2am this week?"
+        },
+        {
+          "id": "a016",
+          "role": "assistant",
+          "text": "yeah it's open late till friday."
+        },
+        {
+          "id": "a017",
+          "role": "user",
+          "text": "sweet, gonna need the coffee lol"
+        },
+        {
+          "id": "a018",
+          "role": "assistant",
+          "text": "good luck with the late session."
+        }
+      ]
+    },
+    {
+      "id": "ac04",
+      "date": "2026-10-22",
+      "time": "12:30",
+      "title": "dinner for priya",
+      "messages": [
+        {
+          "id": "a019",
+          "role": "user",
+          "text": "my roommate priya is vegan, can u find a peanut noodles recipe she'd like for our shared dinner?"
+        },
+        {
+          "id": "a020",
+          "role": "assistant",
+          "text": "found a good vegan peanut noodle one, sending it."
+        },
+        {
+          "id": "a021",
+          "role": "user",
+          "text": "does it have tofu? she loves anything with peanut sauce tbh"
+        },
+        {
+          "id": "a022",
+          "role": "assistant",
+          "text": "yep, this one uses tofu and extra peanut sauce."
+        },
+        {
+          "id": "a023",
+          "role": "user",
+          "text": "nice, we have 3 of us total so need to double it"
+        },
+        {
+          "id": "a024",
+          "role": "assistant",
+          "text": "noted, doubled for three people."
+        }
+      ]
+    },
+    {
+      "id": "ac05",
+      "date": "2026-10-24",
+      "time": "20:10",
+      "title": "study snacks",
+      "messages": [
+        {
+          "id": "a025",
+          "role": "user",
+          "text": "heading to study late at the library again, what snacks wont annoy people lol"
+        },
+        {
+          "id": "a026",
+          "role": "assistant",
+          "text": "granola bars or bananas are safe bets."
+        },
+        {
+          "id": "a027",
+          "role": "user",
+          "text": "ok grab me a focus playlist for like 3 hrs?"
+        },
+        {
+          "id": "a028",
+          "role": "assistant",
+          "text": "here's a lo-fi playlist for three hours."
+        },
+        {
+          "id": "a029",
+          "role": "user",
+          "text": "ur the best, public health midterms are killing me"
+        },
+        {
+          "id": "a030",
+          "role": "assistant",
+          "text": "you've got this, good luck tonight."
+        }
+      ]
+    },
+    {
+      "id": "ac06",
+      "date": "2026-10-24",
+      "time": "14:05",
+      "title": "bus route + caffeine cut",
+      "messages": [
+        {
+          "id": "a031",
+          "role": "user",
+          "text": "is the bus still faster than driving to downtown at 5pm? i'd rather take the bus"
+        },
+        {
+          "id": "a032",
+          "role": "assistant",
+          "text": "yeah bus lane makes it about 10 mins faster."
+        },
+        {
+          "id": "a033",
+          "role": "user",
+          "text": "cool, also trying no caffeine after 2pm until finals end dec 12, so no coffee runs ok"
+        },
+        {
+          "id": "a034",
+          "role": "assistant",
+          "text": "got it, no caffeine after 2pm until dec 12."
+        },
+        {
+          "id": "a035",
+          "role": "user",
+          "text": "like if i ask for a latte at 4pm tell me no lol"
+        },
+        {
+          "id": "a036",
+          "role": "assistant",
+          "text": "haha deal, I'll remind you."
+        },
+        {
+          "id": "a037",
+          "role": "user",
+          "text": "btw did it rain today? my bike seat is soaked"
+        },
+        {
+          "id": "a038",
+          "role": "assistant",
+          "text": "yeah light rain this afternoon."
+        }
+      ]
+    },
+    {
+      "id": "ac07",
+      "date": "2026-10-25",
+      "time": "10:20",
+      "title": "soup and wedding pics",
+      "messages": [
+        {
+          "id": "a039",
+          "role": "user",
+          "text": "help me scale my sunday lentil soup meal prep for the week, need 5 containers"
+        },
+        {
+          "id": "a040",
+          "role": "assistant",
+          "text": "okay, scaled to five servings for you."
+        },
+        {
+          "id": "a041",
+          "role": "user",
+          "text": "omg just got pics back from that wedding out of state i went to in portland last weekend, dress was so pretty"
+        },
+        {
+          "id": "a042",
+          "role": "assistant",
+          "text": "oh nice, glad it was fun."
+        },
+        {
+          "id": "a043",
+          "role": "user",
+          "text": "yeah it was a one time trip, so tired from flying tho"
+        },
+        {
+          "id": "a044",
+          "role": "assistant",
+          "text": "travel always wipes me out too."
+        }
+      ]
+    },
+    {
+      "id": "ac08",
+      "date": "2026-10-25",
+      "time": "18:45",
+      "title": "chai and walk",
+      "messages": [
+        {
+          "id": "a045",
+          "role": "user",
+          "text": "whats a low sugar oat milk chai recipe? i drink it every morning but wanna make at home"
+        },
+        {
+          "id": "a046",
+          "role": "assistant",
+          "text": "use oat milk, black tea, and a little honey."
+        },
+        {
+          "id": "a047",
+          "role": "user",
+          "text": "yum will try tomorrow, also need a podcast for my evening walk after dinner"
+        },
+        {
+          "id": "a048",
+          "role": "assistant",
+          "text": "how about a 25 min public health podcast?"
+        },
+        {
+          "id": "a049",
+          "role": "user",
+          "text": "perfect length, my unwind routine lol"
+        },
+        {
+          "id": "a050",
+          "role": "assistant",
+          "text": "enjoy your walk tonight."
+        }
+      ]
+    },
+    {
+      "id": "ac09",
+      "date": "2026-10-27",
+      "time": "13:10",
+      "title": "priya lunch idea",
+      "messages": [
+        {
+          "id": "a051",
+          "role": "user",
+          "text": "priya wants lunch tomorrow, any vegan spot with peanut noodles she loves?"
+        },
+        {
+          "id": "a052",
+          "role": "assistant",
+          "text": "moonlight cafe has great vegan peanut noodles."
+        },
+        {
+          "id": "a053",
+          "role": "user",
+          "text": "is it cheap? grad student budget lol"
+        },
+        {
+          "id": "a054",
+          "role": "assistant",
+          "text": "yeah around $12 a bowl."
+        },
+        {
+          "id": "a055",
+          "role": "user",
+          "text": "ok send me the menu link"
+        },
+        {
+          "id": "a056",
+          "role": "assistant",
+          "text": "sent, let me know what you pick."
+        }
+      ]
+    },
+    {
+      "id": "ac10",
+      "date": "2026-10-27",
+      "time": "20:30",
+      "title": "switching study time",
+      "messages": [
+        {
+          "id": "a057",
+          "role": "user",
+          "text": "hey so my lab schedule changed, i have to switch to studying mornings instead of evenings"
+        },
+        {
+          "id": "a058",
+          "role": "assistant",
+          "text": "okay, mornings it is from now on."
+        },
+        {
+          "id": "a059",
+          "role": "user",
+          "text": "yeah like 7-10am at the library, don't do the old late evening sessions anymore please"
+        },
+        {
+          "id": "a060",
+          "role": "assistant",
+          "text": "noted, no more evening study sessions."
+        },
+        {
+          "id": "a061",
+          "role": "user",
+          "text": "can u set a reminder for 7am tomorrow to study?"
+        },
+        {
+          "id": "a062",
+          "role": "assistant",
+          "text": "done, 7am study reminder set."
+        }
+      ]
+    },
+    {
+      "id": "ac11",
+      "date": "2026-10-28",
+      "time": "09:00",
+      "title": "bus pass and paperwork",
+      "messages": [
+        {
+          "id": "a063",
+          "role": "user",
+          "text": "should i renew my monthly bus pass? driving is such a pain with parking"
+        },
+        {
+          "id": "a064",
+          "role": "assistant",
+          "text": "yeah bus pass sounds worth it for you."
+        },
+        {
+          "id": "a065",
+          "role": "user",
+          "text": "yeah i'll always pick bus over driving, also stressed cause my visa renewal is still pending"
+        },
+        {
+          "id": "a066",
+          "role": "assistant",
+          "text": "that sounds stressful, hope it clears soon."
+        },
+        {
+          "id": "a067",
+          "role": "user",
+          "text": "thanks, anyway what bus goes to greenlake?"
+        },
+        {
+          "id": "a068",
+          "role": "assistant",
+          "text": "the 62 goes straight there."
+        },
+        {
+          "id": "a069",
+          "role": "user",
+          "text": "cool, might bike instead if its sunny"
+        },
+        {
+          "id": "a070",
+          "role": "assistant",
+          "text": "looks sunny this afternoon actually."
+        }
+      ]
+    },
+    {
+      "id": "ac12",
+      "date": "2026-10-28",
+      "time": "19:00",
+      "title": "decaf evening",
+      "messages": [
+        {
+          "id": "a071",
+          "role": "user",
+          "text": "need herbal tea ideas, still doing no caffeine after 2pm until finals end dec 12"
+        },
+        {
+          "id": "a072",
+          "role": "assistant",
+          "text": "chamomile or peppermint are good decaf options."
+        },
+        {
+          "id": "a073",
+          "role": "user",
+          "text": "grab chamomile then, gonna have it on my evening walk after dinner"
+        },
+        {
+          "id": "a074",
+          "role": "assistant",
+          "text": "nice combo, tea plus walk."
+        },
+        {
+          "id": "a075",
+          "role": "user",
+          "text": "yeah its my fav way to unwind before bed"
+        },
+        {
+          "id": "a076",
+          "role": "assistant",
+          "text": "sounds like a solid routine."
+        }
+      ]
+    },
+    {
+      "id": "ac13",
+      "date": "2026-10-30",
+      "time": "11:15",
+      "title": "meal prep for three",
+      "messages": [
+        {
+          "id": "a077",
+          "role": "user",
+          "text": "planning sunday lentil soup meal prep again, need enough for me and my 2 roommates"
+        },
+        {
+          "id": "a078",
+          "role": "assistant",
+          "text": "okay, triple batch for three people."
+        },
+        {
+          "id": "a079",
+          "role": "user",
+          "text": "priya is vegan so make sure that batch works for her, she loves peanut noodles too but soup is fine right?"
+        },
+        {
+          "id": "a080",
+          "role": "assistant",
+          "text": "yep lentil soup is vegan, good for priya."
+        },
+        {
+          "id": "a081",
+          "role": "user",
+          "text": "perfect, add crusty bread on the side"
+        },
+        {
+          "id": "a082",
+          "role": "assistant",
+          "text": "added bread to the list."
+        },
+        {
+          "id": "a083",
+          "role": "user",
+          "text": "also my bike chain is squeaky ugh"
+        },
+        {
+          "id": "a084",
+          "role": "assistant",
+          "text": "might need some lube from the bike shop."
+        }
+      ]
+    },
+    {
+      "id": "ac14",
+      "date": "2026-10-30",
+      "time": "07:10",
+      "title": "morning library",
+      "messages": [
+        {
+          "id": "a085",
+          "role": "user",
+          "text": "at the library for my morning study block, quiz me on biostats?"
+        },
+        {
+          "id": "a086",
+          "role": "assistant",
+          "text": "sure, ready when you are."
+        },
+        {
+          "id": "a087",
+          "role": "user",
+          "text": "mornings are actually better since lab runs late now"
+        },
+        {
+          "id": "a088",
+          "role": "assistant",
+          "text": "glad the new schedule is working."
+        },
+        {
+          "id": "a089",
+          "role": "user",
+          "text": "yeah no more late night cramming for me"
+        },
+        {
+          "id": "a090",
+          "role": "assistant",
+          "text": "morning focus for the win."
+        }
+      ]
+    },
+    {
+      "id": "ac15",
+      "date": "2026-11-01",
+      "time": "08:05",
+      "title": "chai craving",
+      "messages": [
+        {
+          "id": "a091",
+          "role": "user",
+          "text": "craving my oat milk chai this morning, cafe open yet?"
+        },
+        {
+          "id": "a092",
+          "role": "assistant",
+          "text": "miro opens at 8, you should be good."
+        },
+        {
+          "id": "a093",
+          "role": "user",
+          "text": "also need to bike to campus after, hope it doesnt rain"
+        },
+        {
+          "id": "a094",
+          "role": "assistant",
+          "text": "no rain till tonight, you're clear."
+        },
+        {
+          "id": "a095",
+          "role": "user",
+          "text": "yay, then morning study at library lol"
+        },
+        {
+          "id": "a096",
+          "role": "assistant",
+          "text": "have a good study session."
+        }
+      ]
+    },
+    {
+      "id": "ac16",
+      "date": "2026-11-01",
+      "time": "16:20",
+      "title": "random errands",
+      "messages": [
+        {
+          "id": "a097",
+          "role": "user",
+          "text": "where can i print posters for class cheap?"
+        },
+        {
+          "id": "a098",
+          "role": "assistant",
+          "text": "the uw library print shop is cheapest."
+        },
+        {
+          "id": "a099",
+          "role": "user",
+          "text": "ok thanks, also my succulent is dying help"
+        },
+        {
+          "id": "a100",
+          "role": "assistant",
+          "text": "probably overwatering, let it dry out."
+        },
+        {
+          "id": "a101",
+          "role": "user",
+          "text": "lol oops i water it daily"
+        },
+        {
+          "id": "a102",
+          "role": "assistant",
+          "text": "yeah cut back to once a week."
+        }
+      ]
+    }
+  ],
+  "_label": "SYNTHETIC TEST DATA, held out. Persona Aisha, 26, Seattle. Public health grad student with 2 roommates, bikes to campus."
+}

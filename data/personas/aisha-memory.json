@@ -1,0 +1,266 @@
+{
+  "cards": [
+    {
+      "id": "travel-1",
+      "category": "travel",
+      "type": "preference",
+      "text": "Prefers bus over driving in traffic",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "a001",
+        "a031",
+        "a065"
+      ],
+      "sub": "commute",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "travel-2",
+      "category": "travel",
+      "type": "preference",
+      "text": "Bikes to campus when weather is clear",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "a069",
+        "a093"
+      ],
+      "sub": "bike",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "study-1",
+      "category": "study",
+      "type": "preference",
+      "text": "Studies mornings 7-10am at library",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "a057",
+        "a059",
+        "a085"
+      ],
+      "sub": "schedule",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "health-1",
+      "category": "health",
+      "type": "preference",
+      "text": "Caffeine cutoff at 2pm daily",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.9,
+      "sources": [
+        "a033",
+        "a035",
+        "a071"
+      ],
+      "sub": "caffeine",
+      "until": "2026-12-12",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "personal-1",
+      "category": "personal",
+      "type": "preference",
+      "text": "Has visa renewal pending",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.9,
+      "sources": [
+        "a065"
+      ],
+      "sub": "visa",
+      "priority": 1,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "personal-2",
+      "category": "personal",
+      "type": "preference",
+      "text": "Grad student on a budget",
+      "status": "pending",
+      "sensitive": true,
+      "confidence": 0.8,
+      "sources": [
+        "a053"
+      ],
+      "sub": "budget",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-1",
+      "category": "food",
+      "type": "preference",
+      "text": "Drinks low-sugar homemade oat milk chai mornings",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "a003",
+        "a045",
+        "a091"
+      ],
+      "sub": "drinks",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "food-2",
+      "category": "food",
+      "type": "preference",
+      "text": "Preps lentil soup every Sunday",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "a007",
+        "a039",
+        "a077"
+      ],
+      "sub": "meal-prep",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "routine-1",
+      "category": "routine",
+      "type": "preference",
+      "text": "Walks after dinner to unwind",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.9,
+      "sources": [
+        "a009",
+        "a011",
+        "a047",
+        "a073",
+        "a075"
+      ],
+      "sub": "evening",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "social-1",
+      "category": "social",
+      "type": "preference",
+      "text": "Roommate Priya loves peanut noodles",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.95,
+      "sources": [
+        "a019",
+        "a079",
+        "a021",
+        "a051"
+      ],
+      "sub": "roommates",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "household-1",
+      "category": "household",
+      "type": "preference",
+      "text": "Cooks shared meals for 3 including roommates",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "a023",
+        "a077"
+      ],
+      "sub": "cooking",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "education-1",
+      "category": "education",
+      "type": "preference",
+      "text": "Studies public health including epi and biostats",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "a029",
+        "a013",
+        "a085"
+      ],
+      "sub": "major",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "education-2",
+      "category": "education",
+      "type": "preference",
+      "text": "Attends UW and commutes to campus",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.85,
+      "sources": [
+        "a001",
+        "a098"
+      ],
+      "sub": "school",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    },
+    {
+      "id": "education-3",
+      "category": "education",
+      "type": "preference",
+      "text": "Has lab that runs late",
+      "status": "inferred",
+      "sensitive": false,
+      "confidence": 0.75,
+      "sources": [
+        "a057",
+        "a087"
+      ],
+      "sub": "lab",
+      "priority": 2,
+      "created": "2026-11-02T15:17:17.561Z",
+      "last_seen": "2026-11-02T15:17:17.561Z",
+      "last_confirmed": null
+    }
+  ]
+}

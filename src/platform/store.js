@@ -79,7 +79,8 @@ let fallback = null;
 const als = new AsyncLocalStorage();
 export const current = () => als.getStore() ?? fallback;
 export const runIn = (view, fn) => als.run(view, fn);
-setTodaySource(() => (current()?.realToday ? null : config.today));
+// A demo person can set their own "today" (the day after their chats end).
+setTodaySource(() => (current()?.realToday ? null : current()?.profile?.today ?? config.today));
 
 export function useProfile(id) {
   fallback = profileView(id, { fromEnv: true });

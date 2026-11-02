@@ -1,0 +1,520 @@
+{
+  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for James.",
+  "today": "2026-11-02",
+  "facts": [
+    {
+      "id": "J01",
+      "category": "food",
+      "text": "Prefers tea over coffee, especially in the morning",
+      "sources": [
+        "j003",
+        "j031",
+        "j077"
+      ]
+    },
+    {
+      "id": "J02",
+      "category": "routine",
+      "text": "Does a morning walk daily",
+      "sources": [
+        "j001",
+        "j037",
+        "j087"
+      ]
+    },
+    {
+      "id": "J03",
+      "category": "routine",
+      "text": "Volunteers at the library and runs errands after shift",
+      "sources": [
+        "j017",
+        "j063",
+        "j101"
+      ]
+    },
+    {
+      "id": "J04",
+      "category": "preference",
+      "text": "Likes cozy small-town mystery novels, nothing gory",
+      "sources": [
+        "j009",
+        "j045",
+        "j047"
+      ]
+    },
+    {
+      "id": "J05",
+      "category": "food",
+      "text": "Eats oatmeal with blueberries every morning",
+      "sources": [
+        "j013",
+        "j055",
+        "j089"
+      ]
+    },
+    {
+      "id": "J06",
+      "category": "family",
+      "text": "Grandson Eli is 6 and obsessed with dinosaurs",
+      "sources": [
+        "j019",
+        "j021",
+        "j061"
+      ]
+    },
+    {
+      "id": "J07",
+      "category": "routine",
+      "text": "Does a crossword every evening to wind down",
+      "sources": [
+        "j025",
+        "j027"
+      ]
+    },
+    {
+      "id": "J08",
+      "category": "sensitive",
+      "text": "Takes heart medication daily at 8am",
+      "sources": [
+        "j071"
+      ]
+    },
+    {
+      "id": "J09",
+      "category": "schedule",
+      "text": "Book club was Friday at 4pm",
+      "sources": [
+        "j007",
+        "j029"
+      ],
+      "superseded_by": "J10"
+    },
+    {
+      "id": "J10",
+      "category": "schedule",
+      "text": "Book club is Saturday at 2pm",
+      "sources": [
+        "j065",
+        "j067",
+        "j091"
+      ]
+    },
+    {
+      "id": "J11",
+      "category": "short-term",
+      "text": "Hosting grandkids Dec 18-24, needs simple kid-friendly meals like pasta and chicken nuggets",
+      "sources": [
+        "j051",
+        "j083",
+        "j085"
+      ]
+    },
+    {
+      "id": "J12",
+      "category": "one-off",
+      "text": "Tried an escape room with neighbor last weekend, one-time thing, too many locks",
+      "sources": [
+        "j041"
+      ]
+    },
+    {
+      "id": "J13",
+      "category": "short-term",
+      "text": "Looking for a dinosaur coloring book for Eli for Christmas",
+      "sources": [
+        "j097",
+        "j099"
+      ]
+    },
+    {
+      "id": "J14",
+      "category": "short-term",
+      "text": "Wants a thank-you herbal tea gift set under $25 for neighbor",
+      "sources": [
+        "j079",
+        "j081"
+      ]
+    }
+  ],
+  "_current_truth": "What James answers when shown each card. These changes never came up in chat.",
+  "current_truth": {
+    "J03": {
+      "action": "edit",
+      "text": "Volunteers at the library but stopped driving and now takes the bus to the library and errands"
+    },
+    "J04": {
+      "action": "edit",
+      "text": "Likes cozy small-town mysteries but switched to audiobooks for his eyes"
+    },
+    "J01": {
+      "action": "confirm"
+    },
+    "J02": {
+      "action": "confirm"
+    },
+    "J05": {
+      "action": "confirm"
+    },
+    "J06": {
+      "action": "confirm"
+    }
+  },
+  "questions": [
+    {
+      "id": "JQ01",
+      "kind": "stable",
+      "text": "What should I make for breakfast tomorrow?",
+      "checks": [
+        {
+          "text": "Suggests oatmeal with blueberries",
+          "kw": [
+            "oatmeal",
+            "blueberries"
+          ],
+          "want": true,
+          "fact": "J05"
+        }
+      ]
+    },
+    {
+      "id": "JQ02",
+      "kind": "stable",
+      "text": "What hot drink should I bring to book club?",
+      "checks": [
+        {
+          "text": "Suggests tea",
+          "kw": [
+            "tea",
+            "chamomile"
+          ],
+          "want": true,
+          "fact": "J01"
+        }
+      ]
+    },
+    {
+      "id": "JQ03",
+      "kind": "stable",
+      "text": "Should I walk this morning?",
+      "checks": [
+        {
+          "text": "Encourages morning walk",
+          "kw": [
+            "morning walk",
+            "walk"
+          ],
+          "want": true,
+          "fact": "J02"
+        }
+      ]
+    },
+    {
+      "id": "JQ04",
+      "kind": "stable",
+      "text": "Find a birthday gift for Eli, age 6",
+      "checks": [
+        {
+          "text": "Recommends dinosaur gift",
+          "kw": [
+            "dinosaur",
+            "t-rex"
+          ],
+          "want": true,
+          "fact": "J06"
+        }
+      ]
+    },
+    {
+      "id": "JQ05",
+      "kind": "stable",
+      "text": "What can I do to wind down tonight?",
+      "checks": [
+        {
+          "text": "Suggests evening crossword",
+          "kw": [
+            "crossword",
+            "evening puzzle"
+          ],
+          "want": true,
+          "fact": "J07"
+        }
+      ]
+    },
+    {
+      "id": "JQ06",
+      "kind": "stable",
+      "text": "What should I bring to volunteer shift today?",
+      "checks": [
+        {
+          "text": "Mentions library volunteering",
+          "kw": [
+            "library",
+            "volunteer shift"
+          ],
+          "want": true,
+          "fact": "J03"
+        }
+      ]
+    },
+    {
+      "id": "JQ07",
+      "kind": "stable",
+      "text": "Suggest a cozy mystery for me",
+      "checks": [
+        {
+          "text": "Recommends cozy small-town mystery",
+          "kw": [
+            "cozy mystery",
+            "small town"
+          ],
+          "want": true,
+          "fact": "J04"
+        }
+      ]
+    },
+    {
+      "id": "JQ08",
+      "kind": "stable",
+      "text": "Plan kid-friendly dinners for Dec 18-24 visit",
+      "checks": [
+        {
+          "text": "Plans pasta and chicken nuggets",
+          "kw": [
+            "pasta",
+            "chicken nuggets"
+          ],
+          "want": true,
+          "fact": "J11"
+        }
+      ]
+    },
+    {
+      "id": "JQ09",
+      "kind": "outside",
+      "text": "How should I get to the library for my shift tomorrow?",
+      "checks": [
+        {
+          "text": "Plans bus route",
+          "kw": [
+            "bus",
+            "bus route"
+          ],
+          "want": true,
+          "fact": "J03"
+        },
+        {
+          "text": "Tells him to drive",
+          "kw": [
+            "drive",
+            "parking"
+          ],
+          "want": false,
+          "fact": "J03"
+        }
+      ]
+    },
+    {
+      "id": "JQ10",
+      "kind": "outside",
+      "text": "Recommend a new mystery book for my eyes",
+      "checks": [
+        {
+          "text": "Recommends audiobook version",
+          "kw": [
+            "audiobook",
+            "listen"
+          ],
+          "want": true,
+          "fact": "J04"
+        },
+        {
+          "text": "Recommends print paperback only",
+          "kw": [
+            "paperback",
+            "print copy"
+          ],
+          "want": false,
+          "fact": "J04"
+        }
+      ]
+    },
+    {
+      "id": "JQ11",
+      "kind": "outside",
+      "text": "I need to stop at the post office after volunteering, how to plan it?",
+      "checks": [
+        {
+          "text": "Plans taking the bus",
+          "kw": [
+            "takes the bus",
+            "bus"
+          ],
+          "want": true,
+          "fact": "J03"
+        }
+      ]
+    },
+    {
+      "id": "JQ12",
+      "kind": "outside",
+      "text": "Find me a small-town cozy mystery I can enjoy",
+      "checks": [
+        {
+          "text": "Offers audiobook format",
+          "kw": [
+            "audiobook",
+            "listen"
+          ],
+          "want": true,
+          "fact": "J04"
+        }
+      ]
+    },
+    {
+      "id": "JQ13",
+      "kind": "inchat",
+      "text": "When is book club this week?",
+      "checks": [
+        {
+          "text": "States Saturday at 2pm",
+          "kw": [
+            "saturday",
+            "2pm"
+          ],
+          "want": true,
+          "fact": "J10"
+        },
+        {
+          "text": "States Friday at 4pm",
+          "kw": [
+            "friday",
+            "4pm"
+          ],
+          "want": false,
+          "fact": "J09"
+        }
+      ]
+    },
+    {
+      "id": "JQ14",
+      "kind": "inchat",
+      "text": "Remind me about book club meeting",
+      "checks": [
+        {
+          "text": "Reminds Saturday at 2pm",
+          "kw": [
+            "saturday",
+            "2pm"
+          ],
+          "want": true,
+          "fact": "J10"
+        },
+        {
+          "text": "Reminds Friday at 4pm",
+          "kw": [
+            "friday",
+            "4pm"
+          ],
+          "want": false,
+          "fact": "J09"
+        }
+      ]
+    },
+    {
+      "id": "JQ15",
+      "kind": "short",
+      "text": "What should I get Eli for Christmas?",
+      "checks": [
+        {
+          "text": "Suggests dinosaur coloring book",
+          "kw": [
+            "coloring book",
+            "dinosaur"
+          ],
+          "want": true,
+          "fact": "J13"
+        }
+      ]
+    },
+    {
+      "id": "JQ16",
+      "kind": "short",
+      "text": "Help me thank my neighbor who brings coffee",
+      "checks": [
+        {
+          "text": "Suggests herbal tea gift set",
+          "kw": [
+            "herbal tea",
+            "gift set"
+          ],
+          "want": true,
+          "fact": "J14"
+        }
+      ]
+    },
+    {
+      "id": "JQ17",
+      "kind": "sensitive",
+      "text": "Plan my morning routine around my health",
+      "checks": [
+        {
+          "text": "Includes 8am heart medication reminder",
+          "kw": [
+            "medication",
+            "8am"
+          ],
+          "want": true,
+          "fact": "J08"
+        }
+      ]
+    },
+    {
+      "id": "JQ18",
+      "kind": "sensitive",
+      "text": "Can I stay up late doing puzzles every night?",
+      "checks": [
+        {
+          "text": "Accounts for daily heart medication schedule",
+          "kw": [
+            "heart medication",
+            "medication schedule"
+          ],
+          "want": true,
+          "fact": "J08"
+        }
+      ]
+    },
+    {
+      "id": "JQ19",
+      "kind": "oneoff",
+      "text": "Plan a fun weekend activity for me",
+      "checks": [
+        {
+          "text": "Books regular escape rooms",
+          "kw": [
+            "escape room",
+            "locks"
+          ],
+          "want": false,
+          "fact": "J12"
+        }
+      ]
+    },
+    {
+      "id": "JQ20",
+      "kind": "oneoff",
+      "text": "What hobby should I pick up?",
+      "checks": [
+        {
+          "text": "Suggests escape rooms as hobby",
+          "kw": [
+            "escape room",
+            "escape rooms"
+          ],
+          "want": false,
+          "fact": "J12"
+        }
+      ]
+    }
+  ]
+}
