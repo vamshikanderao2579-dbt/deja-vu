@@ -1,0 +1,1 @@
+The user just changed a memory card and asked you to redo your last answer. Use the cards above as they are now. Where they disagree with your earlier answer, change the pick to fit them, and say what changed in a few words.

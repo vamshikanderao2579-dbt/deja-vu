@@ -343,6 +343,52 @@
       ]
     },
     {
+      "id": "c28",
+      "date": "2025-11-20",
+      "time": "19:10",
+      "title": "Thanksgiving prep",
+      "messages": [
+        {
+          "id": "m062",
+          "role": "user",
+          "text": "we're hosting thanksgiving again, 8 people. mom always brings the pumpkin pie so don't plan dessert"
+        },
+        {
+          "id": "m063",
+          "role": "assistant",
+          "text": "Got it: dinner for 8, dessert covered by your mom. Want a shopping list for the Tuesday before?"
+        },
+        {
+          "id": "m064",
+          "role": "user",
+          "text": "yes, and order the turkey by the 15th, last year they sold out"
+        }
+      ]
+    },
+    {
+      "id": "c29",
+      "date": "2025-12-08",
+      "time": "20:30",
+      "title": "Christmas plans",
+      "messages": [
+        {
+          "id": "m065",
+          "role": "user",
+          "text": "christmas eve at home this year, christmas day we drive to sam's parents in milwaukee"
+        },
+        {
+          "id": "m066",
+          "role": "assistant",
+          "text": "Noted. Want me to block Dec 25 for the drive and check road conditions that morning?"
+        },
+        {
+          "id": "m067",
+          "role": "user",
+          "text": "yes. and keep maya's stocking gifts around $50 total"
+        }
+      ]
+    },
+    {
       "id": "c18",
       "date": "2026-01-08",
       "time": "07:00",
@@ -438,6 +484,24 @@
       ]
     },
     {
+      "id": "c30",
+      "date": "2026-07-12",
+      "time": "10:00",
+      "title": "Weekend project",
+      "messages": [
+        {
+          "id": "m068",
+          "role": "user",
+          "text": "i'm building a little family recipe website on weekends, keep saturday mornings free for it"
+        },
+        {
+          "id": "m069",
+          "role": "assistant",
+          "text": "Love it. I'll keep Saturday mornings clear for the recipe site."
+        }
+      ]
+    },
+    {
       "id": "c23",
       "date": "2026-08-14",
       "time": "16:00",
@@ -470,6 +534,24 @@
           "id": "m055",
           "role": "assistant",
           "text": "Updated. Your usual is now a large iced matcha."
+        }
+      ]
+    },
+    {
+      "id": "c31",
+      "date": "2026-09-15",
+      "time": "19:05",
+      "title": "Marathon dinners",
+      "messages": [
+        {
+          "id": "m201",
+          "role": "user",
+          "text": "sam is training for the half marathon until mid november, so early carb-heavy dinners on weeknights till then"
+        },
+        {
+          "id": "m202",
+          "role": "assistant",
+          "text": "Got it: early pasta, rice bowls and potato dishes on weeknights until mid-November."
         }
       ]
     },
@@ -524,70 +606,6 @@
           "id": "m061",
           "role": "assistant",
           "text": "It's out for delivery today, expected by 7 PM."
-        }
-      ]
-    },
-    {
-      "id": "c28",
-      "date": "2025-11-20",
-      "time": "19:10",
-      "title": "Thanksgiving prep",
-      "messages": [
-        {
-          "id": "m062",
-          "role": "user",
-          "text": "we're hosting thanksgiving again, 8 people. mom always brings the pumpkin pie so don't plan dessert"
-        },
-        {
-          "id": "m063",
-          "role": "assistant",
-          "text": "Got it: dinner for 8, dessert covered by your mom. Want a shopping list for the Tuesday before?"
-        },
-        {
-          "id": "m064",
-          "role": "user",
-          "text": "yes, and order the turkey by the 15th, last year they sold out"
-        }
-      ]
-    },
-    {
-      "id": "c29",
-      "date": "2025-12-08",
-      "time": "20:30",
-      "title": "Christmas plans",
-      "messages": [
-        {
-          "id": "m065",
-          "role": "user",
-          "text": "christmas eve at home this year, christmas day we drive to sam's parents in milwaukee"
-        },
-        {
-          "id": "m066",
-          "role": "assistant",
-          "text": "Noted. Want me to block Dec 25 for the drive and check road conditions that morning?"
-        },
-        {
-          "id": "m067",
-          "role": "user",
-          "text": "yes. and keep maya's stocking gifts around $50 total"
-        }
-      ]
-    },
-    {
-      "id": "c30",
-      "date": "2026-07-12",
-      "time": "10:00",
-      "title": "Weekend project",
-      "messages": [
-        {
-          "id": "m068",
-          "role": "user",
-          "text": "i'm building a little family recipe website on weekends, keep saturday mornings free for it"
-        },
-        {
-          "id": "m069",
-          "role": "assistant",
-          "text": "Love it. I'll keep Saturday mornings clear for the recipe site."
         }
       ]
     }

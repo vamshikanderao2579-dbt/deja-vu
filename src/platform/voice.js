@@ -6,6 +6,8 @@
 import { config } from './config.js';
 import { recordAudioSpend } from './llm.js';
 
+export const VOICE_MODEL = 'muse-voice-transcribe-1.0';
+
 const URL = 'wss://api.meta.ai/v1/asr/realtime';
 const RATE = 24000;
 const FRAME_MS = 80;
@@ -29,7 +31,7 @@ export async function transcribe(pcm) {
       ws.send(JSON.stringify({
         authorization: { accessToken: `Bearer ${config.providers.main.apiKey}` },
         audioEncoding: 'PCM_24KHZ',
-        model: 'muse-voice-transcribe-1.0',
+        model: VOICE_MODEL,
         mode: 'PUSH_TO_TALK',
       }));
     };

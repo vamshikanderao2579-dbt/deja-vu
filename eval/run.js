@@ -18,7 +18,7 @@
 // Without an API key this runs in mock mode with a keyword judge, which only
 // checks the plumbing. Real numbers need MAIN_API_KEY.
 
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -42,6 +42,7 @@ const key = JSON.parse(readFileSync(join(ROOT, P.key), 'utf8'));
 const historyJson = JSON.parse(readFileSync(join(ROOT, P.history), 'utf8'));
 // These must be set before the app modules load.
 process.env.HISTORY_FILE = P.history;
+process.env.STATE_FILE = 'data/private/eval-build/state.json'; // never anyone's real memory
 process.env.USER_NAME = key.userName ?? historyJson.user?.name ?? 'the user';
 process.env.DEMO_TODAY = key.today; // answers must agree on what "today" is
 process.env.REPLAY = 'off'; // every eval run asks Muse fresh
@@ -50,7 +51,8 @@ process.env.RELEVANCE_CACHE = 'off'; // every question picks its own cards
 if (arg('grader')) process.env.GRADER = arg('grader');
 
 const { config } = await import('../src/platform/config.js');
-const { distill, selectRelevant, answer, summarizeHistory } = await import('../src/engine/agent.js');
+const { selectRelevant, answer, summarizeHistory } = await import('../src/engine/agent.js');
+const { buildMemory, applyBuild } = await import('../src/engine/build.js');
 const { applyCardAction, estimateTokens, renderContext } = await import('../src/engine/cards.js');
 const { complete, parseJson } = await import('../src/platform/llm.js');
 const { prompt } = await import('../src/prompts/index.js');
@@ -65,15 +67,22 @@ const log = (...a) => console.log(...a);
 log(`\nEval · persona ${PERSONA} · ${config.mock ? 'MOCK (keyword judge, plumbing check only)' : `live · answers ${config.providers.main.model} · memory ${config.providers.bg.model}`}`);
 
 // ---------- 1. Build cards from history ----------
+// The same staged build the app runs (guard → writer → self-review → grader → contract),
+// from scratch, then merged into an empty memory exactly as the app applies a build
+// (ids, statuses, dates). --reuse-build reads the last build's cards instead.
 let t0 = Date.now();
-const built = await distill([], []);
-const inferredCards = built.cards;
-log(`Built ${inferredCards.length} cards in ${((Date.now() - t0) / 1000).toFixed(1)}s (${built.calls} model calls)`);
-const rv = built.review;
-if (rv) {
-  const fmt = (o) => Object.entries(o).map(([k, n]) => `${k} ${n}`).join(', ') || 'none';
-  log(`Review gate (grader: ${config.graderEnabled ? config.providers.grader.model : 'off'}): ${rv.proposed} proposed → ${rv.kept} kept (${rv.locked} locked) · rules dropped: ${fmt(rv.byRules)} · grader dropped: ${fmt(rv.byGrader)}${rv.graderErrors ? ` · grader errors ${rv.graderErrors}` : ''}`);
+const buildDir = join(ROOT, 'data', 'private', 'eval-build', `${PERSONA}${arg('grader') ? `-grader-${arg('grader')}` : ''}`);
+const reuse = process.argv.includes('--reuse-build') && existsSync(join(buildDir, 'cards.json'));
+let built;
+if (reuse) built = { cards: JSON.parse(readFileSync(join(buildDir, 'cards.json'), 'utf8')), report: JSON.parse(readFileSync(join(buildDir, 'report.json'), 'utf8')) };
+else {
+  rmSync(buildDir, { recursive: true, force: true });
+  built = await buildMemory({ conversations: history.conversations, profileId: buildDir });
 }
+const inferredCards = applyBuild([], built.cards, [], { partial: false });
+if (!inferredCards.every((c) => c.id && c.status)) throw new Error('built cards are missing ids or statuses');
+const br = built.report;
+log(`${reuse ? 'Reused' : 'Built'} ${inferredCards.length} cards in ${((Date.now() - t0) / 1000).toFixed(1)}s from ${br.turns} turns in ${br.batches} batches · grader ${config.graderEnabled ? config.providers.grader.model : 'off'} dropped ${br.dropped}${br.graderFailed ? ' (grader failed: kept the writer’s cards)' : ''} · ${br.instructionsSkipped} instruction-like messages skipped · ${br.secretsRemoved} secrets removed`);
 
 // ---------- 2. Simulated review pass ----------
 // Each card is matched to the planted fact it came from (by shared source
@@ -248,11 +257,11 @@ const result = {
   persona: PERSONA,
   generated: new Date().toISOString(),
   mock: config.mock,
-  models: { answers: config.providers.main.model, memory: config.providers.bg.model, judge: config.mock ? 'keyword' : config.providers.main.model },
+  models: { answers: config.providers.main.model, memory: config.providers.bg.model, grader: config.graderEnabled ? config.providers.grader.model : null, judge: config.mock ? 'keyword' : config.providers.main.model },
   today: key.today,
   questions: key.questions.length,
   checks: key.questions.reduce((a, q) => a + q.checks.length, 0),
-  cards: { built: inferredCards.length, afterReview: confirmedCards.length, allCardsTokens, swipes, gate: { grader: config.graderEnabled ? config.providers.grader.model : null, ...built.review } },
+  cards: { built: inferredCards.length, afterReview: confirmedCards.length, allCardsTokens, swipes, gate: { grader: config.graderEnabled ? config.providers.grader.model : null, build: 'staged', ...br } },
   memorySummary: { tokens: estimateTokens(memorySummary), text: memorySummary },
   summary,
   projection: { assumptions: { conversationsPerDay: CONV_PER_DAY, tokensPerConversation: Math.round(tokensPerConversation) }, points: projection },

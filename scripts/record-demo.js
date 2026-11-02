@@ -4,6 +4,14 @@
 //   npm run dev                                  # with MUSE_ENABLED=true
 //   node scripts/record-demo.js maria            # alex | maria | sreenidhi | vamshi
 //
+// For the public link's free replay, record the demo personas into data/demo-replay.json
+// from a clean public-mode server (a fresh copy of each persona, as visitors get):
+//   AGENT_NAME=Pip AGENT_AVATAR= PUBLIC_DEMO=true REPLAY_FILE=data/demo-replay.json SESSION_DIR=<tmp> PORT=3002 node server.js
+// then open it in a browser and press ▶ Play a demo conversation for each demo person.
+// Use the app's button, not this script: its ✕ → "chat about it" → redo leaves slightly
+// different chat history, so the recordings wouldn't match. Settings must match the deploy
+// (AGENT_NAME, DEMO_TODAY, models): they're part of every prompt.
+//
 // It does exactly what the app's "Play demo conversation" does, and answers any
 // quick check the way the script says (✓ by default, ✕ + chat, or no answer).
 // Builds the profile's memory first if it has none.
@@ -12,8 +20,11 @@ const PORT = process.env.PORT ?? 3000;
 const BASE = `http://localhost:${PORT}`;
 const id = process.argv[2] ?? 'alex';
 
+// One browser session throughout, like the app (the server keeps who you are per cookie).
+let cookie = '';
 const call = async (path, body) => {
-  const res = await fetch(BASE + path, body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const res = await fetch(BASE + path, { ...(body === undefined ? {} : { method: 'POST', body: JSON.stringify(body) }), headers: { 'Content-Type': 'application/json', ...(cookie ? { cookie } : {}) } });
+  cookie = res.headers.get('set-cookie')?.split(';')[0] ?? cookie;
   const out = await res.json();
   if (!res.ok) throw new Error(`${path}: ${out.error}`);
   return out;

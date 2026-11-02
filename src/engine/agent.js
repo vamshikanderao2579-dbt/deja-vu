@@ -4,9 +4,9 @@ import { config, ROOT, todayString } from '../platform/config.js';
 import { complete, parseJson } from '../platform/llm.js';
 import { prompt } from '../prompts/index.js';
 import { ACTION_TOOLS, toDraft } from './actions.js';
-import { mergeCards, renderContext, estimateTokens, usable, seasonState } from './cards.js';
+import { mergeCards, renderContext, estimateTokens, usable, seasonState, untilState, validUntil } from './cards.js';
 import { todayMs } from '../platform/config.js';
-import { getHistory, historyAsText, messageTime, userName } from '../platform/store.js';
+import { getHistory, historyAsText, messageTime, userName, current } from '../platform/store.js';
 import { reviewCards, addReviewStats, emptyReviewStats } from './review.js';
 import { guardHistory } from './guard.js';
 
@@ -95,14 +95,15 @@ const RELEVANCE_TTL_MS = 30 * 60 * 1000;
 const STOP = new Set('the and for with our you your can please find get some any this that what who are was now just from near about into have has had will would like want need me my us we it its'.split(' '));
 const intent = (msg) => new Set(msg.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w)));
 const overlap = (a, b) => { let n = 0; for (const w of a) if (b.has(w)) n++; return n / (Math.max(a.size, b.size) || 1); };
-const relevanceCache = [];
+// Per memory (view): one visitor's recent topics never steer another visitor's picks.
+const picksOf = () => (current().relevanceCache ??= []);
 export const relevanceStats = { hits: 0, misses: 0 };
 
 function cachedPick(message, pool) {
   if (process.env.RELEVANCE_CACHE === 'off') return null;
   const words = intent(message);
   const now = Date.now();
-  const hit = relevanceCache.find((e) => now - e.at < RELEVANCE_TTL_MS && overlap(words, e.words) >= 0.75);
+  const hit = picksOf().find((e) => now - e.at < RELEVANCE_TTL_MS && overlap(words, e.words) >= 0.75);
   if (!hit) return null;
   const ids = new Set(hit.ids);
   const newer = (c) => hit.categories.has(c.category) && Date.parse(c.created ?? 0) > hit.at;
@@ -110,6 +111,7 @@ function cachedPick(message, pool) {
   return { relevant, key: pool.filter((c) => hit.key.includes(c.id) || newer(c)), stakes: hit.stakes, cached: true };
 }
 function rememberPick(message, result) {
+  const relevanceCache = picksOf();
   relevanceCache.unshift({ words: intent(message), at: Date.now(), ids: result.relevant.map((c) => c.id), key: result.key.map((c) => c.id), categories: new Set(result.relevant.filter((c) => c.category !== 'style').map((c) => c.category)), stakes: result.stakes });
   relevanceCache.length = Math.min(relevanceCache.length, 50);
 }
@@ -117,7 +119,7 @@ function rememberPick(message, result) {
 // Which cards matter for this request, and how costly a wrong guess would be.
 export async function selectRelevant(message, cards) {
   // Cards about the agent itself (its name, avatar) aren't about the user.
-  const candidates = cards.filter((c) => c.category !== 'assistant' && !/\b(avatar|pikachu|charmander)\b/i.test(c.text) && seasonState(c, todayMs())?.active !== false);
+  const candidates = cards.filter((c) => c.category !== 'assistant' && !/\b(avatar|pikachu|charmander)\b/i.test(c.text) && seasonState(c, todayMs())?.active !== false && !untilState(c, todayMs())?.ended);
   if (config.mock) return mockRelevance(message, candidates);
   const cached = cachedPick(message, candidates);
   if (cached) { relevanceStats.hits++; return cached; }
@@ -174,10 +176,10 @@ export async function rewriteCard(category, oldText, message) {
   }
   const res = await complete('bg', [
     { role: 'system', content: prompt('update.system') },
-    { role: 'user', content: prompt('update.user', { category, oldCard: oldText, message }) },
+    { role: 'user', content: prompt('update.user', { today: new Date(todayMs()).toISOString().slice(0, 10), category, oldCard: oldText, message }) },
   ], { json: true, maxTokens: 1500, reasoning: 'minimal' });
   const out = parseJson(res.text);
-  return out.text ? { text: out.text, type: out.type === 'lesson' ? 'lesson' : 'preference' } : null;
+  return out.text ? { text: out.text, type: out.type === 'lesson' ? 'lesson' : 'preference', ...(validUntil(out.until) ? { until: out.until } : {}) } : null;
 }
 
 // The memory tree as one line: "food (6) · seasonal: Thanksgiving (2), Christmas (2) · …"
@@ -205,12 +207,12 @@ export async function proposeFrom(rawConv, existing) {
   if (config.mock) return { kept: [], review: emptyReviewStats(), dropped: [] };
   // Same step 0 as a full build: steering text skipped, secrets removed, before the model reads it.
   const conv = guardHistory([rawConv]).convs[0];
-  const existingText = (existing.length ? `TREE: ${treeLine(existing)}\n` : '') + (existing.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`).join('\n') || '(none yet)');
+  const existingText = (existing.length ? `TREE: ${treeLine(existing)}\n` : '') + (existing.map((c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}${c.until ? ` (until ${c.until})` : ''}`).join('\n') || '(none yet)');
   const res = await complete('bg', [
     { role: 'system', content: prompt('distill.system') + '\n\n' + prompt('learn.system-addendum') + '\n\n' + prompt('build.rules') },
     // Neutral labels (n1, n2…) instead of ids and clock times, so the same chat always
     // produces the same request (and a recorded demo replays exactly).
-    { role: 'user', content: prompt('learn.user', { existing: existingText, conversation: conv.messages.map((m, i) => `[n${i + 1}] ${m.role}: ${m.text}`).join('\n') }) },
+    { role: 'user', content: prompt('learn.user', { today: new Date(todayMs()).toISOString().slice(0, 10), existing: existingText, conversation: conv.messages.map((m, i) => `[n${i + 1}] ${m.role}: ${m.text}`).join('\n') }) },
   ], { json: true, maxTokens: 3000, reasoning: 'minimal' });
   let incoming = [];
   try { incoming = parseJson(res.text).cards ?? []; } catch { return { kept: [], review: emptyReviewStats(), dropped: [] }; }
@@ -250,7 +252,7 @@ export async function summarizeHistory() {
 // "full" (entire history), "none" (no memory)
 // `actions`: let the answer propose a booking or order draft through a tool call (the app
 // passes it for high-stakes requests; the eval leaves it off so answers stay plain text).
-export async function answer(message, mode, relevantCards, { summary, recent = [], actions = false } = {}) {
+export async function answer(message, mode, relevantCards, { summary, recent = [], actions = false, redo = false, model = null, effort = 'low' } = {}) {
   const today = todayString();
   let context = '';
   if (mode === 'cards') context = renderContext(relevantCards.filter(usable));
@@ -265,12 +267,12 @@ export async function answer(message, mode, relevantCards, { summary, recent = [
     return { text: mockAnswer(message, mode, relevantCards.filter(usable)), draft, contextTokens, usage: null };
   }
   const messages = [
-    { role: 'system', content: prompt('answer.system', { userName: userName(), today, agentName: config.agent.name }) + (actions ? `\n\n${prompt('answer.tools-addendum')}` : '') + (context ? `\n\n${context}` : '') },
+    { role: 'system', content: prompt('answer.system', { userName: userName(), today, agentName: config.agent.name }) + (actions ? `\n\n${prompt('answer.tools-addendum')}` : '') + (context ? `\n\n${context}` : '') + (redo ? `\n\n${prompt('answer.redo')}` : '') },
     // Earlier turns of this conversation, so "near the hotel" knows which hotel.
     ...recent.slice(-6).map((m) => ({ role: m.role, content: m.text })),
     { role: 'user', content: message },
   ];
-  const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: 'low', tools: actions ? ACTION_TOOLS : null });
+  const res = await complete('main', messages, { maxTokens: 2000, temperature: 0.4, reasoning: effort, tools: actions ? ACTION_TOOLS : null, model });
   const draft = toDraft(res.toolCalls?.[0]);
   // A tool call can come with no text; give the draft a short lead-in.
   const text = res.text.trim() || (draft ? `Here's a draft${draft.title ? ` for ${draft.title}` : ''}, based on what I know. Want me to change anything?` : '');

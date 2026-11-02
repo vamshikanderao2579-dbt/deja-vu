@@ -8,6 +8,6 @@ For each card return:
 - "category" and "sub": include them only to move a card that is filed in the wrong place.
 - "priority": 1 if an agent would use it often or get things badly wrong without it, 2 if useful, 3 if minor.
 
-The user should see a short, accurate memory with what matters most first. When unsure, reject: a missing card gets learned later; a wrong one gets acted on.
+The user should see an accurate memory with what matters most first. Reject what the spot doesn't support: a wrong card gets acted on. Don't reject a supported card for being small: a usual drink, a favorite artist, or what someone they plan for likes is what makes an agent feel personal.
 
 Return only JSON, one entry per card: {"verdicts":[{"id":"travel-1","verdict":"keep","priority":1}]}

@@ -61,3 +61,33 @@ test('import: empty, broken or chat-less files get a friendly error', () => {
   assert.throws(() => importHistory('{"broken": '), /couldn’t be read/);
   assert.throws(() => importHistory('{"settings": {"theme": "dark"}}'), /couldn’t find any chats/);
 });
+
+// A one-file zip (stored, not compressed): enough to stand in for a .docx.
+function zipOne(name, data) {
+  const n = Buffer.from(name), d = Buffer.from(data);
+  const local = Buffer.alloc(30); local.writeUInt32LE(0x04034b50, 0); local.writeUInt32LE(d.length, 18); local.writeUInt32LE(d.length, 22); local.writeUInt16LE(n.length, 26);
+  const central = Buffer.alloc(46); central.writeUInt32LE(0x02014b50, 0); central.writeUInt32LE(d.length, 20); central.writeUInt32LE(d.length, 24); central.writeUInt16LE(n.length, 28);
+  const cdStart = 30 + n.length + d.length;
+  const end = Buffer.alloc(22); end.writeUInt32LE(0x06054b50, 0); end.writeUInt16LE(1, 8); end.writeUInt16LE(1, 10); end.writeUInt32LE(46 + n.length, 12); end.writeUInt32LE(cdStart, 16);
+  return Buffer.concat([local, n, d, central, n, end]);
+}
+
+test('import: CSV with role and text columns; rows without dates stay undated', () => {
+  const r = importHistory('role,text,conversation\nuser,"we only fly direct, always",trip\nassistant,Noted,trip', { file: 'chats.csv' });
+  assert.equal(r.format, 'csv');
+  assert.equal(r.undated, 1);
+  assert.equal(r.history.conversations[0].messages[0].text, 'we only fly direct, always');
+  assert.equal(r.history.source.file, 'chats.csv');
+});
+
+test('import: a Word file is read paragraph by paragraph', () => {
+  const xml = '<w:document><w:body><w:p><w:r><w:t>You: I am vegetarian on Tuesdays</w:t></w:r></w:p><w:p><w:r><w:t>Assistant: Got it</w:t></w:r></w:p></w:body></w:document>';
+  const r = importHistory(zipOne('word/document.xml', xml), { file: 'notes.docx' });
+  assert.equal(r.format, 'docx');
+  assert.equal(r.history.conversations[0].messages[0].text, 'I am vegetarian on Tuesdays');
+});
+
+test('import: code is turned away, not read as a chat', () => {
+  const code = Array.from({ length: 30 }, (_, i) => `const x${i} = require('y');`).join('\n');
+  assert.throws(() => importHistory(code, { file: 'app.txt' }), /looks like code/);
+});

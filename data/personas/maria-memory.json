@@ -204,6 +204,23 @@
       "last_seen": "2025-04-27T14:00:00",
       "last_confirmed": null,
       "first_seen": "2025-04-27T14:00:00"
+    },
+    {
+      "id": "shopping-2",
+      "category": "shopping",
+      "type": "preference",
+      "text": "No takeout while saving for Leo's robotics camp",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "q201"
+      ],
+      "until": "2026-10-27",
+      "created": "2026-10-28T20:55:30.550Z",
+      "last_seen": "2026-07-27T10:30:00",
+      "last_confirmed": "2026-07-27T10:35:00",
+      "first_seen": "2026-07-27T10:30:00"
     }
   ]
 }

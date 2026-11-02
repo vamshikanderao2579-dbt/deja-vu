@@ -15,8 +15,15 @@ Confirmed by the user
 What becomes a card
 - Lasting facts that change how an agent helps the user later: preferences, routines, people they plan for, and lessons from things that went wrong.
 - What the user chose ("went with the Airbnb") and what they turned down ("no layovers with the kids") are the strongest evidence. Weigh them above what the assistant suggested.
+- Small, steady likes count: a usual order ("iced matcha"), a favorite artist, a hobby, a go-to store. So do the people the user plans for and what those people like ("Mom loves gardening", "Leo is into robotics"). Agents use these for gifts, meals and picks; they are what makes help feel personal.
+- Cover every topic the user keeps coming back to. Memory has room for up to 8 cards per topic: a thin memory misses more than a full one.
 - One fact per card, at most 14 words, about the user, in positive form: "Vegetarian on Tuesdays", not "No non-veg on Tuesdays".
 - Every card cites the message ids it came from, and at least one of them is a message the user wrote.
+
+Short-term or long-term
+- Most cards are long-term: no end date.
+- When the user says something holds only for a while ("no meat for 6 months", "until the move in March", "this semester"), it's short-term: add "until" with the end date as YYYY-MM-DD, counted from the date of the message that said it. Keep the time limit out of the card text: "No meat (health plan)", "until": "2027-04-27".
+- A plan with a fixed date that has already passed is not a card.
 
 Sensitive and secret
 - Never put a password, PIN, one-time code, API key, card or account number, or ID number in a card, even when one appears in the history.

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
-import { config, ROOT } from '../platform/config.js';
+import { config, ROOT, modelName } from '../platform/config.js';
 import { complete, parseJson } from '../platform/llm.js';
 import { prompt } from '../prompts/index.js';
 import { mergeCards } from './cards.js';
@@ -31,7 +31,7 @@ const dirFor = (profileId) => profileId.startsWith('/') ? profileId : join(proce
 const readJson = (p) => JSON.parse(readFileSync(p, 'utf8'));
 const writeJson = (p, v) => writeFileSync(p, JSON.stringify(v, null, 2));
 const rules = () => prompt('build.rules');
-const cardLine = (c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}`;
+const cardLine = (c) => `${c.id} [${c.category}${c.sub ? '/' + c.sub : ''}] ${c.text}${c.until ? ` (until ${c.until})` : ''}`;
 
 // One model call, retried on failure or on output that isn't the JSON we asked for.
 async function call(role, messages, opts, check) {
@@ -160,7 +160,7 @@ async function buildOnce({ conversations, existing, rejected, profileId, since, 
       if (Array.isArray(out.skipped)) cp.skipped.push(...out.skipped.slice(0, 10));
       cp.next = i + 1;
       saveCp();
-      progress(8 + (67 * (i + 1)) / work.length, 'draft', `Writing cards · batch ${i + 1} of ${work.length}`);
+      progress(8 + (67 * (i + 1)) / work.length, 'draft', `${modelName(config.providers.bg.model)} is writing cards · batch ${i + 1} of ${work.length}`);
     }
     cp.stage = 'review';
     saveCp();
@@ -195,7 +195,7 @@ async function buildOnce({ conversations, existing, rejected, profileId, since, 
     const chunks = [];
     for (let i = 0; i < cp.cards.length; i += GRADE_CHUNK) chunks.push(cp.cards.slice(i, i + GRADE_CHUNK));
     for (const [n, chunk] of chunks.entries()) {
-      progress(86 + (11 * n) / Math.max(chunks.length, 1), 'grade', 'Checking every card with fresh eyes');
+      progress(86 + (11 * n) / Math.max(chunks.length, 1), 'grade', config.graderEnabled ? `${modelName(config.providers.grader.model)} is checking every card` : 'Checking every card');
       // The exact spot: the cited user message (▶) with the message before and after it.
       const around = (id) => {
         const at = spot.get(id);
@@ -238,7 +238,7 @@ async function buildOnce({ conversations, existing, rejected, profileId, since, 
 
   // Stage 5: the contract. A malformed build never reaches the user: it runs again.
   progress(98, 'contract', 'Final checks');
-  const cards = cp.cards.map((c) => ({ category: c.category, ...(c.sub ? { sub: c.sub } : {}), type: c.type, text: c.text, confidence: c.confidence, sources: c.sources, sensitive: !!c.sensitive, priority: c.priority, ...(c.season ? { season: c.season } : {}), ...(c.changed_from ? { changed_from: c.changed_from } : {}), ...(c.mock_keywords ? { mock_keywords: c.mock_keywords } : {}) }));
+  const cards = cp.cards.map((c) => ({ category: c.category, ...(c.sub ? { sub: c.sub } : {}), type: c.type, text: c.text, confidence: c.confidence, sources: c.sources, sensitive: !!c.sensitive, priority: c.priority, ...(c.season ? { season: c.season } : {}), ...(c.until ? { until: c.until } : {}), ...(c.changed_from ? { changed_from: c.changed_from } : {}), ...(c.mock_keywords ? { mock_keywords: c.mock_keywords } : {}) }));
   const errors = contractErrors({ cards, summary: cp.summary, turns: plan.turns });
   if (errors.length) throw new Error(`output contract failed: ${errors.slice(0, 3).join('; ')}`);
   const report = {

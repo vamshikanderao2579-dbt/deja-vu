@@ -57,12 +57,22 @@ export function recordAudioSpend(seconds) {
 // the same request is answered from the cache in well under a second, with no API
 // call: record a demo once live, then replay it as many times as you like.
 // Saved under data/private/ because answers can contain personal history.
-const CACHE_PATH = join(ROOT, 'data', 'private', 'replay-cache.json');
+// data/demo-replay.json is a second, read-only layer that ships with the repo: the demo
+// personas' "Play a demo conversation", recorded once (scripts/record-demo.js), so it
+// replays for free on the public link. The public link never writes a cache.
+const CACHE_PATH = process.env.REPLAY_FILE ?? join(ROOT, 'data', 'private', 'replay-cache.json');
+const DEMO_REPLAY_PATH = join(ROOT, 'data', 'demo-replay.json');
 let cache = null;
+let demoReplay = null;
+// The public link reads only the demo layer, never a private cache on this machine.
 function loadCache() {
-  if (!cache) cache = existsSync(CACHE_PATH) ? JSON.parse(readFileSync(CACHE_PATH, 'utf8')) : {};
+  if (!cache) cache = existsSync(CACHE_PATH) && (!config.publicDemo || process.env.REPLAY_FILE) ? JSON.parse(readFileSync(CACHE_PATH, 'utf8')) : {};
   return cache;
 }
+const findReplay = (key) => {
+  demoReplay ??= existsSync(DEMO_REPLAY_PATH) && CACHE_PATH !== DEMO_REPLAY_PATH ? JSON.parse(readFileSync(DEMO_REPLAY_PATH, 'utf8')) : {};
+  return loadCache()[key] ?? demoReplay[key];
+};
 function saveCache() {
   mkdirSync(dirname(CACHE_PATH), { recursive: true });
   writeFileSync(CACHE_PATH, JSON.stringify(cache));
@@ -75,29 +85,36 @@ export const replayStats = { hits: 0, misses: 0 };
 // `reasoning` sets how long the model thinks first (minimal | low | medium). Thinking
 // tokens count toward maxTokens and are billed as output, so keep it low for small jobs.
 // `tools` (OpenAI function tools) lets the model call one; calls come back as `toolCalls`.
-export async function complete(role, messages, { json = false, maxTokens = 1500, temperature = 0.2, reasoning = 'low', tools = null } = {}) {
+export async function complete(role, messages, { json = false, maxTokens = 1500, temperature = 0.2, reasoning = 'low', tools = null, model = null } = {}) {
   const p = config.providers[role];
-  const body = { model: p.model, messages, max_tokens: maxTokens, temperature };
+  // `model`: another allowed model for this one call (the chat's model picker).
+  // A quote cut through an emoji leaves half a character, which the API rejects.
+  const whole = (v) => (typeof v === 'string' ? v.toWellFormed() : v);
+  messages = messages.map((m) => ({ ...m, content: whole(m.content) }));
+  const body = { model: model ?? p.model, messages, max_tokens: maxTokens, temperature };
   if (json) body.response_format = { type: 'json_object' };
   if (tools?.length) { body.tools = tools; body.tool_choice = 'auto'; }
   if (reasoning) body.reasoning_effort = reasoning;
   const key = cacheKey(role, body);
 
   if (!config.museEnabled || config.replayFirst) {
-    const hit = loadCache()[key];
+    const hit = findReplay(key);
     if (!hit && config.museEnabled) return liveCall();
     if (!hit) {
       replayStats.misses++;
+      if (process.env.REPLAY_DEBUG) console.warn(`[replay miss] ${role} ${key.slice(0, 8)} ${JSON.stringify(messages).slice(-600)}`);
       throw Object.assign(new Error('Not recorded yet. Run this once with MUSE_ENABLED=true, then replay.'), { status: 409 });
     }
     replayStats.hits++;
+    if (process.env.REPLAY_DEBUG) console.warn(`[replay hit] ${role} ${key.slice(0, 8)}`);
     await new Promise((r) => setTimeout(r, 250 + Math.random() * 350)); // feels natural, still instant
-    return { text: hit.text, toolCalls: hit.toolCalls ?? [], usage: hit.usage, model: p.model, replayed: true };
+    return { text: hit.text, toolCalls: hit.toolCalls ?? [], usage: hit.usage, model: body.model, replayed: true };
   }
 
   return liveCall();
 
   async function liveCall() {
+  if (process.env.REPLAY_DEBUG) console.warn(`[live] ${role} ${key.slice(0, 8)} ${JSON.stringify(messages).slice(-600)}`);
   // Only live calls count against the daily cap; replays are free.
   const spent = spentToday();
   // On the public link visitors see a plain message; the numbers are for whoever runs it.
@@ -134,19 +151,30 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
   // Use the provider's token counts; fall back to a character estimate.
   const inTok = data.usage?.prompt_tokens ?? Math.ceil(JSON.stringify(messages).length / 4);
   const outTok = data.usage?.completion_tokens ?? Math.ceil(text.length / 4);
-  recordSpend(inTok, outTok, p.model);
-  loadCache()[key] = { text, ...(toolCalls.length ? { toolCalls } : {}), usage: data.usage ?? null, at: new Date().toISOString() };
-  saveCache();
+  recordSpend(inTok, outTok, body.model);
+  // Kept for replay, except on the public link: visitors' answers are never stored.
+  // (Recording the demo replay sets REPLAY_FILE explicitly, so that run is kept.)
+  if (!config.publicDemo || process.env.REPLAY_FILE) {
+    loadCache()[key] = { text, ...(toolCalls.length ? { toolCalls } : {}), usage: data.usage ?? null, at: new Date().toISOString() };
+    saveCache();
+  }
   return { text, toolCalls, usage: data.usage ?? null, model: p.model };
   }
 }
 
-function post(p, body) {
-  return fetch(`${p.baseUrl.replace(/\/$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${p.apiKey}` },
-    body: JSON.stringify(body),
-  });
+// A dropped connection (DNS, reset) is retried twice before the call fails.
+async function post(p, body, tries = 3) {
+  try {
+    return await fetch(`${p.baseUrl.replace(/\/$/, '')}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${p.apiKey}` },
+      body: JSON.stringify(body),
+    });
+  } catch (err) {
+    if (tries <= 1) throw err;
+    await new Promise((r) => setTimeout(r, 800 * (4 - tries)));
+    return post(p, body, tries - 1);
+  }
 }
 
 export function parseJson(text) {

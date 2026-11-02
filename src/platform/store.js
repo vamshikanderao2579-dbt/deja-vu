@@ -56,12 +56,13 @@ export const activeProfileId = () => process.env.PROFILE || (existsSync(ACTIVE_P
 export const rememberActive = (id) => { if (!process.env.STATE_FILE && !process.env.HISTORY_FILE && !config.publicDemo) writeFileSync(ACTIVE_PATH, id); };
 
 // A profile's own files, shared by everyone on this machine (the local app, scripts, eval).
-// HISTORY_FILE / STATE_FILE (eval, tests) override the default profile's files.
-export function profileView(id) {
+// HISTORY_FILE / STATE_FILE (eval, tests) override the default profile's files; an eval
+// (HISTORY_FILE set, no request) overrides whichever profile the process starts with.
+export function profileView(id, { fromEnv = false } = {}) {
   const all = listProfiles();
   const p = all.find((x) => x.id === id) ?? all[0];
   if (!p) throw new Error('No profiles found (data/profiles.json)');
-  const isDefault = p.id === all[0].id;
+  const isDefault = p.id === all[0].id || (fromEnv && !!process.env.HISTORY_FILE);
   const statePath = join(ROOT, (isDefault && process.env.STATE_FILE) || p.state);
   return openView({
     profile: p,
@@ -81,7 +82,7 @@ export const runIn = (view, fn) => als.run(view, fn);
 setTodaySource(() => (current()?.realToday ? null : config.today));
 
 export function useProfile(id) {
-  fallback = profileView(id);
+  fallback = profileView(id, { fromEnv: true });
   rememberActive(fallback.profile.id);
   return fallback.profile;
 }

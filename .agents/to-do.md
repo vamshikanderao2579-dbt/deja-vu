@@ -40,7 +40,7 @@ Team travels until Nov 2 (San Diego → Vegas → Zion → NYC), one laptop. Cla
 | 10 | **Deploy + deck fills:** `modal deploy deploy/modal_app.py` (live; daily cap $5 for now: set `SPEND_CAP_USD=15` in `deploy/deploy.env` and redeploy before demo day); deck `[your name]`, `[repo link]`, `[live demo URL]`; retake slides 7–8 screenshots (answer-first layout) | Stage 1 needs a live URL | #3 | 2 h (Nov 1) |
 | 11 | **Prompt rewrite pass** against the six principles + card-wording rules (audit in `prompt-quality.md`), with an `ambiguous` reject reason for the grader. New eval → new cards, so do it with #13 | Tech depth | before #13 | ½ day |
 | 12 | **Muse Wonder as independent eval judge**, right before the evals (today Spark answers *and* judges) | Removes the self-judging objection | nothing (~$1–2) | 2 h |
-| 13 | **Eval rerun + grader A/B** on all 4 people (`--grader off`), new answer flow, **built with the staged build** (`eval/run.js` still calls the one-pass `distill`); update `docs/eval.md`, README and deck slide 10 | A fresh number for everything above | after #11–12 (~$4–5) | ½ day |
+| 13 | ~~**Eval rerun** on all 4 people with the staged build~~ **Done Oct 31:** confirmed 77.6% = summary 77.6% > full 76.3%; changed outside chat 91.7% vs 50%; ~131 vs ~499 vs ~39k tokens. In Insights via `data/eval-summary.json` (`node eval/summarize.js`). Still open: grader A/B (`--grader off`), `docs/eval.md`, deck slide 10 | A fresh number for everything above | — | — |
 | 14 | **Muse Image "Memory Wrapped"** shareable image for the X post | Most Viral + tooling (small) | nothing | 1 h |
 | 15 | **SAM 3.1 in the video:** spotlight the ✕ and the draft changing | Demo polish | recorded video | stretch |
 
@@ -56,3 +56,6 @@ Check before sending real histories through the cheaper Muse Spark **Contributor
 - Ping Modal in the Discord about credits; apply for Baseten ($100 + 2M TPM). Unblocks #7–#8.
 - Remove the two Charmander cards in Vamshi's Memory (#3).
 - Play Vamshi's and Alex's demos and flag anything off.
+
+
+- ~~Known demo flaw (Oct 31): Airbnb redo kept the hotel.~~ Fixed Nov 1: change-a-card writes the new preference firmly, and a redo tells the model a card just changed..

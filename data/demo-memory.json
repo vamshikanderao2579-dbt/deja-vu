@@ -442,6 +442,23 @@
       "last_seen": "2025-12-08T20:30:00",
       "last_confirmed": null,
       "first_seen": "2025-12-08T20:30:00"
+    },
+    {
+      "id": "food-4",
+      "category": "food",
+      "type": "preference",
+      "text": "Early, carb-heavy weeknight dinners for Sam's half-marathon training",
+      "status": "confirmed",
+      "sensitive": false,
+      "confidence": 1,
+      "sources": [
+        "m201"
+      ],
+      "until": "2026-11-15",
+      "created": "2026-10-20T09:00:00",
+      "last_seen": "2026-09-15T19:05:00",
+      "last_confirmed": "2026-09-15T19:10:00",
+      "first_seen": "2026-09-15T19:05:00"
     }
   ]
 }

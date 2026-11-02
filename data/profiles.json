@@ -2,58 +2,127 @@
   {
     "id": "alex",
     "name": "Alex",
-    "about": "Synthetic \u00b7 parent in Chicago, partner Sam, kid Maya, dog Biscuit",
+    "about": "Synthetic · parent in Chicago, partner Sam, kid Maya, dog Biscuit",
     "history": "data/test-history.json",
     "state": "data/me.json",
     "demoMemory": "data/demo-memory.json",
     "suggestions": [
-      "Find us flights to San Diego for a long weekend",
-      "Find a hotel near Sunset Cliffs",
-      "Just landed! Find lunch near the hotel",
-      "Find a place for dinner tonight with the family"
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
     ],
     "script": [
       {
-        "text": "thinking san diego for a long weekend with the family, find us flights",
-        "onCue": "ignore"
+        "say": "Memory is off. Like most agents today, it knows nothing about Alex.",
+        "memoryOff": true,
+        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs"
       },
       {
-        "newChat": "A week later \u00b7 landing in San Diego"
+        "say": "A generic answer. ⓘ shows nothing about Alex was used, and the tokens it took.",
+        "info": true
       },
       {
-        "text": "landing tomorrow! find us a hotel near sunset cliffs",
-        "onCue": "reject",
-        "chat": "we're fine with an Airbnb with a kitchen this time, Maya is picky"
-      },
-      "just landed! find lunch near the hotel",
-      "btw my sister is watching Biscuit from now on, no more dog sitters",
-      {
-        "newChat": "That evening"
+        "say": "Now turn memory on. Déjà Vu explains what it keeps, then builds cards from past chats.",
+        "memoryOn": true
       },
       {
-        "text": "plan dinner near sunset cliffs for the family tonight",
-        "onCue": "ignore"
+        "say": "Memory is on. An everyday question first: nothing is at stake, so nothing is asked.",
+        "text": "morning! what's the weather like in san diego this time of year?"
+      },
+      {
+        "say": "Another small question. Memory is used quietly.",
+        "text": "nice. how long is the drive from the airport to sunset cliffs?"
+      },
+      {
+        "say": "The same hotel request as before. This time Déjà Vu uses the few cards that fit, and checks the one guess that shapes the booking.",
+        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs"
+      },
+      {
+        "say": "ⓘ lists the cards used: ~150 tokens instead of the full history. Tap a card to see the past message it came from.",
+        "info": "Airbnb"
+      },
+      {
+        "say": "That card is out of date. Back in chat, Alex taps ✕ Not anymore (or swipes it left).",
+        "back": true,
+        "swipe": "no"
+      },
+      {
+        "say": "Alex says what changed, in their own words. It becomes a confirmed card.",
+        "chat": "we're fine with an Airbnb with a kitchen, Maya is picky"
+      },
+      {
+        "say": "Redo: the pick changes to match the new card.",
+        "redo": true
+      },
+      {
+        "say": "Everything Déjà Vu knows is in Memory, by topic. Open it from the menu.",
+        "memory": true
+      },
+      {
+        "say": "Open Family: 4 cards, each a short line learned from chats.",
+        "section": "family"
+      },
+      {
+        "say": "Swipe through: ✕ not anymore, ✓ still true, ✓ still true, ✕ not anymore.",
+        "swipes": {
+          "family-1": "no",
+          "family-2": "yes",
+          "family-4": "yes",
+          "family-3": "no"
+        }
+      },
+      {
+        "say": "Two cards changed. Chat about them: the sentences are already started, Alex just finishes them.",
+        "chat": [
+          "eats fish and chicken again",
+          "into swimming, soccer is over"
+        ]
+      },
+      {
+        "say": "Back to everyday life. The next answer uses the updated cards, with no reminders from Alex.",
+        "text": "plan dinner out tonight for the family"
       }
     ]
   },
   {
     "id": "maria",
     "name": "Maria",
-    "about": "Synthetic \u00b7 night-shift nurse in Phoenix, teen son Leo",
+    "about": "Synthetic · night-shift nurse in Phoenix, teen son Leo",
     "history": "data/personas/maria-history.json",
     "state": "data/profiles/maria.json",
     "suggestions": [
-      "Book me a dentist appointment next week",
-      "Plan my meals for this week",
-      "Gift ideas for Leo's birthday",
-      "My car needs an oil change, find me a place"
+      "What should we have for dinner tonight?",
+      "Find me a hotel for a weekend away",
+      "Gift ideas for someone in my family",
+      "Help me plan my week"
     ],
     "script": [
-      "what should i watch with my mom tonight?",
-      "book me a dentist appointment next week",
-      "btw my mom moved in with us last month",
-      "plan my meals for this week",
-      "my car needs an oil change, find me a place"
+      {
+        "say": "Meet Maria: a night-shift nurse with a teen son. An everyday question first.",
+        "text": "hey! how many hours are in a 3 day stretch of 12 hour shifts?"
+      },
+      {
+        "say": "Short-term memory: in July Maria said “no takeout for 3 months”. Today is the end date, so Déjà Vu asks once: extend it, change it or let it end.",
+        "ending": "1"
+      },
+      {
+        "say": "A booking. Déjà Vu fits it to her shifts without her repeating them.",
+        "text": "book me a dentist appointment next week"
+      },
+      {
+        "say": "ⓘ shows the cards it used. Tap one to see the message it came from.",
+        "info": "after 3pm"
+      },
+      {
+        "say": "A life change, said in passing, becomes a memory card.",
+        "back": true,
+        "text": "btw my mom moved in with us last month"
+      },
+      {
+        "say": "The next answer uses what Déjà Vu knows about her mom.",
+        "text": "what should i watch with my mom tonight?"
+      }
     ],
     "demoMemory": "data/personas/maria-memory.json"
   }

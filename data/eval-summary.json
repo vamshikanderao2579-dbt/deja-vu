@@ -1,0 +1,203 @@
+{
+  "generated": "2026-11-02T02:18:35.537Z",
+  "build": "staged (guard → writer → self-review → grader → contract)",
+  "models": {
+    "answers": "muse-spark-1.3",
+    "memory": "muse-spark-1.3",
+    "grader": "muse-wonder-1.0",
+    "judge": "muse-spark-1.3"
+  },
+  "people": 4,
+  "questions": 42,
+  "checks": 76,
+  "combined": [
+    {
+      "mode": "full",
+      "accuracy": 75,
+      "accuracyDrifted": 33.3,
+      "staleErrors": 3,
+      "avgContextTokens": 39022,
+      "maxContextTokens": 113619,
+      "avgLatencyMs": 3869
+    },
+    {
+      "mode": "summary",
+      "accuracy": 73.7,
+      "accuracyDrifted": 41.7,
+      "staleErrors": 2,
+      "avgContextTokens": 472,
+      "maxContextTokens": 564,
+      "avgLatencyMs": 3651
+    },
+    {
+      "mode": "confirmed",
+      "accuracy": 86.8,
+      "accuracyDrifted": 91.7,
+      "staleErrors": 2,
+      "avgContextTokens": 143,
+      "maxContextTokens": 158,
+      "avgLatencyMs": 6579
+    }
+  ],
+  "perPerson": [
+    {
+      "label": "Alex (synthetic)",
+      "questions": 15,
+      "checks": 29,
+      "cards": 23,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 76,
+          "accuracyDrifted": 25,
+          "staleErrors": 1,
+          "avgContextTokens": 1996
+        },
+        {
+          "mode": "summary",
+          "accuracy": 72,
+          "accuracyDrifted": 25,
+          "staleErrors": 1,
+          "avgContextTokens": 460
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 93,
+          "accuracyDrifted": 100,
+          "staleErrors": 0,
+          "avgContextTokens": 143
+        }
+      ]
+    },
+    {
+      "label": "Maria (synthetic)",
+      "questions": 11,
+      "checks": 20,
+      "cards": 13,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 65,
+          "accuracyDrifted": 38,
+          "staleErrors": 2,
+          "avgContextTokens": 1513
+        },
+        {
+          "mode": "summary",
+          "accuracy": 75,
+          "accuracyDrifted": 50,
+          "staleErrors": 1,
+          "avgContextTokens": 353
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 95,
+          "accuracyDrifted": 88,
+          "staleErrors": 0,
+          "avgContextTokens": 138
+        }
+      ]
+    },
+    {
+      "label": "Real history A",
+      "questions": 8,
+      "checks": 14,
+      "cards": 11,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 86,
+          "accuracyDrifted": null,
+          "staleErrors": 0,
+          "avgContextTokens": 38961
+        },
+        {
+          "mode": "summary",
+          "accuracy": 86,
+          "accuracyDrifted": null,
+          "staleErrors": 0,
+          "avgContextTokens": 564
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 71,
+          "accuracyDrifted": null,
+          "staleErrors": 2,
+          "avgContextTokens": 134
+        }
+      ]
+    },
+    {
+      "label": "Real history B",
+      "questions": 8,
+      "checks": 13,
+      "cards": 27,
+      "summary": [
+        {
+          "mode": "full",
+          "accuracy": 77,
+          "accuracyDrifted": null,
+          "staleErrors": 0,
+          "avgContextTokens": 113619
+        },
+        {
+          "mode": "summary",
+          "accuracy": 62,
+          "accuracyDrifted": null,
+          "staleErrors": 0,
+          "avgContextTokens": 512
+        },
+        {
+          "mode": "confirmed",
+          "accuracy": 77,
+          "accuracyDrifted": null,
+          "staleErrors": 0,
+          "avgContextTokens": 158
+        }
+      ]
+    }
+  ],
+  "projection": {
+    "assumptions": {
+      "conversationsPerDay": 2,
+      "tokensPerConversation": 64
+    },
+    "points": [
+      {
+        "months": 1,
+        "fullHistory": 3846,
+        "cardsPerQuestion": 143,
+        "summaryPerMessage": 446,
+        "cardsCeiling": 1568
+      },
+      {
+        "months": 3,
+        "fullHistory": 11537,
+        "cardsPerQuestion": 143,
+        "summaryPerMessage": 446,
+        "cardsCeiling": 1568
+      },
+      {
+        "months": 6,
+        "fullHistory": 23075,
+        "cardsPerQuestion": 143,
+        "summaryPerMessage": 446,
+        "cardsCeiling": 1568
+      },
+      {
+        "months": 12,
+        "fullHistory": 46150,
+        "cardsPerQuestion": 143,
+        "summaryPerMessage": 446,
+        "cardsCeiling": 1568
+      },
+      {
+        "months": 24,
+        "fullHistory": 92299,
+        "cardsPerQuestion": 143,
+        "summaryPerMessage": 446,
+        "cardsCeiling": 1568
+      }
+    ]
+  }
+}

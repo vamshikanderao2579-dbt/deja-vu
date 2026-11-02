@@ -7,6 +7,7 @@ const OLD_DAYS = 365;
 
 // Why a card would be worth a quick check, or null if it's fine as is.
 export function checkReason(card, now = todayMs()) {
+  if (card.until && new Date(now).toISOString().slice(0, 10) >= card.until) return 'ended';
   if (card.status === 'pending') return 'sensitive';
   if (card.status === 'inferred' && card.changed_from) return 'changed';
   if (card.status === 'inferred' && card.last_seen && now - Date.parse(card.last_seen) > OLD_DAYS * DAY) return 'old';
@@ -17,7 +18,7 @@ export function checkReason(card, now = todayMs()) {
 
 // Ask about what most likely changes this answer first. Locked (sensitive) cards
 // come last: they're often only loosely related, and asking about them is personal.
-const PRIORITY = { changed: 0, old: 1, guessed: 2, stale: 3, sensitive: 4 };
+const PRIORITY = { ended: 0, changed: 0, old: 1, guessed: 2, stale: 3, sensitive: 4 };
 
 // The "don't nag" rule. A cue is shown only when all of these hold:
 //  1. a relevant card is about to shape the answer and needs a check,
@@ -61,8 +62,10 @@ export function implicitYes(card, now = new Date().toISOString()) {
 
 function questionFor(card, reason) {
   switch (reason) {
+    case 'ended':
+      return 'This was only for a while, and its end date has come. Still going?';
     case 'sensitive':
-      return 'This seems relevant, but I won’t use it unless you say so. Should I factor it in?';
+      return 'Went with this private detail. Still right?';
     case 'changed':
       return `Went with the new one (you used to say “${card.changed_from}”). Still right?`;
     case 'old': {

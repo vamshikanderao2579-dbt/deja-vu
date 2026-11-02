@@ -19,10 +19,10 @@ test('merge: a repeated fact updates the card instead of duplicating it', () => 
   assert.deepEqual(b[0].sources.sort(), ['m1', 'm2']);
 });
 
-test('merge: sensitive facts start locked (pending)', () => {
+test('merge: sensitive facts start unconfirmed (pending) and are still used', () => {
   const [c] = mergeCards([], [card({ category: 'health', text: 'Lower back pain', sensitive: true })]);
   assert.equal(c.status, 'pending');
-  assert.equal(usable(c), false);
+  assert.equal(usable(c), true);
 });
 
 test('merge: a card the user removed is not brought back', () => {
@@ -70,7 +70,7 @@ test('actions: confirm, edit, note and reject', () => {
   assert.throws(() => applyCardAction(state, a.id, 'explode'));
 });
 
-test('context: locked cards never reach the model; confirmed ones are marked', () => {
+test('context: every card reaches the model; confirmed ones are marked ✓, the rest ~', () => {
   const cards = [
     { ...card(), status: 'confirmed' },
     { ...card({ text: 'Lower back pain' }), status: 'pending' },
@@ -79,7 +79,7 @@ test('context: locked cards never reach the model; confirmed ones are marked', (
   const text = renderContext(cards);
   assert.match(text, /✓ Loves Thai food/);
   assert.match(text, /~ Likes tacos/);
-  assert.doesNotMatch(text, /back pain/);
+  assert.match(text, /~ Lower back pain/);
 });
 
 test('check reasons: changed, sensitive, old, guessed, stale, fine', () => {
@@ -134,4 +134,28 @@ test('seasonal cards: awake inside their window, sleeping outside, windows wrap 
   assert.deepEqual(seasonState(thanksgiving, Date.parse('2026-07-01T12:00:00')), { active: false, wakes: '2026-10-25' });
   assert.equal(seasonState(winter, Date.parse('2027-01-05T12:00:00')).active, true);
   assert.equal(seasonState({}, NOW), null);
+});
+
+test('short-term: a card with an end date keeps it, shows it to the model and ends on time', async () => {
+  const { untilState } = await import('../src/engine/cards.js');
+  const [c] = mergeCards([], [card({ text: 'No meat (health plan)', until: '2027-04-27' }), card({ text: 'Bad date', until: 'soon' })]).filter((x) => x.text === 'No meat (health plan)');
+  assert.equal(c.until, '2027-04-27');
+  assert.ok(renderContext([{ ...c, status: 'confirmed' }]).includes('(until 2027-04-27)'));
+  assert.equal(untilState(c, Date.parse('2027-04-26T12:00:00')).ended, false);
+  assert.equal(untilState(c, Date.parse('2027-04-27T12:00:00')).endsToday, true);
+  assert.equal(untilState(c, Date.parse('2027-04-28T12:00:00')).ended, true);
+  assert.equal(untilState(card(), NOW), null);
+  assert.equal(mergeCards([], [card({ until: 'soon' })])[0].until, undefined);
+});
+
+test('short-term: on its end date a card is worth a check; extend or keep it for good', () => {
+  const c = { ...card(), id: 'food-1', status: 'confirmed', until: '2026-10-27', last_confirmed: '2026-10-01T00:00:00Z' };
+  assert.equal(checkReason(c, NOW), 'ended');
+  assert.equal(checkReason({ ...c, until: '2026-12-01' }, NOW), null);
+  const state = { cards: [c], rejected: [] };
+  applyCardAction(state, 'food-1', 'until', '2027-01-27');
+  assert.equal(state.cards[0].until, '2027-01-27');
+  applyCardAction(state, 'food-1', 'until', '');
+  assert.equal(state.cards[0].until, undefined);
+  assert.throws(() => applyCardAction(state, 'food-1', 'until', 'next year'));
 });

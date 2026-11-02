@@ -4,11 +4,11 @@ import { join, extname, normalize } from 'node:path';
 import { config, ROOT } from './src/platform/config.js';
 import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, saveSeed, loadSeed, chatTitle, current, runIn, getProfile, getHistory, userName } from './src/platform/store.js';
 import { sessionFor, viewFor, profilesFor, choose, saveImport, countBuild, endSession, clearCookie, buildsRunning } from './src/platform/sessions.js';
-import { importHistory } from './src/platform/importers.js';
+import { importHistory, isChat } from './src/platform/importers.js';
 import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/engine/agent.js';
 import { cueDecision, checkReason, applyFeedback, implicitYes } from './src/engine/cue.js';
-import { transcribe, interpret } from './src/platform/voice.js';
-import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState, renderContext, similarity } from './src/engine/cards.js';
+import { transcribe, interpret, VOICE_MODEL } from './src/platform/voice.js';
+import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState, untilState, renderContext, similarity } from './src/engine/cards.js';
 import { todayMs } from './src/platform/config.js';
 import { addReviewStats, emptyReviewStats } from './src/engine/review.js';
 import { buildMemory, applyBuild } from './src/engine/build.js';
@@ -66,7 +66,7 @@ function startBuild(plan = { mode: 'full', since: null }) {
   job.promise = buildMemory({ conversations: getHistory().conversations, existing: s.cards, rejected: s.rejected, profileId: view.buildKey, since: plan.since, onProgress: (p) => Object.assign(job, p) })
     .then(({ cards, report }) => {
       const st = getState();
-      st.cards = applyBuild(st.cards, cards, st.rejected, { partial: plan.mode === 'new' || !!plan.since });
+      st.cards = markImported(applyBuild(st.cards, cards, st.rejected, { partial: plan.mode === 'new' || !!plan.since }));
       st.build = { ...report, mode: plan.mode, historyTokens: historyTokensNow() };
       st.review = emptyReviewStats();
       save();
@@ -75,6 +75,16 @@ function startBuild(plan = { mode: 'full', since: null }) {
     })
     .catch((err) => Object.assign(job, { running: false, done: true, error: err.message }));
   return job;
+}
+// Cards learned only from undated imported chats: tagged imported, and never short-term
+// (there's no date to count from). Dated chats in Déjà Vu make cards the usual way.
+function markImported(cards) {
+  const undated = new Set(getHistory().conversations.filter((c) => c.undated).flatMap((c) => c.messages.map((m) => m.id)));
+  if (!undated.size) return cards;
+  for (const c of cards) {
+    if (c.sources?.length && c.sources.every((id) => undated.has(id))) { c.imported = true; delete c.until; }
+  }
+  return cards;
 }
 const jobView = (j) => (j ? { running: j.running, done: !!j.done, pct: j.pct, stage: j.stage, label: j.label, report: j.report ?? null, error: j.error ?? null, profileId: j.profileId } : { running: false });
 
@@ -151,7 +161,7 @@ route('POST', '/api/chat', async (body) => {
     else {
       // Check only a card central to this answer; never style or agent-identity cards.
       // Sensitive (locked) cards are only ever reviewed in Memory, never raised mid-task.
-      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending');
+      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant');
       // A scripted demo spans several "days": only the once-per-chat rule applies.
       const log = demo ? s.cueLog.filter((e) => e.conversationId === conversationId) : s.cueLog;
       const decision = cueDecision({ relevant: askable, stakes, conversationId, cueLog: log });
@@ -170,7 +180,10 @@ route('POST', '/api/chat', async (body) => {
   const prior = s.live.find((c) => c.id === `live-${conversationId}`)?.messages ?? [];
   // Draft tools only for requests that are about acting: booking, ordering, a stay or a flight.
   const actions = stakes === 'high' && ACTION_WORDS.test(message);
-  const res = await answer(message, mode, relevant, { recent: prior, actions });
+  // The chat's model picker: only allowed models and effort levels; the default otherwise.
+  const model = config.answerModels.includes(body.model) && body.model !== config.providers.main.model ? body.model : null;
+  const effort = ['medium', 'high'].includes(body.effort) ? body.effort : 'low';
+  const res = await answer(message, mode, relevant, { recent: prior, actions, redo: skipCue, model, effort });
   const used = relevant.filter(usable);
   for (const c of used) c.last_used = new Date().toISOString();
   s.trace = countTrace(s.trace, trace, !!res.draft);
@@ -188,6 +201,7 @@ route('POST', '/api/chat', async (body) => {
     mode,
     stakes,
     usedCards: used.map(publicCard),
+    model: model ?? config.providers.main.model,
     tokens: { context: res.contextTokens, fullHistory: fullHistoryTokens(), usage: res.usage },
   };
 });
@@ -213,7 +227,7 @@ route('POST', '/api/recall', async ({ message, conversationId = 'external' }) =>
   const s = getState();
   if (s.memoryOff) return { stakes: 'low', cards: [], context: '', check: null };
   const { relevant, key = [], stakes } = await selectRelevant(message, s.cards);
-  const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending');
+  const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant');
   const { cue } = cueDecision({ relevant: askable, stakes, conversationId, cueLog: s.cueLog });
   if (cue) { s.cueLog.push({ cardId: cue.cardId, conversationId, at: new Date().toISOString(), outcome: null }); save(); }
   const cards = relevant.filter(usable);
@@ -266,7 +280,8 @@ function learnInBackground(conv) {
 }
 
 // Swipe or tap on a card: confirm (right), reject (left), edit (up)
-route('POST', '/api/cards/:id', (body, { id }) => {
+route('POST', '/api/cards/:id', async (body, { id }) => {
+  if (body.demo) await current().learning;
   const s = getState();
   const { action, text } = body;
   applyCardAction(s, id, action, text);
@@ -281,13 +296,14 @@ route('POST', '/api/cards/:id', (body, { id }) => {
 route('POST', '/api/memory/update', async (body) => {
   const { category, oldText, message, cardId } = body;
   if (!category || !message?.trim()) throw httpError(400, 'category and message are required');
+  if (body.demo) await current().learning;
   const s = getState();
   if (cardId && s.cards.some((c) => c.id === cardId)) applyCardAction(s, cardId, 'reject');
   const next = await rewriteCard(category, oldText ?? '', message);
   if (!next) { save(); return { card: null, ...statePayload() }; }
   // Merge without the rejected list: the new wording can be close to the old one.
   const before = new Set(s.cards.map((c) => c.id));
-  s.cards = mergeCards(s.cards, [{ category, type: next.type, text: next.text, confidence: 1 }], []);
+  s.cards = mergeCards(s.cards, [{ category, type: next.type, text: next.text, confidence: 1, ...(next.until ? { until: next.until } : {}) }], []);
   // The card this became: a new one, or the existing card it merged into (which keeps
   // its old wording, so take the user's new words). Never just "the last card".
   const card = s.cards.find((c) => !before.has(c.id)) ??
@@ -295,6 +311,8 @@ route('POST', '/api/memory/update', async (body) => {
     s.cards.filter((c) => c.category === category).sort((a, b) => similarity(b.text, next.text) - similarity(a.text, next.text))[0];
   if (!card) { save(); return { card: null, ...statePayload() }; }
   card.text = next.text;
+  if (next.until) card.until = next.until;
+  else delete card.until;
   applyCardAction(s, card.id, 'confirm');
   save();
   return { card: publicCard(card), ...statePayload() };
@@ -317,12 +335,16 @@ route('GET', '/api/sources/:id', (_, { id }) => {
     sources,
     conversations: convIds.map((cid) => {
       const c = findConversation(cid);
-      return { id: c.id, title: c.title, date: c.date, time: c.time, messages: c.messages };
+      return { id: c.id, title: c.title, date: c.date, time: c.time, undated: !!c.undated, file: c.undated ? getHistory().source?.file ?? null : null, messages: c.messages };
     }),
   };
 });
 
+// The eval across all people (numbers only, committed: data/eval-summary.json), else the
+// last local run for the synthetic default persona.
 route('GET', '/api/eval', async () => {
+  const combined = await readFile(join(ROOT, 'data', 'eval-summary.json'), 'utf8').catch(() => null);
+  if (combined) return { available: true, ...JSON.parse(combined) };
   const raw = await readFile(join(ROOT, 'eval', 'results', 'latest.json'), 'utf8').catch(() => null);
   if (!raw) return { available: false };
   const { rows, ...rest } = JSON.parse(raw);
@@ -339,6 +361,8 @@ route('POST', '/api/reset', () => {
 // the memory as first built from their chats).
 route('POST', '/api/demo/load', async () => {
   if (!loadSeed()) throw httpError(409, 'Build this profile’s memory first (Memory → Build from my chats).');
+  // A fresh start picks cards fresh too, so a recorded demo replays exactly.
+  current().relevanceCache = [];
   return statePayload();
 });
 
@@ -353,13 +377,18 @@ route('POST', '/api/profile', async ({ id }, _, { session }) => {
 // profile and a build starts right away; the page shows its progress.
 async function importRoute(req, url, session) {
   if (current()?.buildJob?.running) throw httpError(409, 'A memory build is already running. Wait for it to finish.');
-  const raw = (await readRaw(req, config.importMaxMb * 1024 * 1024, `That file is over ${config.importMaxMb} MB. Export a shorter stretch, or keep just the last few months.`)).toString('utf8');
+  // The page trims a big export to its newest part before upload; this is only a backstop.
+  const raw = await readRaw(req, config.importMaxMb * 1024 * 1024, 'That file is too big for this prototype. Try a shorter export.');
   let parsed;
-  try { parsed = importHistory(raw, { name: url.searchParams.get('name') ?? '' }); } catch (err) { throw httpError(400, err.message); }
+  try { parsed = importHistory(raw, { name: url.searchParams.get('name') ?? '', file: url.searchParams.get('file') ?? '' }); } catch (err) { throw httpError(400, err.message); }
+  const check = await isChat(parsed.history);
+  if (!check.chat) throw httpError(400, 'That doesn’t look like a chat. Upload a conversation between you and an assistant (ChatGPT, Claude, Muse, or a log with “You:” and “Assistant:” lines).');
   canBuild(session);
   saveImport(session, parsed);
   const view = viewFor(session);
-  return runIn(view, () => ({ imported: { format: parsed.label, turns: parsed.turns, conversations: parsed.history.conversations.length }, job: jobView(startBuild()), ...statePayload() }));
+  // The build reads the newest BUILD_TURN_CAP messages you wrote; say so up front.
+  const reading = Math.min(parsed.turns, Number(process.env.BUILD_TURN_CAP ?? 500));
+  return runIn(view, () => ({ imported: { format: parsed.label, turns: parsed.turns, reading, undated: parsed.undated, conversations: parsed.history.conversations.length }, job: jobView(startBuild()), ...statePayload() }));
 }
 
 // End the visit: delete everything uploaded or built in it.
@@ -379,13 +408,14 @@ function statePayload() {
   const s = getState();
   return {
     mock: config.mock,
-    models: { main: config.providers.main.model, bg: config.providers.bg.model, grader: config.graderEnabled ? config.providers.grader.model : null },
+    models: { answer: config.answerModels, main: config.providers.main.model, bg: config.providers.bg.model, grader: config.graderEnabled ? config.providers.grader.model : null, voice: VOICE_MODEL },
     userName: userName(),
     profile: { id: getProfile().id, name: getProfile().name, about: getProfile().about, suggestions: getProfile().suggestions ?? [], script: getProfile().script ?? [], mine: getProfile().id === 'mine' },
     publicDemo: config.publicDemo,
     museEnabled: config.museEnabled,
     agent: config.agent,
-    cards: s.cards.map((c) => ({ ...publicCard(c), checkReason: seasonState(c, todayMs())?.active === false ? null : checkReason(c), seasonState: seasonState(c, todayMs()) })),
+    today: new Date(todayMs()).toISOString().slice(0, 10),
+    cards: s.cards.map((c) => ({ ...publicCard(c), checkReason: seasonState(c, todayMs())?.active === false ? null : checkReason(c), seasonState: seasonState(c, todayMs()), untilState: untilState(c, todayMs()) })),
     budget: budgetStats(s.cards),
     fullHistoryTokens: fullHistoryTokens(),
     cuesShown: s.cueLog.length,

@@ -42,16 +42,18 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
 
 Every step is visible to the person: **Why?** on each card opens the exact message and time it came from; ⓘ under each answer shows the cards used and what the loop decided (checked X, or *no check: nothing at stake*); Insights totals it all.
 
-## Results (Oct 28 eval, 4 people, 42 questions, 76 checks)
+## Results (Nov 2 eval, 4 people, 42 questions, 76 checks)
 
-| | Confirmed memory | Memory summary | Full history |
+Memory built by the staged build (Muse Spark writes, Muse Wonder grades), one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. Pooled over every check.
+
+| | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| Accuracy (average) | **84.5%** | 82.5% | 73% |
-| Preferences that changed outside chat | **94%** | 44% | 38% |
-| Stale answers | **1** | 2 | 5 |
-| Memory tokens per message | **~147** | ~488 | ~38,900 (up to 113,619) |
+| Accuracy | **86.8%** | 73.7% | 75% |
+| Preferences that changed outside chat | **91.7%** | 41.7% | 33.3% |
+| Stale answers | **2** | **2** | 3 |
+| Memory tokens per question | **~143** | ~472 | ~39,000 (up to 113,619) |
 
-Honest caveat: on one real history where nothing had changed, the summary scored higher (93% vs 86%). Details and method: [`docs/eval.md`](docs/eval.md). A rerun with the grader gate and the new answer flow is planned.
+Per person (Déjà Vu / summary / full): Alex 93 / 72 / 76, Maria 95 / 75 / 65, real history A 71 / 86 / 86, real history B 77 / 62 / 77. Honest caveat: on real history A the summary still scores higher; its build kept only 11 cards from 194 messages, which is the next thing to improve. Two changes since Oct 31 moved the numbers: every card is used in answers (private and unconfirmed ones too; a check is never a gate), and the builder keeps small steady likes and the people you plan for. Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md).
 
 ## Building memory from a whole history
 
@@ -106,7 +108,9 @@ curl -X POST localhost:3000/api/cards/travel-4 -H 'content-type: application/jso
 - **Drafts, not claims.** "Find us a hotel" comes back with a draft (place, dates, details, *from your memory* chips). Change a card and redo: the draft marks what's **new** and what's gone.
 - **Memory · by Déjà Vu** in the menu: cards by topic, swipe to confirm, Why? on each, recently learned, how lean it is.
 - **Memory on/off.** Off means nothing used, asked or learned. Turning it on explains what will happen, then fast-forwards the first weeks.
-- **Bounded:** at most 10 topics × 8 cards × 14 words. **Sensitive stays locked:** health, money, visa cards are never used until you say yes. **Portable:** export `me.json`.
+- **Short-term memory.** “No meat for 6 months” becomes a card with an end date (`until`). It shows a ⏳ badge, stops being used after that day, and on the day itself chat asks once: +1 month, +3 months, keep for good, change it, or let it end. The writer, live learning and the change-a-card prompt all set the date from the message's date; cards without one are long-term, as before.
+- **Pick the model.** A picker by the message box switches answers between Muse Spark (default) and Muse Wonder, with low, medium or high effort. Memory work stays on the background model.
+- **Bounded:** at most 10 topics × 8 cards × 14 words. **Confirming is never a gate:** every card is used, guesses and private ones included (marked unconfirmed); the one-time check is how you correct them, not a wait before they count. **Portable:** export `me.json`.
 
 ## Quick start
 
@@ -116,7 +120,7 @@ Requires Node 18+. No dependencies.
 cp .env.example .env     # add MAIN_API_KEY from dev.meta.ai
 npm run check-api        # lists your models, makes one test call
 npm run dev              # http://localhost:3000
-npm test                 # 60 tests, mock mode, no cost
+npm test                 # 62 tests, mock mode, no cost
 ```
 
 Without an API key the app runs in **mock mode** on a hand-written fixture, so the UI works offline. Recorded demos replay instantly with `MUSE_ENABLED=false`. A daily spend cap (`SPEND_CAP_USD`) stops model calls once reached; today's spend is in `data/spend.json`.
@@ -157,6 +161,7 @@ Every new browser lands on **Select user**: no sign-in, a dropdown of demo peopl
 - **Import:** ChatGPT or Claude `conversations.json` (preferred), a Muse export `manifest.json`, or any .json, .md or .txt chat log. The upload becomes the visitor's profile and the staged build starts at once, with live progress; the newest 500 messages are read.
 - **Guardrails:** files up to `IMPORT_MAX_MB` (30); `SESSION_BUILDS` builds per visitor (2); `BUILDS_AT_ONCE` across everyone (3); the per-IP rate limit; `SPEND_CAP_USD` per day and `SPEND_TOTAL_CAP_USD` in total (the deploy sets $15 and $60, keeping $40+ of the credit for the demo).
 - **Deleted:** "End session" in Settings removes the upload and cards; so does `SESSION_IDLE_HOURS` (24) without a visit.
+- **Play demo is free:** each demo person's ▶ conversation replays a recording ([`data/demo-replay.json`](data/demo-replay.json), synthetic chats only); the link never stores visitors' answers. Re-record after changing a prompt or a demo memory (see `scripts/record-demo.js`).
 - **Hosting:** [`deploy/modal_app.py`](deploy/modal_app.py) runs it on Modal (Starter plan's included compute covers one small always-on container). Real profiles under `data/private/` are never listed or uploaded.
 
 ```bash

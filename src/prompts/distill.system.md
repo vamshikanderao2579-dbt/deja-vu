@@ -16,7 +16,8 @@ Rules:
 - Set "sensitive": true for health, money (income, debts, accounts, cards, taxes), immigration or visa status, home address or where they live, relationships, religion, or similar.
 - "sources" lists the message ids the card came from.
 - "confidence" (0-1) is how sure you are this is a lasting preference. Repeated mentions mean higher confidence.
+- Short-term facts ("for 6 months", "until March") get "until": the end date as YYYY-MM-DD, counted from the message's date; the text leaves the time limit out. Lasting facts get no "until".
 - If an EXISTING card already covers a fact, return it with the same "id" and updated fields instead of a duplicate.
 
 Return only JSON:
-{"cards":[{"id":"optional existing id","category":"","type":"preference|lesson","text":"","confidence":0.0,"sources":[""],"sensitive":false,"changed_from":"optional"}]}
+{"cards":[{"id":"optional existing id","category":"","type":"preference|lesson","text":"","confidence":0.0,"sources":[""],"sensitive":false,"changed_from":"optional","until":"optional YYYY-MM-DD"}]}

@@ -57,6 +57,7 @@ export function mergeCards(existing, incoming, rejected = [], now = new Date().t
     if (match) {
       match.sources = [...new Set([...(match.sources ?? []), ...(raw.sources ?? [])])];
       match.last_seen = now;
+      if (validUntil(raw.until)) match.until = raw.until;
       // A different meaning for the same card (it named the card, or said what it
       // used to be) is a change of mind, not a rewording.
       const changed = (raw.changed_from || raw.id === match.id) && jaccard(match.text, text) < 0.5;
@@ -86,6 +87,7 @@ export function mergeCards(existing, incoming, rejected = [], now = new Date().t
       ...(raw.changed_from ? { changed_from: raw.changed_from } : {}),
       ...(raw.sub ? { sub: String(raw.sub) } : {}),
       ...(raw.season?.start && raw.season?.end ? { season: raw.season } : {}),
+      ...(validUntil(raw.until) ? { until: raw.until } : {}),
       ...([1, 2, 3].includes(raw.priority) ? { priority: raw.priority } : {}),
       created: now,
       last_seen: now,
@@ -116,6 +118,17 @@ export function enforceBudget(cards) {
   return trimmed;
 }
 
+// Short-term memory: a card with "until" (YYYY-MM-DD) holds only until that day
+// ("no meat for 6 months"). Cards without it are long-term.
+export const validUntil = (d) => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d));
+const dayOf = (ms) => new Date(ms).toISOString().slice(0, 10);
+// null for a long-term card; otherwise { until, endsToday, ended } for the given day.
+export function untilState(card, nowMs = Date.now()) {
+  if (!validUntil(card.until)) return null;
+  const today = dayOf(nowMs);
+  return { until: card.until, endsToday: today === card.until, ended: today > card.until };
+}
+
 // Seasonal cards wake up inside their window (MM-DD to MM-DD, every year) and sleep
 // outside it: not sent to the model, not asked about.
 export function seasonState(card, nowMs = Date.now()) {
@@ -137,16 +150,17 @@ export function groupByCategory(cards) {
   return out;
 }
 
-// Cards that may be sent to the model. Pending (sensitive, unconfirmed) cards
-// stay out of answers until the user says yes.
-export const usable = (c) => c.status === 'confirmed' || c.status === 'inferred';
+// Every card is used: confirming is a way to own memory, never a gate in front of it.
+// Unconfirmed cards (guesses, and private ones not yet approved) go in marked "~", and
+// the don't-nag rule may check one once when it shapes an answer.
+export const usable = (c) => c.status === 'confirmed' || c.status === 'inferred' || c.status === 'pending';
 
 export function renderContext(cards) {
   const list = cards.filter(usable);
   if (!list.length) return '';
   const groups = groupByCategory(list);
   const body = Object.entries(groups)
-    .map(([cat, cs]) => `${cat}:\n` + cs.map((c) => `- ${c.status === 'confirmed' ? '✓' : '~'} ${c.text}${c.note ? ` (note: ${c.note})` : ''}`).join('\n'))
+    .map(([cat, cs]) => `${cat}:\n` + cs.map((c) => `- ${c.status === 'confirmed' ? '✓' : '~'} ${c.text}${c.note ? ` (note: ${c.note})` : ''}${c.until ? ` (until ${c.until})` : ''}`).join('\n'))
     .join('\n');
   return `${prompt('context.header')}\n${body}`;
 }
@@ -157,7 +171,7 @@ export function renderMarkdown(cards, userName) {
   return (
     `# What my agent knows about me (${userName})\n\n` +
     Object.entries(groups)
-      .map(([cat, cs]) => `## ${cat[0].toUpperCase() + cat.slice(1)}\n` + cs.map((c) => `- ${c.text}${c.note ? ` (note: ${c.note})` : ''} _(${c.type}, ${label[c.status]})_`).join('\n'))
+      .map(([cat, cs]) => `## ${cat[0].toUpperCase() + cat.slice(1)}\n` + cs.map((c) => `- ${c.text}${c.note ? ` (note: ${c.note})` : ''}${c.until ? ` (until ${c.until})` : ''} _(${c.type}, ${label[c.status]})_`).join('\n'))
       .join('\n\n') +
     '\n'
   );
@@ -198,11 +212,17 @@ export function applyCardAction(state, id, action, text, now = new Date().toISOS
     if (!text?.trim()) throw Object.assign(new Error('text is required'), { status: 400 });
     Object.assign(card, { note: clampWords(text), status: 'confirmed', confidence: 1, last_confirmed: now });
     delete card.changed_from;
+  } else if (action === 'until') {
+    // Extend a short-term card to a new end date, or keep it for good (no date).
+    if (text && !validUntil(text)) throw Object.assign(new Error('until must be YYYY-MM-DD'), { status: 400 });
+    if (text) card.until = text;
+    else delete card.until;
+    Object.assign(card, { status: card.sensitive && card.status === 'pending' ? 'pending' : 'confirmed', confidence: 1, last_confirmed: now });
   } else if (action === 'reject') {
     state.rejected.push(card.text);
     state.cards = state.cards.filter((c) => c.id !== id);
   } else {
-    throw Object.assign(new Error('action must be confirm, edit, note, or reject'), { status: 400 });
+    throw Object.assign(new Error('action must be confirm, edit, note, until, or reject'), { status: 400 });
   }
 }
 

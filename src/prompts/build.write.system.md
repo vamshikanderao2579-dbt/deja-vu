@@ -11,4 +11,4 @@ For this batch:
 Pace: {{pace}}
 
 Return only JSON:
-{"cards":[{"id":"optional draft id","category":"travel","sub":"optional","type":"preference|lesson","text":"Books direct flights when traveling with kids","confidence":0.8,"sources":["m12"],"sensitive":false,"changed_from":"optional"}],"notes":"…","skipped":[{"id":"m40","why":"asked to change the card format"}]}
+{"cards":[{"id":"optional draft id","category":"travel","sub":"optional","type":"preference|lesson","text":"Books direct flights when traveling with kids","confidence":0.8,"sources":["m12"],"sensitive":false,"changed_from":"optional","until":"optional YYYY-MM-DD"}],"notes":"…","skipped":[{"id":"m40","why":"asked to change the card format"}]}

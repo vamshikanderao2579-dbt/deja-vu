@@ -43,6 +43,8 @@ export const config = {
   // instant); anything new goes to Muse. The eval sets REPLAY=off to stay fresh.
   replayFirst: env('REPLAY', 'auto') !== 'off',
   providers: { main, bg, grader },
+  // Models a person may pick for answers in chat (the first is the default).
+  answerModels: [...new Set([main.model, grader.model])],
   // GRADER=off keeps only the code rules (for the eval's with/without comparison).
   graderEnabled: env('GRADER', 'on').toLowerCase() !== 'off',
   userName: env('USER_NAME', 'Alex'),
@@ -67,6 +69,9 @@ export const config = {
     maxWordsPerCard: 14,
   },
 };
+
+// "muse-spark-1.3" → "Muse Spark 1.3", for labels people read.
+export const modelName = (id = '') => id.split('/').pop().replace(/-(\d)/, ' $1').split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 
 // "Now" for staleness checks: the fixed demo date if set, otherwise the real clock.
 // An imported (real) history always uses the real clock: the store sets the source.
