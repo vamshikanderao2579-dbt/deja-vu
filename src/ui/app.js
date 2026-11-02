@@ -226,7 +226,50 @@ function syncChrome() {
   const top = [...OVERLAYS].reverse().find((id) => $(`#${id}`).classList.contains('open')) ?? 'chat';
   app.dataset.view = top;
   $$('.drow').forEach((d) => d.classList.toggle('active', d.dataset.go === top));
+  setRoute(top === 'category' && openCat ? `memory/${encodeURIComponent(openCat)}` : ['memory', 'insights', 'settings'].includes(top) ? top : 'chat');
 }
+
+// ---------------- deep links ----------------
+// #/home · #/chat · #/chat/<id> · #/memory · #/memory/<topic> · #/insights · #/settings ·
+// #/demo, each with an optional ?as=<person> (alex, maria, daniel…). The address follows
+// the open screen, so any screen can be shared or bookmarked.
+let openCat = null;
+const setRoute = (path) => {
+  if (!$('#landing').hidden && path !== 'home') return;
+  // Only made-up demo people go in the address: never a real person's or an import's id.
+  const as = data?.profile?.demo && path !== 'home' ? `?as=${encodeURIComponent(data.profile.id)}` : '';
+  const next = `#/${path}${as}`;
+  if (location.hash !== next) history.replaceState(null, '', next);
+};
+function parseRoute() {
+  const m = location.hash.match(/^#\/([^?]*)(?:\?(.*))?$/);
+  if (!m) return null;
+  const [screen, ...rest] = m[1].split('/').filter(Boolean).map(decodeURIComponent);
+  return { screen: screen || 'home', arg: rest.join('/') || null, as: new URLSearchParams(m[2] ?? '').get('as') };
+}
+// Open the screen a link names, as the person it names (or whoever this browser is;
+// a fresh visitor without one gets Alex). False when the link has nothing to open.
+async function followRoute(r, state) {
+  if (!r || r.screen === 'home' || !['chat', 'memory', 'insights', 'settings', 'demo'].includes(r.screen)) return false;
+  if (demoRunning) stopTour(); // a link mid-tour ends the tour, so the two never fight
+  const who = r.as ?? (state?.needsChoice ? 'alex' : null);
+  try {
+    if (who && who !== data?.profile?.id) await enterApp(await api('/api/profile', { id: who }));
+    else if (!data || !$('#landing').hidden) await enterApp(state ?? await api('/api/state'));
+  } catch (err) { toast(err.message); return false; }
+  markSeen('dv-tour-app');
+  document.querySelectorAll('.coach-spot, .coach-tip').forEach((n) => n.remove());
+  if (r.screen === 'chat') { if (r.arg) await openChat(r.arg); else closeAll(); }
+  if (r.screen === 'memory') { closeAll(); open('memory'); if (r.arg) openCategory(r.arg); }
+  if (r.screen === 'insights' || r.screen === 'settings') { closeAll(); open(r.screen); }
+  if (r.screen === 'demo') { closeAll(); playDemo(); }
+  return true;
+}
+window.addEventListener('hashchange', async () => {
+  const r = parseRoute();
+  if (r?.screen === 'home') { if (demoRunning) stopTour(); return showLanding(await api('/api/profiles'), { canGoBack: !!data }); }
+  followRoute(r, data ? null : await api('/api/state'));
+});
 
 // Laptop: the menu button opens and closes the sidebar (remembered). Phone and iPad: it slides over.
 const SIDE_KEY = 'dv-side';
@@ -372,7 +415,7 @@ function addMsg(role, html) {
 const STEP_NOTES = ['Reading your memory…', 'Picking the cards that fit…'];
 // With memory off: nothing that sounds like reading memory.
 const PLAIN_NOTES = ['Thinking it through…', 'Drafting your answer…', 'Almost there…'];
-const MORE_NOTES = ['Weighing confirmed vs guessed…', 'Checking what changed lately…', 'Connecting the dots…', 'Thinking it through…', 'Drafting your answer…', 'Cross-checking the details…', 'Mulling it over…', 'Cerebrating…', 'Almost there…'];
+const MORE_NOTES = ['Weighing confirmed vs guessed…', 'Checking what changed lately…', 'Connecting the dots…', 'Thinking it through…', 'Drafting your answer…', 'Cross-checking the details…', 'Mulling it over…', 'Almost there…'];
 function typing(steps = STEP_NOTES, more = MORE_NOTES) {
   const m = addMsg('assistant typing', '<span class="typing-dots"><span></span><span></span><span></span></span><span class="typing-note"></span>');
   const note = m.querySelector('.typing-note');
@@ -745,8 +788,11 @@ function voiceButton(btn, onResult, idleLabel) {
       });
       btn.classList.add('recording');
       btn.innerHTML = '■ Stop';
-    } catch {
-      toast('Microphone not available.');
+    } catch (err) {
+      // Voice is input only: speak instead of typing. Say why it can't listen.
+      toast(err?.name === 'NotAllowedError' ? 'Microphone is blocked for this site. Allow it in your browser’s site settings, or type instead.'
+        : err?.name === 'NotFoundError' ? 'No microphone found. Type instead, or plug one in.'
+        : 'Microphone not available here. Type instead.');
     }
   });
 }
@@ -996,7 +1042,7 @@ function renderMemory() {
       <div class="hero-text">
         <h2>${toCheck ? `${count(toCheck, 'card')} to check` : 'All caught up'}</h2>
         <p class="hero-stats"><span><b>${data.cards.length}</b> ${data.cards.length === 1 ? 'card' : 'cards'} in all:</span><span><b>${n.check}</b> to check</span><span><b>${n.confirmed}</b> confirmed</span><span><b>${n.guess}</b> ${n.guess === 1 ? 'guess' : 'guesses'} that look right</span></p>
-        ${locked || recheck ? `<p class="fine hero-note">Each card is counted once. The ${toCheck} to check: ${[locked ? `${locked} private, not checked yet` : '', recheck ? `${recheck} you confirmed before that may have changed` : '', toCheck - locked - recheck ? `${toCheck - locked - recheck} ${toCheck - locked - recheck === 1 ? 'guess' : 'guesses'}` : ''].filter(Boolean).join(' · ')}.</p>` : ''}
+        ${locked || recheck ? `<p class="fine hero-note">Each card is counted once. The ${toCheck} to check: ${[locked ? `${locked} private, not checked yet` : '', recheck ? `${recheck} you confirmed before that may have changed` : '', toCheck - locked - recheck ? `${toCheck - locked - recheck} ${toCheck - locked - recheck === 1 ? 'guess' : 'guesses'} worth a look (unsure, old or changed)` : ''].filter(Boolean).join(' · ')}.</p>` : ''}
         <p class="mem-dates"><span>Since <b>${starts.length ? day(starts[0]) : '—'}</b></span></p>
         ${toCheck ? `<button class="primary review-btn" id="reviewBtn">Review now<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>` : ''}
       </div>
@@ -1057,6 +1103,7 @@ function openReview() {
 let deck = { cat: null, ids: [], i: 0 };
 
 function openCategory(cat, sub = null) {
+  openCat = cat;
   const all = data.cards.filter((c) => c.category === cat);
   const cards = sub ? all.filter((c) => c.sub === sub) : all;
   const subs = subsOf(all);
@@ -1570,14 +1617,16 @@ async function playDemo() {
     setTimeout(() => ripple.remove(), 600);
     node.click();
   };
-  // The caption for a step, left up long enough to read.
+  // The caption for a step. With captions only, it stays up long enough to read before
+  // the step plays. With voice, the clip and the step play together, so you hear each
+  // line while it happens on screen; the next step waits for both.
   const say = async (text, i) => {
     await whilePaused();
     if (!tourBar || !text) return;
     tourBar.querySelector('.tour-step').textContent = `${i + 1} of ${steps.length}`;
     tourBar.querySelector('p').textContent = text;
-    await Promise.all([sleep(tourPrefs.hidden && !tourPrefs.voice ? 300 : Math.min(1800, 600 + text.length * 8)), narrate(text)]);
-    await whilePaused();
+    if (tourPrefs.voice) return narrate(text);
+    await sleep(tourPrefs.hidden ? 300 : Math.min(1800, 600 + text.length * 8));
   };
   const lastCard = (sel) => [...document.querySelectorAll(sel)].at(-1);
   // Back to chat the way a person would: the back arrow on each open page.
@@ -1588,7 +1637,9 @@ async function playDemo() {
 
   for (const [i, step] of steps.entries()) {
     if (!demoRunning) break;
-    await say(step.say, i);
+    const spoken = say(step.say, i);
+    if (!tourPrefs.voice) await spoken;
+    else await sleep(700); // the line starts just before its action
     if (!demoRunning) break;
     if (step.newChat) { conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); }
     if (step.memoryOff) {
@@ -1724,6 +1775,8 @@ async function playDemo() {
         await sleep(200);
       }
     }
+    await spoken; // the line finishes before the next one starts
+    await whilePaused();
     await sleep(450); // a moment on the result before the next caption
   }
   await sleep(600);
@@ -1892,6 +1945,7 @@ $('#resetBtn').addEventListener('click', async () => {
 const NEW_USER = '__new';
 function showLanding(choice, { canGoBack = false } = {}) {
   closeAll();
+  setRoute('home');
   app.classList.add('landing-on');
   $('#landing').hidden = false;
   $('#landing').scrollTop = 0;
@@ -1929,6 +1983,7 @@ function describeUser() {
 function hideLanding() {
   $('#landing').hidden = true;
   app.classList.remove('landing-on');
+  syncChrome();
 }
 $('#userSelect').addEventListener('change', describeUser);
 $('#userGo').addEventListener('click', async () => {
@@ -2190,6 +2245,7 @@ $('#importGo').addEventListener('click', async () => {
 // The app always opens on Select user, with whoever this browser used last picked.
 (async () => {
   const state = await api('/api/state');
+  if (await followRoute(parseRoute(), state)) return;
   showLanding(state.needsChoice ? state : await api('/api/profiles'));
   try { if (sessionStorage.getItem('dv-ended')) { sessionStorage.removeItem('dv-ended'); toast('Session ended: your upload, cards and chats are deleted.'); } } catch {}
 })();

@@ -119,6 +119,19 @@ curl -X POST localhost:3000/api/cards/travel-4 -H 'content-type: application/jso
 - **Pick the model.** A picker by the message box switches answers between Muse Spark (default) and Muse Wonder, with low, medium or high effort. Memory work stays on the background model.
 - **Bounded:** at most 10 topics × 8 cards × 14 words. **Confirming is never a gate:** every card is used, guesses and private ones included (marked unconfirmed); the one-time check is how you correct them, not a wait before they count. **Portable:** export `me.json`.
 
+### Deep links
+
+Every screen has an address, and the address follows the screen you're on. Add `?as=<person>` to open it as a demo person (alex, maria, daniel, sofia, james, aisha, luis, grace, ethan, fatima, tom, rosa); without it, a new visitor gets Alex.
+
+| Link | Opens |
+|---|---|
+| `#/home` | the welcome page |
+| `#/demo?as=alex` · `#/demo?as=maria` | the guided tour |
+| `#/chat` | the chat |
+| `#/memory` · `#/memory/travel` | Memory, or one topic |
+| `#/insights` | Insights: eval results, what it decided |
+| `#/settings` | Settings |
+
 ## Quick start
 
 Requires Node 18+. No dependencies.

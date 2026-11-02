@@ -434,7 +434,7 @@ function statePayload() {
     mock: config.mock,
     models: { answer: config.answerModels, main: config.providers.main.model, bg: config.providers.bg.model, grader: config.graderEnabled ? config.providers.grader.model : null, voice: VOICE_MODEL },
     userName: userName(),
-    profile: { id: getProfile().id, name: getProfile().name, about: getProfile().about, suggestions: getProfile().suggestions ?? [], script: getProfile().script ?? [], mine: getProfile().id === 'mine' },
+    profile: { id: getProfile().id, name: getProfile().name, about: getProfile().about, suggestions: getProfile().suggestions ?? [], script: getProfile().script ?? [], mine: getProfile().id === 'mine', demo: !getProfile().real && getProfile().id !== 'mine' },
     publicDemo: config.publicDemo,
     museEnabled: config.museEnabled,
     agent: config.agent,
