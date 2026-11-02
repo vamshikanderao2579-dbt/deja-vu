@@ -19,25 +19,27 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 3. **Answer** each question in each setup.
 4. **Judge** against a checklist, e.g. *"Suggests an Airbnb"* (should not) or *"Includes exactly 5 hashtags"* (should). Checklists are far more reliable than asking a model whether an answer is good.
 
-## Results (Oct 28 2026, one run per person, final code)
+## Results (Nov 2 2026, one run per person, staged build)
 
-| | Confirmed memory | Inferred memory (summary) | Full history |
+Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every card used in answers (guesses and private ones too), one simulated review pass.
+
+| | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| Alex · synthetic · 15 questions | **93%** | 83% | 83% |
-| Maria · synthetic · 11 questions | **90%** | 85% | 75% |
-| Real history A · 25 days, 457 msgs · 8 questions | 86% | **93%** | 71% |
-| Real history B · 5 weeks, 727 msgs · 8 questions | **69%** | **69%** | 62% |
-| **Average** | **84.5%** | 82.5% | 73% |
-| Changed outside chat (synthetic) | **94%** | 44% | 38% |
-| Stale answers (all 4 people) | **1** | 2 | 5 |
-| Memory tokens per message (avg) | **~147** | ~488 | ~38,900 (up to 113,619) |
+| Alex · synthetic · 15 questions | **93%** | 72% | 76% |
+| Maria · synthetic · 11 questions | **95%** | 75% | 65% |
+| Real history A · 194 user msgs · 8 questions | 71% | **86%** | **86%** |
+| Real history B · 304 user msgs · 8 questions | **77%** | 62% | **77%** |
+| **Pooled over 76 checks** | **86.8%** | 73.7% | 75% |
+| Changed outside chat (synthetic) | **91.7%** | 41.7% | 33.3% |
+| Stale answers (all 4 people) | **2** | **2** | 3 |
+| Memory tokens per message (avg) | **~143** | ~472 | ~39,000 (up to 113,619) |
 
-Earlier runs on Alex (before the final prompt changes) ranged 76 to 90% for confirmed memory, so treat single-run differences of a few points as noise.
+Real history A trails because its build kept only 11 cards from 194 messages; the builder now keeps more detail (thresholds, names, birthdays, health issues as private cards). Earlier runs: Oct 28 (one-pass build) 84.5% / 82.5% / 73%; Oct 31 77.6% for all three. Treat single-run differences of a few points as noise.
 
 ## What it shows
 
-- **Confirmation catches what inference can't.** When a preference changed and never came up in chat, every inferred setup kept getting it wrong (44% and 38%); confirmed memory got 94%.
-- **Reading only what's needed is cheaper without costing accuracy.** Confirmed memory reads ~3× fewer tokens per message than a summary and up to ~700× fewer than full history, while matching or beating both on average.
+- **Confirmation catches what inference can't.** When a preference changed and never came up in chat, the summary and full history got it right only 42% and 33% of the time; Déjà Vu memory got 92%.
+- **Reading only what's needed is cheaper without costing accuracy.** Déjà Vu memory reads ~3× fewer tokens per message than a summary and ~270× fewer than full history on average, while scoring higher than both.
 - **Full history is the worst of both.** It's the most expensive *and* the least accurate: years of noise drown the signal.
 - **Honest caveat.** On one real history where nothing had changed, the summary scored higher (93% vs 86%). A good summary is strong when life is static; confirmed memory wins on cost everywhere and on accuracy as soon as things change.
 

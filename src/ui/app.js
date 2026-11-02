@@ -3,9 +3,9 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const app = $('.app');
 
 const MODES = [
-  { id: 'cards', label: 'Memory: your cards' },
-  { id: 'full', label: 'Memory: full chat history' },
-  { id: 'none', label: 'Memory: off' },
+  { id: 'cards', label: 'Memory on', chip: 'Memory', about: 'Uses the few cards that fit each message' },
+  { id: 'none', label: 'Off for this chat', chip: 'No memory', about: 'A fresh start: nothing used or learned' },
+  { id: 'full', label: 'Read full history', chip: 'Full history', about: 'To compare: slower, reads every chat' },
 ];
 const SUGGESTIONS = [
   'What should we have for dinner tonight?',
@@ -137,7 +137,11 @@ const count = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const bucketOf = (c) => (c.checkReason ? 'check' : c.status === 'confirmed' ? 'confirmed' : 'guess');
 
 let data = null;
-let mode = 'cards';
+// What memory this chat uses: your cards (default), off for just this chat, or the full
+// history to compare. Kept per chat in this browser; memory switched off overrides it.
+let chatModes = {};
+try { chatModes = JSON.parse(localStorage.getItem('dv-chat-modes') || '{}'); } catch {}
+const chatMode = () => (data?.memoryOff ? 'none' : chatModes[conversationId] ?? 'cards');
 let conversationId = newId();
 const sessionLog = [];
 
@@ -242,7 +246,7 @@ async function refresh(next) {
   const toCheck = data.cards.filter((c) => c.checkReason).length;
   $('#menuDot').classList.toggle('hidden', !toCheck);
   $('#drawerCount').classList.toggle('hidden', !toCheck);
-  $('#drawerCount').textContent = toCheck;
+  $('#drawerCount').textContent = `${toCheck} to check`;
   // On a laptop the menu is a sidebar that's always showing, so keep it current.
   if (wide.matches) renderDrawer();
 }
@@ -266,7 +270,8 @@ function renderLearned() {
 // Saved chats, newest first, under the memory section. The open one is highlighted.
 const chatKey = () => `dv-chat-${data?.profile?.id ?? ''}`;
 async function renderChats() {
-  const { chats } = await api('/api/chats').catch(() => ({ chats: [] }));
+  // The guided demo's chat is a replay, not one of yours: it stays out of the list.
+  const chats = (await api('/api/chats').catch(() => ({ chats: [] }))).chats.filter((c) => !c.id.startsWith('demo-'));
   const box = $('#drawerChats');
   box.innerHTML = chats.length
     ? chats.slice(0, 30).map((c) => `<button class="chat-row${c.id === conversationId ? ' active' : ''}" data-id="${esc(c.id)}" title="${esc(c.title)}">${esc(c.title)}</button>`).join('')
@@ -280,6 +285,7 @@ async function openChat(id) {
   try { chat = await api(`/api/chats/${encodeURIComponent(id)}`); } catch { try { localStorage.removeItem(chatKey()); } catch {} return renderWelcome(); }
   demoRunning = false;
   conversationId = id;
+  renderMemChip();
   thread.innerHTML = '';
   chat.messages.forEach((m, i) => addMsg(m.role, m.role === 'user' ? esc(m.text) : md(m.text) + (m.draft ? pickHtml(m.draft, `saved-${id}-${i}`) : '')));
   closeAll();
@@ -300,6 +306,7 @@ function scrollDown() {
 
 function renderWelcome() {
   thread.innerHTML = '';
+  renderMemChip();
   if (!data.cards.length && building) {
     thread.append(el(`<div class="msg assistant"><p>${esc(`Hi ${data.userName}! I’m reading your chats now and turning them into short cards. I’ll tell you here when they’re ready.`)}</p></div>`));
     return;
@@ -390,7 +397,7 @@ async function sendInner(message, { skipCue = false } = {}) {
   if (!skipCue) addMsg('user', esc(message));
   const t = typing(data.memoryOff ? ['Thinking…'] : skipCue ? ['Using your updated card…'] : STEP_NOTES);
   try {
-    const res = await api('/api/chat', { message, mode, conversationId, skipCue, demo: demoRunning, ...(demoRunning ? {} : chosenModel()) });
+    const res = await api('/api/chat', { message, mode: chatMode(), conversationId, skipCue, demo: demoRunning, ...(demoRunning ? {} : chosenModel()) });
     t.remove();
     rememberChat();
     renderChats();
@@ -425,7 +432,8 @@ function renderAnswer(res, question) {
     let line;
     if (res.mode === 'cards') {
       const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
-      line = used.length ? `Used ${used.length} card${used.length > 1 ? 's' : ''} · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
+      const conf = used.filter((c) => c.status === 'confirmed').length;
+      line = used.length ? `Used ${count(used.length, 'card')} (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
     } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory off';
     const u = res.tokens.usage;
     if (u?.prompt_tokens) line += `<div class="tok-row"><span>⬆ ${u.prompt_tokens.toLocaleString()} tokens in</span><span>⬇ ${(u.completion_tokens ?? 0).toLocaleString()} out</span>${res.model ? `<span>${esc(modelName(res.model))}</span>` : ''}</div>`;
@@ -433,7 +441,9 @@ function renderAnswer(res, question) {
     if (used.length) {
       const chips = el('<div class="chips"></div>');
       for (const c of used) {
-        const chip = el(`<button class="chip ${c.status}" title="Open in Memory">${esc(c.text)}</button>`);
+        // A private card is used, but its words stay out of view until opened in Memory.
+        const hidden = c.sensitive || c.status === 'pending';
+        const chip = el(`<button class="chip ${c.status}" title="Open in Memory">${hidden ? `${ico('lock', 'sm')} Private card` : esc(c.text)}</button>`);
         chip.addEventListener('click', () => openCard(c.id));
         chips.append(chip);
       }
@@ -522,7 +532,7 @@ const QUIET = {
   asked_this_chat: 'no check: already asked once in this chat',
   cooldown: 'no check: asked recently',
   recently_asked: 'no check: asked about these this week',
-  nothing_to_check: 'no check: the cards it used are confirmed or fresh',
+  nothing_to_check: 'no check: no shaky guess shaped it',
   redo: 'redone with your change',
 };
 function traceLine(t) {
@@ -832,14 +842,33 @@ const newChat = () => { demoRunning = false; conversationId = newId(); try { loc
 $('#newChatBtn').addEventListener('click', newChat);
 $('#drawerNewChat').addEventListener('click', newChat);
 
-$('#modeChip').addEventListener('click', () => {
+// The memory chip in the message box: this chat only.
+function renderMemChip() {
+  const m = chatMode();
+  $('#memChip').dataset.mode = data?.memoryOff ? 'off' : m;
+  $('#memChipLabel').textContent = data?.memoryOff ? 'Memory off' : MODES.find((x) => x.id === m).chip;
+}
+$('#memChip').addEventListener('click', (e) => {
+  e.stopPropagation();
   if (data.memoryOff) return open('memoryIntro');
-  const i = MODES.findIndex((m) => m.id === mode);
-  mode = MODES[(i + 1) % MODES.length].id;
-  $('#modeChip').dataset.mode = mode;
-  $('#modeLabel').textContent = MODES.find((m) => m.id === mode).label;
-  toast({ cards: 'Using only the cards relevant to each question.', full: 'Comparison mode: the agent reads your entire history.', none: 'Comparison mode: no memory at all.' }[mode]);
+  const menu = $('#memMenu');
+  if (!menu.hidden) return (menu.hidden = true);
+  const m = chatMode();
+  menu.innerHTML = MODES.map((x) => `<button role="menuitemradio" aria-checked="${x.id === m}" data-m="${x.id}"><span><b>${esc(x.label)}</b><small>${esc(x.about)}</small></span>${x.id === m ? '✓' : ''}</button>`).join('') +
+    `<div class="mm-sep"></div><p class="mm-note">Only this chat. Turn memory off everywhere in Memory.</p>`;
+  menu.hidden = false;
 });
+$('#memMenu').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const id = e.target.closest('[data-m]')?.dataset.m;
+  if (!id) return;
+  if (id === 'cards') delete chatModes[conversationId]; else chatModes[conversationId] = id;
+  try { localStorage.setItem('dv-chat-modes', JSON.stringify(chatModes)); } catch {}
+  $('#memMenu').hidden = true;
+  renderMemChip();
+  toast({ cards: 'Memory on for this chat.', none: 'Memory off for this chat: nothing used or learned here.', full: 'This chat reads your whole history, to compare.' }[id]);
+});
+document.addEventListener('click', () => { $('#memMenu').hidden = true; });
 
 // ---------------- memory: categories ----------------
 // Building memory from the whole history runs in the background with a live progress
@@ -959,6 +988,7 @@ function renderMemory() {
   const verified = data.cards.map((c) => c.last_confirmed).filter(Boolean).sort();
   const day = (d) => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   $('#memDates').innerHTML = '';
+  $('#memStamp').textContent = empty ? '' : stampLine(data.cards, data.updatedAt);
   // The overview: how much of memory you've confirmed, and one button to check the rest.
   $('#memorySummary').innerHTML = empty ? '' : `<div class="mem-hero">
       <div class="ring" style="--p:${pct}" role="img" aria-label="${pct}% confirmed by you"><div><b>${pct}%</b><span>confirmed</span></div></div>
@@ -966,13 +996,13 @@ function renderMemory() {
         <h2>${toCheck ? `${count(toCheck, 'card')} to check` : 'All caught up'}</h2>
         <p class="hero-stats"><span><b>${data.cards.length}</b> ${data.cards.length === 1 ? 'card' : 'cards'} in all:</span><span><b>${n.check}</b> to check</span><span><b>${n.confirmed}</b> confirmed</span><span><b>${n.guess}</b> ${n.guess === 1 ? 'guess' : 'guesses'} that look right</span></p>
         ${locked || recheck ? `<p class="fine hero-note">${[locked ? `${count(locked, 'private card')} not checked yet` : '', recheck ? `${count(recheck, 'confirmed card')} that may have changed` : ''].filter(Boolean).join(' and ')} ${locked + recheck === 1 ? 'is' : 'are'} in “to check”.</p>` : ''}
-        <p class="mem-dates"><span>Since <b>${starts.length ? day(starts[0]) : '—'}</b></span><span>Last verified <b>${verified.length ? day(verified.at(-1)) : 'not yet'}</b></span></p>
+        <p class="mem-dates"><span>Since <b>${starts.length ? day(starts[0]) : '—'}</b></span></p>
         ${toCheck ? `<button class="primary review-btn" id="reviewBtn">Review now<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>` : ''}
       </div>
     </div>`;
   $('#reviewBtn')?.addEventListener('click', openReview);
   renderLearned();
-  $('#memCredit').textContent = empty || !data.models ? '' : `Cards written by ${modelName(data.models.bg)}${data.models.grader ? `, graded by ${modelName(data.models.grader)}` : ''}. Answers by ${modelName(data.models.main)}.`;
+  $('#memCredit').textContent = empty || !data.models ? '' : `Cards written by ${modelName(data.models.bg)}${data.models.grader ? `, graded by ${modelName(data.models.grader)}` : ''}. Answers by ${modelName(data.models.main)}. Voice by ${modelName(data.models.voice ?? 'muse-voice-transcribe-1.0')}.`;
   $$('#topicSeg button').forEach((b) => b.classList.toggle('on', b.dataset.f === topicFilter));
   const grid = $('#catGrid');
   grid.innerHTML = '';
@@ -988,7 +1018,7 @@ function renderMemory() {
       (!shown.length && hidden ? `<li class="lock">Private. Only shown when you open it.</li>` : '');
     const tile = el(`<button class="cat-tile" aria-label="${esc(catLabel(cat))}: ${count(cards.length, 'card')}${check ? `, ${check} to check` : ''}">
       <span class="ct-top"><span class="cat-icon">${catIcon(cat)}</span>
-        <span class="ct-name"><b>${esc(catLabel(cat))}</b><span class="fine">${count(cards.length, 'card')} · ${ok} confirmed</span></span>
+        <span class="ct-name"><b>${esc(catLabel(cat))}</b><span class="fine">${count(cards.length, 'card')} · ${ok} confirmed</span><span class="fine ct-stamp">${esc(stampLine(cards, data.topicUpdated?.[cat]))}</span></span>
         ${check ? `<span class="ct-pill">${check} to check</span>` : `<span class="ct-pill done" title="All confirmed or fine">✓</span>`}</span>
       <span class="ct-bar" aria-hidden="true"><i style="width:${Math.round((ok / cards.length) * 100)}%"></i></span>
       ${peek ? `<ul class="ct-peek">${peek}</ul>` : ''}
@@ -1000,6 +1030,14 @@ function renderMemory() {
 }
 $$('#topicSeg button').forEach((b) => b.addEventListener('click', () => { topicFilter = b.dataset.f; renderMemory(); }));
 
+// "Updated Nov 2 · Confirmed Oct 27": when these cards last changed, and were last confirmed.
+function stampLine(cards, extra) {
+  const latest = (xs) => xs.filter(Boolean).sort().at(-1);
+  const updated = latest([extra, ...cards.map((c) => c.updated ?? c.created)]);
+  const confirmed = latest(cards.map((c) => c.last_confirmed));
+  return `Updated ${updated ? fmtDay(updated) : '—'} · Confirmed ${confirmed ? fmtDay(confirmed) : 'not yet'}`;
+}
+
 // Every card that needs a look, across topics, in one deck: changed first, then private ones.
 const REVIEW_ORDER = { changed: 0, sensitive: 1, guessed: 2, stale: 3, old: 4 };
 function openReview() {
@@ -1008,6 +1046,7 @@ function openReview() {
   $('#catSubs').innerHTML = '';
   $('#catIcon').innerHTML = catIcon('review');
   $('#catName').textContent = 'To check';
+  $('#catStamp').textContent = stampLine(cards);
   setSeg('deck');
   open('category');
   renderDeck();
@@ -1034,6 +1073,7 @@ function openCategory(cat, sub = null) {
   deck = { cat, sub, ids: cards.map((c) => c.id), i: 0, removed: [] };
   $('#catIcon').innerHTML = catIcon(cat);
   $('#catName').textContent = catLabel(cat);
+  $('#catStamp').textContent = stampLine(all, data.topicUpdated?.[cat]);
   setSeg('deck');
   open('category');
   renderDeck();
@@ -1299,6 +1339,7 @@ function renderCombinedEval(box, ev) {
         <table><thead><tr><th>Person</th><th>Checks</th>${rows.map((r) => `<th>${MODE_NAMES[r.mode]}</th>`).join('')}</tr></thead>
         <tbody>${ev.perPerson.map((p) => `<tr><td>${esc(p.label)}</td><td>${p.checks}</td>${rows.map((r) => `<td>${p.summary.find((s) => s.mode === r.mode)?.accuracy ?? '–'}%</td>`).join('')}</tr>`).join('')}</tbody></table>
       </details>
+      <p class="fine eval-note">A check is one thing an answer should get right, like “suggests an Airbnb” or “keeps it mild for Maya”. <a href="https://github.com/vamshikanderao2579-dbt/deja-vu/blob/main/docs/eval.md" target="_blank" rel="noopener">How it’s measured ↗</a> · <a href="https://github.com/vamshikanderao2579-dbt/deja-vu" target="_blank" rel="noopener">Code ↗</a></p>
       <p class="fine eval-note">${lost.length ? `Honest note: for ${lost.map((p) => esc(p.label)).join(' and ')}, another setup scored higher than confirmed cards. ` : ''}Confirmed cards here went through one simulated review; stale errors with confirmed cards: ${conf?.staleErrors ?? '–'}.</p>
     </div>`;
   wireTips(box);
@@ -1392,12 +1433,22 @@ function showTour() {
   tourBar.querySelector('.t-stop').addEventListener('click', stopTour);
   sync();
 }
-function stopTour() { demoRunning = false; tourPaused = false; try { speechSynthesis.cancel(); } catch {} tourBar?.remove(); tourBar = null; document.querySelectorAll('.tour-cursor, .tour-ripple').forEach((n) => n.remove()); }
+function stopTour() {
+  demoRunning = false; tourPaused = false;
+  document.body.classList.remove('touring');
+  try { speechSynthesis.cancel(); } catch {}
+  tourBar?.remove(); tourBar = null;
+  document.querySelectorAll('.tour-cursor, .tour-ripple').forEach((n) => n.remove());
+  // Leave everything matching what the tour did: fresh counts, no tutorial popping up after.
+  markSeen('dv-tour-land', 'dv-tour-app');
+  refresh().then(() => { renderDrawer(); if ($('#memory').classList.contains('open')) renderMemory(); }).catch(() => {});
+}
 const whilePaused = async () => { while (tourPaused && demoRunning) await sleep(250); };
-// The most natural English voice this browser has (network and premium voices first).
+// A warm, conversational female English voice: the natural (neural) voices first, then
+// premium ones, then the best of the rest.
 function bestVoice() {
   const voices = speechSynthesis.getVoices().filter((v) => /^en[-_]/i.test(v.lang));
-  const rank = (v) => [/natural/i, /premium|enhanced/i, /google us english/i, /samantha|ava|allison|aria|jenny/i, /google/i, /en-us/i].findIndex((re) => re.test(`${v.name} ${v.lang}`));
+  const rank = (v) => [/(aria|jenny|ava|emma|michelle).*natural/i, /natural/i, /(ava|zoe|allison|nicky|serena).*(premium|enhanced)/i, /premium|enhanced/i, /google us english/i, /google uk english female/i, /samantha|karen|moira|tessa/i, /en-us/i].findIndex((re) => re.test(`${v.name} ${v.lang}`));
   return voices.map((v) => [v, rank(v)]).filter(([, r]) => r >= 0).sort((a, b) => a[1] - b[1])[0]?.[0] ?? voices[0] ?? null;
 }
 try { speechSynthesis.getVoices(); } catch {}
@@ -1409,10 +1460,11 @@ function narrate(text) {
     const u = new SpeechSynthesisUtterance(text.replace(/ⓘ/g, 'The info button').replace(/~/g, 'about '));
     const voice = bestVoice();
     if (voice) u.voice = voice;
-    u.rate = 1.02;
+    u.rate = 0.96;
+    u.pitch = 1.05;
     u.onend = u.onerror = () => resolve();
     speechSynthesis.speak(u);
-    setTimeout(resolve, 15000);
+    setTimeout(resolve, 2500 + text.length * 80); // if the browser never says it finished
   });
 }
 
@@ -1442,6 +1494,8 @@ async function playDemo() {
   if (demoRunning) return;
   await askNarration();
   demoRunning = true;
+  document.querySelectorAll('.coach-spot, .coach-tip').forEach((n) => n.remove());
+  coaching = false;
   closeAll();
   try {
     await refresh(await api('/api/demo/load', {}));
@@ -1449,13 +1503,15 @@ async function playDemo() {
     demoRunning = false;
     return toast(err.message);
   }
+  if (data.memoryOff) await refresh(await api('/api/memory/switch', { on: true }));
   learnedSeen = data.learned?.at(-1)?.at ?? '';
-  conversationId = newId();
+  conversationId = `demo-${newId()}`;
   thread.innerHTML = '';
+  document.body.classList.add('touring'); // model and memory pickers out of the way
   showTour();
   const input = $('#input');
   const steps = data.profile?.script?.length ? data.profile.script : DEMO_SCRIPT;
-  const typeIn = async (text) => { for (const ch of text) { if (!demoRunning) return; input.value += ch; growInput(); await sleep(14); } await sleep(250); };
+  const typeIn = async (text) => { for (const ch of text) { if (!demoRunning) return; input.value += ch; growInput(); await sleep(8); } await sleep(150); };
   const settled = async () => { await sleep(400); while (demoRunning && inFlight > 0) await sleep(300); };
   const until = async (sel, ms = 20000) => { for (let t = 0; t < ms && demoRunning; t += 300) { const n = [...document.querySelectorAll(sel)].at(-1); if (n) return n; await sleep(300); } return null; };
   // The pointer glides to what is about to be pressed, then clicks it.
@@ -1464,12 +1520,12 @@ async function playDemo() {
     await whilePaused();
     if (!node || !demoRunning) return;
     node.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    await sleep(250);
+    await sleep(150);
     const r = node.getBoundingClientRect();
     const z = uiZoom();
     const x = (r.left + Math.min(r.width / 2, 40)) / z, y = (r.top + r.height / 2) / z;
     cursor.style.transform = `translate(${x}px, ${y}px)`;
-    await sleep(550);
+    await sleep(380);
     const ripple = el(`<span class="tour-ripple" style="left:${x}px;top:${y}px"></span>`);
     document.body.append(ripple);
     setTimeout(() => ripple.remove(), 600);
@@ -1481,7 +1537,7 @@ async function playDemo() {
     if (!tourBar || !text) return;
     tourBar.querySelector('.tour-step').textContent = `${i + 1} of ${steps.length}`;
     tourBar.querySelector('p').textContent = text;
-    await Promise.all([sleep(tourPrefs.hidden && !tourPrefs.voice ? 600 : Math.min(2600, 900 + text.length * 12)), narrate(text)]);
+    await Promise.all([sleep(tourPrefs.hidden && !tourPrefs.voice ? 300 : Math.min(1800, 600 + text.length * 8)), narrate(text)]);
     await whilePaused();
   };
   const lastCard = (sel) => [...document.querySelectorAll(sel)].at(-1);
@@ -1508,7 +1564,7 @@ async function playDemo() {
       await press(onScreen(['#drawer .drow[data-go="memory"]', '#menuBtn']));
       await sleep(600);
       await press($('#memToggle'));
-      await sleep(1800); // time to read the intro
+      await sleep(1100); // time to read the intro
       await press($('#memOnBtn'));
       await press(await until('#ffGo:not([hidden])', 20000));
       conversationId = newId();
@@ -1537,9 +1593,9 @@ async function playDemo() {
         const row = document.querySelector('#catList .flash, #catList [data-card].flash') ?? [...document.querySelectorAll('#catList [data-card]')].find((r) => r.textContent.toLowerCase().includes(step.info.toLowerCase()));
         await press(row?.querySelector('[data-a=why]'));
         const go = await until('#catList .open-past', 5000);
-        await sleep(1500);
+        await sleep(900);
         await press(go);
-        await sleep(2200);
+        await sleep(1300);
         await press($('#thread .past-head button'));
         await sleep(500);
       }
@@ -1564,7 +1620,53 @@ async function playDemo() {
       for (let t = 0; t < 20000 && demoRunning && document.querySelectorAll('#thread .msg.assistant:not(.typing)').length <= said; t += 300) await sleep(300);
       await sleep(300);
     }
-    if (step.redo) { await press(await until('#thread .inline-actions .redo')); await settled(); }
+    if (step.yourTurn) {
+      // The one real tap: point at the button, wait for the viewer; tap it for them if they don't.
+      const actions = lastCard('#thread .cue.check .cue-actions');
+      const btn = actions?.querySelector(step.yourTurn === 'no' ? '.no' : '.yes');
+      if (btn) {
+        btn.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        btn.classList.add('tour-tap');
+        for (let t = 0; t < 9000 && demoRunning && actions.isConnected; t += 200) await sleep(200);
+        btn.classList.remove('tour-tap');
+        if (actions.isConnected) await press(btn);
+      }
+      await settled();
+    }
+    if (step.choose) {
+      // Say what changed in one tap: a chip (the recorded answer), or type your own.
+      await until('#thread .inline-actions .chat');
+      const box = el(`<div class="tour-choices">${step.choose.map((c, k) => `<button type="button" data-k="${k}">${esc(c)}</button>`).join('')}<button type="button" data-k="own" class="own">Type my own…</button></div>`);
+      thread.append(box);
+      scrollDown();
+      let picked = null;
+      box.addEventListener('click', (e) => { const k = e.target.closest('button')?.dataset.k; if (k != null) picked = k; });
+      for (let t = 0; t < 9000 && demoRunning && picked == null; t += 200) await sleep(200);
+      if (picked == null) { await press(box.querySelector('[data-k="0"]')); picked = '0'; }
+      box.remove();
+      await press(await until('#thread .inline-actions .chat'));
+      const said = document.querySelectorAll('#thread .msg.assistant').length;
+      if (picked === 'own') {
+        tourBar.querySelector('p').textContent = 'Finish the sentence and press Enter.';
+        input.focus();
+        for (let t = 0; t < 120000 && demoRunning && document.querySelectorAll('#thread .msg.assistant:not(.typing)').length <= said; t += 300) await sleep(300);
+      } else {
+        await typeIn(step.choose[Number(picked)]);
+        $('#composer').requestSubmit();
+        for (let t = 0; t < 20000 && demoRunning && document.querySelectorAll('#thread .msg.assistant:not(.typing)').length <= said; t += 300) await sleep(300);
+      }
+      await sleep(300);
+    }
+    if (step.redo) {
+      await press(await until('#thread .inline-actions .redo'));
+      await settled();
+      // The new pick, marked: what's new and what's gone.
+      const pick = lastCard('#thread .pick');
+      pick?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      pick?.classList.add('tour-glow');
+      setTimeout(() => pick?.classList.remove('tour-glow'), 4000);
+    }
+    if (step.glance) { await backToChat(); if (!wide.matches) { open('drawer'); await sleep(300); } await press(onScreen(['#drawer .drow[data-go="memory"]', '#menuBtn'])); if (!$('#memory').classList.contains('open')) open('memory'); await sleep(1800); }
     if (step.memory) { closeAll(); open('drawer'); await sleep(350); await press($('#drawer [data-go="memory"]')); if (!$('#memory').classList.contains('open')) open('memory'); }
     if (step.section) {
       const tile = [...document.querySelectorAll('#catGrid .cat-tile')].find((t) => t.getAttribute('aria-label').toLowerCase().startsWith(step.section.toLowerCase()));
@@ -1576,19 +1678,40 @@ async function playDemo() {
         const card = currentCard();
         if (!card) break;
         const act = step.swipes[card.id] === 'no' ? 'reject' : 'confirm';
-        await sleep(700); // time to read the card
+        await sleep(400); // time to read the card
         const at = deck.i;
         await press($(`#deckButtons [data-act="${act}"]`));
         for (let t = 0; t < 10000 && demoRunning && deck.i === at; t += 200) await sleep(200);
         await sleep(200);
       }
     }
-    await sleep(900); // a moment on the result before the next caption
+    await sleep(450); // a moment on the result before the next caption
   }
-  await sleep(1500);
+  await sleep(600);
+  const finished = demoRunning;
   stopTour();
+  if (finished) showDemoEnd();
 }
 $('#playDemoBtn').addEventListener('click', playDemo);
+
+// After the tour: a clear next step, and a clean chat to start from.
+function showDemoEnd() {
+  const box = el(`<div class="narr-ask demo-end" role="dialog" aria-label="Demo finished"><div class="narr-card">
+    <div class="ct-icon">${ico('logo')}</div><h3>That’s Déjà Vu</h3>
+    <p>Memory any agent can add: it uses what it learned, checks once when it matters, and you fix it in one tap.</p>
+    <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button></div>
+    <p class="fine">Answers by Muse Spark · cards graded by Muse Wonder · voice by Muse Voice Transcribe</p></div></div>`);
+  box.addEventListener('click', (e) => {
+    const x = e.target.closest('[data-x]')?.dataset.x;
+    if (!x && e.target !== box) return;
+    box.remove();
+    newChat();
+    if (x === 'memory') open('memory');
+    if (x === 'numbers') open('insights');
+    if (x === 'try') toast('Tell it something that changed (“I’m vegetarian now”), then ask for a plan.');
+  });
+  document.body.append(box);
+}
 
 // ---------------- profiles ----------------
 const PROFILE_COLORS = ['#0082FB', '#E5484D', '#1FA36A', '#B5541C', '#6250D6', '#0F7B8A'];
@@ -1602,8 +1725,7 @@ function renderMemSwitch() {
   const on = !data.memoryOff;
   $('#memToggle').setAttribute('aria-checked', String(on));
   $('#memSwitchSub').textContent = on ? 'On: I remember what matters to you.' : 'Off: I don’t remember anything.';
-  $('#modeChip').classList.toggle('off', !on);
-  $('#modeLabel').textContent = on ? MODES.find((m) => m.id === mode).label : 'Memory: off';
+  renderMemChip();
 }
 $('#memToggle').addEventListener('click', async () => {
   if (!data.memoryOff) {
@@ -1614,10 +1736,15 @@ $('#memToggle').addEventListener('click', async () => {
   open('memoryIntro');
 });
 $('#memOnBtn').addEventListener('click', async () => {
-  await refresh(await api('/api/memory/switch', { on: true }));
+  const res = await api('/api/memory/switch', { on: true });
+  await refresh(res);
   renderMemSwitch();
   closeAll();
-  fastForward();
+  // The guided demo shows memory being built; otherwise it picks up where it left off.
+  if (demoRunning || !res.resume) return fastForward();
+  const r = res.resume;
+  toast(`Memory is back on: kept your ${count(r.kept, 'card')}${r.updatedAt ? `, last updated ${fmtDay(r.updatedAt)}` : ''}.${r.newChats ? ` Reading only the ${count(r.newChats, 'newer chat')}.` : ''}`);
+  if (r.newChats) pollBuild();
 });
 
 // A time-lapse of the first weeks: cards collecting into topics. Front end only, no model calls.
@@ -1641,7 +1768,7 @@ async function fastForward() {
     for (const c of shown.slice(Math.floor(((w - 1) * shown.length) / weeks), Math.floor((w * shown.length) / weeks))) {
       $('#ffCardsList').prepend(el(`<div class="ff-card"><span class="cat-icon">${catIcon(c.category)}</span><span>${esc(c.text)}</span></div>`));
     }
-    await sleep(900);
+    await sleep(demoRunning ? 450 : 900);
   }
   $('#ffDone').textContent = `${weeks} weeks of chats → ${total} short cards, about ${data.budget.totalTokens.toLocaleString()} tokens instead of ${data.fullHistoryTokens.toLocaleString()}.`;
   $('#ffGo').hidden = false;
@@ -1753,7 +1880,17 @@ $('#userGo').addEventListener('click', async () => {
   if (id === NEW_USER) return openImport();
   try {
     await enterApp(await api('/api/profile', { id }));
+    newChat(); // from the welcome page, always a clean start
     toast(`You’re in as ${data.profile.name}.`);
+  } catch (err) { toast(err.message); }
+});
+// The fastest way in: straight into Alex's guided demo.
+$('#landDemo').addEventListener('click', async () => {
+  markSeen('dv-tour-app'); // the demo is the tour
+  try {
+    await enterApp(await api('/api/profile', { id: 'alex' }));
+    newChat();
+    playDemo();
   } catch (err) { toast(err.message); }
 });
 $('#landBack').addEventListener('click', hideLanding);
@@ -1867,7 +2004,7 @@ const markSeen = (...ks) => { try { ks.forEach((k) => localStorage.setItem(k, '1
 let coaching = false;
 function coach(all, key) {
   const tips = all.filter((t) => onScreen(t.at));
-  if (!tips.length || coaching) return;
+  if (!tips.length || coaching || demoRunning) return; // never over a running demo
   coaching = true;
   let i = 0;
   const spot = el('<div class="coach-spot" aria-hidden="true"></div>');

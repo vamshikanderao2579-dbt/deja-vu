@@ -107,7 +107,7 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
     }
     replayStats.hits++;
     if (process.env.REPLAY_DEBUG) console.warn(`[replay hit] ${role} ${key.slice(0, 8)}`);
-    await new Promise((r) => setTimeout(r, 250 + Math.random() * 350)); // feels natural, still instant
+    await new Promise((r) => setTimeout(r, 100 + Math.random() * 150)); // feels natural, still instant
     return { text: hit.text, toolCalls: hit.toolCalls ?? [], usage: hit.usage, model: body.model, replayed: true };
   }
 

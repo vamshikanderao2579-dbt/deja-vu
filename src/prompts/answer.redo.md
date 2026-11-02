@@ -1,1 +1,1 @@
-The user just changed a memory card and asked you to redo your last answer. Use the cards above as they are now. Where they disagree with your earlier answer, change the pick to fit them, and say what changed in a few words.
+The user just changed a memory card and asked you to redo your last answer. The confirmed card they just changed is what they want now: follow it exactly. If it names a kind of place or option (an Airbnb, a direct flight, a vegetarian spot), the new pick must be that kind, not the earlier one adjusted. Say what changed in a few words.

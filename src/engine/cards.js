@@ -66,9 +66,11 @@ export function mergeCards(existing, incoming, rejected = [], now = new Date().t
         // to inferred so the agent checks before relying on it.
         match.changed_from = match.text;
         match.text = text;
+        match.updated = now;
         match.status = raw.sensitive ? 'pending' : 'inferred';
         match.confidence = raw.confidence ?? match.confidence;
       } else if (match.status !== 'confirmed') {
+        if (match.text !== text) match.updated = now;
         match.text = text;
         match.confidence = Math.max(match.confidence, raw.confidence ?? 0);
       }
@@ -192,6 +194,9 @@ export function budgetStats(cards) {
 export function applyCardAction(state, id, action, text, now = new Date().toISOString()) {
   const card = state.cards.find((c) => c.id === id);
   if (!card) throw Object.assign(new Error('card not found'), { status: 404 });
+  // When each topic last changed (a removed card leaves no card to carry the date).
+  (state.topicUpdated ??= {})[card.category] = now;
+  card.updated = now;
   if (action === 'confirm') {
     Object.assign(card, { status: 'confirmed', confidence: 1, last_confirmed: now });
     delete card.changed_from;

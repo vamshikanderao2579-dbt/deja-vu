@@ -16,6 +16,10 @@ What becomes a card
 - Lasting facts that change how an agent helps the user later: preferences, routines, people they plan for, and lessons from things that went wrong.
 - What the user chose ("went with the Airbnb") and what they turned down ("no layovers with the kids") are the strongest evidence. Weigh them above what the assistant suggested.
 - Small, steady likes count: a usual order ("iced matcha"), a favorite artist, a hobby, a go-to store. So do the people the user plans for and what those people like ("Mom loves gardening", "Leo is into robotics"). Agents use these for gifts, meals and picks; they are what makes help feel personal.
+- Keep the detail that makes a card actionable: numbers, thresholds and names ("Books Milo's sitter 2+ weeks before trips", "Only direct flights, no layovers", "Partner Taylor is vegetarian"), not a vaguer version ("plans ahead for the dog").
+- Never soften a stated number, threshold, date or reason into a paraphrase: to stay within 14 words, cut other words first. A fact about someone stays a fact about them ("Partner Taylor is vegetarian", not "includes veg options").
+- Dates that come back every year are cards: birthdays and anniversaries of the people they plan for, in "seasonal" with a "season" window starting a few weeks before ("Taylor's birthday is Nov 14").
+- A health issue that changes plans (an injury, a condition, a diet a doctor set) is a card, marked "sensitive": true, and short-term if they said it will pass.
 - Cover every topic the user keeps coming back to. Memory has room for up to 8 cards per topic: a thin memory misses more than a full one.
 - One fact per card, at most 14 words, about the user, in positive form: "Vegetarian on Tuesdays", not "No non-veg on Tuesdays".
 - Every card cites the message ids it came from, and at least one of them is a message the user wrote.

@@ -14,74 +14,35 @@
     ],
     "script": [
       {
-        "say": "Memory is off. Like most agents today, it knows nothing about Alex.",
-        "memoryOff": true,
+        "say": "Alex is about to book a hotel. One thing Déjà Vu remembers about Alex is out of date. Watch."
+      },
+      {
+        "say": "Alex asks for a hotel. Déjà Vu uses only the few cards that fit, about 150 tokens instead of the whole history, and makes a pick.",
         "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs"
       },
       {
-        "say": "A generic answer. ⓘ shows nothing about Alex was used, and the tokens it took.",
-        "info": true
-      },
-      {
-        "say": "Now turn memory on. Déjà Vu explains what it keeps, then builds cards from past chats.",
-        "memoryOn": true
-      },
-      {
-        "say": "Memory is on. An everyday question first: nothing is at stake, so nothing is asked.",
-        "text": "morning! what's the weather like in san diego this time of year?"
-      },
-      {
-        "say": "Another small question. Memory is used quietly.",
-        "text": "nice. how long is the drive from the airport to sunset cliffs?"
-      },
-      {
-        "say": "The same hotel request as before. This time Déjà Vu uses the few cards that fit, and checks the one guess that shapes the booking.",
-        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs"
-      },
-      {
-        "say": "ⓘ lists the cards used: ~150 tokens instead of the full history. Tap a card to see the past message it came from.",
+        "say": "Why a hotel? Tap the card: back in June, after an Airbnb cancelled, Alex said “never again with Airbnb”.",
         "info": "Airbnb"
       },
       {
-        "say": "That card is out of date. Back in chat, Alex taps ✕ Not anymore (or swipes it left).",
+        "say": "That changed. Your turn: tap ✕ Not anymore.",
         "back": true,
-        "swipe": "no"
+        "yourTurn": "no"
       },
       {
-        "say": "Alex says what changed, in their own words. It becomes a confirmed card.",
-        "chat": "we're fine with an Airbnb with a kitchen, Maya is picky"
-      },
-      {
-        "say": "Redo: the pick changes to match the new card.",
-        "redo": true
-      },
-      {
-        "say": "Everything Déjà Vu knows is in Memory, by topic. Open it from the menu.",
-        "memory": true
-      },
-      {
-        "say": "Open Family: 4 cards, each a short line learned from chats.",
-        "section": "family"
-      },
-      {
-        "say": "Swipe through: ✕ not anymore, ✓ still true, ✓ still true, ✕ not anymore.",
-        "swipes": {
-          "family-1": "no",
-          "family-2": "yes",
-          "family-4": "yes",
-          "family-3": "no"
-        }
-      },
-      {
-        "say": "Two cards changed. Chat about them: the sentences are already started, Alex just finishes them.",
-        "chat": [
-          "eats fish and chicken again",
-          "into swimming, soccer is over"
+        "say": "Say what changed, in one tap.",
+        "choose": [
+          "we're fine with an Airbnb with a kitchen, Maya is picky",
+          "any place with free cancellation is fine"
         ]
       },
       {
-        "say": "Back to everyday life. The next answer uses the updated cards, with no reminders from Alex.",
-        "text": "plan dinner out tonight for the family"
+        "say": "The pick updates: an Airbnb with a kitchen. Nothing was booked without Alex.",
+        "redo": true
+      },
+      {
+        "say": "Everything it knows lives in Memory, by topic: guesses, confirmed cards, private ones kept out of view, and short-term ones with an end date.",
+        "glance": true
       }
     ]
   },

@@ -67,6 +67,7 @@ function startBuild(plan = { mode: 'full', since: null }) {
     .then(({ cards, report }) => {
       const st = getState();
       st.cards = markImported(applyBuild(st.cards, cards, st.rejected, { partial: plan.mode === 'new' || !!plan.since }));
+      st.updatedAt = new Date().toISOString();
       st.build = { ...report, mode: plan.mode, historyTokens: historyTokensNow() };
       st.review = emptyReviewStats();
       save();
@@ -161,7 +162,7 @@ route('POST', '/api/chat', async (body) => {
     else {
       // Check only a card central to this answer; never style or agent-identity cards.
       // Sensitive (locked) cards are only ever reviewed in Memory, never raised mid-task.
-      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant');
+      const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending' && !c.sensitive);
       // A scripted demo spans several "days": only the once-per-chat rule applies.
       const log = demo ? s.cueLog.filter((e) => e.conversationId === conversationId) : s.cueLog;
       const decision = cueDecision({ relevant: askable, stakes, conversationId, cueLog: log });
@@ -191,7 +192,8 @@ route('POST', '/api/chat', async (body) => {
   const { conv } = addLiveMessage(conversationId, 'user', message);
   addLiveMessage(conversationId, 'assistant', res.text, res.draft ? { draft: res.draft } : {});
   save();
-  if (!s.memoryOff) learnInBackground(conv);
+  // Memory off, for everything or just this chat: nothing is learned from it.
+  if (!s.memoryOff && mode !== 'none') learnInBackground(conv);
   return {
     type: 'answer',
     text: res.text,
@@ -227,7 +229,7 @@ route('POST', '/api/recall', async ({ message, conversationId = 'external' }) =>
   const s = getState();
   if (s.memoryOff) return { stakes: 'low', cards: [], context: '', check: null };
   const { relevant, key = [], stakes } = await selectRelevant(message, s.cards);
-  const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant');
+  const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending' && !c.sensitive);
   const { cue } = cueDecision({ relevant: askable, stakes, conversationId, cueLog: s.cueLog });
   if (cue) { s.cueLog.push({ cardId: cue.cardId, conversationId, at: new Date().toISOString(), outcome: null }); save(); }
   const cards = relevant.filter(usable);
@@ -245,10 +247,21 @@ route('POST', '/api/remember', ({ messages, conversationId = 'external' }) => {
 });
 // confirm / reject: POST /api/cards/:id { action: 'confirm' | 'reject' } (below).
 
+// Off keeps every card and learns nothing (chats from that time stay unlearned). Back on
+// picks up from the cards it has: nothing is re-read. Only chats newer than the last
+// build (a new import, say) are read, and only those.
 route('POST', '/api/memory/switch', (body) => {
-  getState().memoryOff = !body.on;
+  const s = getState();
+  s.memoryOff = !body.on;
+  let resume = null;
+  if (body.on && s.cards.length) {
+    const since = s.build?.readThrough ?? null;
+    const newer = since ? getHistory().conversations.filter((c) => `${c.date}T${c.time ?? '12:00'}` > since).length : 0;
+    resume = { kept: s.cards.length, updatedAt: s.updatedAt ?? null, newChats: newer, since };
+    if (newer && !current().buildJob?.running) startBuild({ mode: 'new', since });
+  }
   save();
-  return statePayload();
+  return { ...statePayload(), resume };
 });
 
 function learnInBackground(conv) {
@@ -268,6 +281,7 @@ function learnInBackground(conv) {
       if (!added.length) { save(); return; }
       s.cards = cards;
       const at = new Date().toISOString();
+      s.updatedAt = at;
       // Locked (sensitive) learnings are saved quietly, never announced.
       const shareable = added.filter((c) => c.status !== 'pending');
       // `was`: the card this learning changed, so the chat can show the update happening.
@@ -285,6 +299,7 @@ route('POST', '/api/cards/:id', async (body, { id }) => {
   const s = getState();
   const { action, text } = body;
   applyCardAction(s, id, action, text);
+  s.updatedAt = new Date().toISOString();
 
   const open = [...s.cueLog].reverse().find((e) => e.cardId === id && !e.outcome);
   if (open) open.outcome = action;
@@ -313,6 +328,7 @@ route('POST', '/api/memory/update', async (body) => {
   card.text = next.text;
   if (next.until) card.until = next.until;
   else delete card.until;
+  s.updatedAt = new Date().toISOString();
   applyCardAction(s, card.id, 'confirm');
   save();
   return { card: publicCard(card), ...statePayload() };
@@ -424,6 +440,8 @@ function statePayload() {
     review: s.review ?? emptyReviewStats(),
     trace: s.trace ?? null,
     memoryOff: !!s.memoryOff,
+    updatedAt: s.updatedAt ?? null,
+    topicUpdated: s.topicUpdated ?? {},
     screened: s.screened ?? [],
     build: s.build ?? null,
   };
@@ -507,7 +525,8 @@ createServer(async (req, res) => {
     if (!file.startsWith(PUBLIC)) return send(res, 403, 'forbidden', 'text/plain');
     const data = await readFile(file).catch(() => null);
     if (!data) return send(res, 404, 'not found', 'text/plain');
-    send(res, 200, data, TYPES[extname(file)] ?? 'application/octet-stream');
+    // Always check for a newer version, so a redeploy never leaves someone on an old app.
+  send(res, 200, data, TYPES[extname(file)] ?? 'application/octet-stream', { 'Cache-Control': 'no-cache' });
   } catch (err) {
     console.error(err);
     send(res, err.status ?? 500, JSON.stringify({ error: err.message }));
