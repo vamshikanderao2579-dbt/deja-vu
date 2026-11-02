@@ -9,19 +9,20 @@ For the next agent or chat. Read this first, then `.agents/` (README → context
 | What | Where |
 |---|---|
 | Live app (Modal) | https://vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run, running the same code as `main` |
-| Repo | https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory (renamed from `deja-vu` on Nov 2; GitHub redirects the old URL) |
-| Full deck, 15 slides | `docs/decks/full.html`; editable on claude.ai: https://claude.ai/artifact/DJKtjUyCdDRghS4rW61hJr |
-| Short deck, 6 slides + Alex demo | `docs/decks/short.html`; editable on claude.ai: https://claude.ai/artifact/LdZGeaPK3WJ1BA1gf5xsAv |
+| Repo | https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory, public (renamed from `deja-vu` on Nov 2; GitHub redirects the old URL) |
+| Working folder | `/Users/vamshi/Documents/GitHub/deja-vu`. All work happens here, nowhere else |
+| Full deck, 15 slides | `docs/decks/full.html` |
+| Short deck, 6 slides + Alex demo | `docs/decks/short.html` |
 | Deck sources | `docs/decks/full/`, `docs/decks/short/` (`deck.json` + `slides/*.html`). After editing, run `python3 scripts/build-decks.py` |
 | Eval method and per-person tables | `docs/eval.md`; results in `data/eval-summary.json` (also in the app under Insights) |
 | Prompts and their quality bar | `src/prompts/*.md`, `src/prompts/prompt-quality.md` |
 | Project memory for agents | `.agents/` (rules, decisions, history, playbooks in `.agents/skills/`) |
 
-The claude.ai deck links are private to the account that made them. The HTML files in `docs/decks/` work anywhere: open one in a browser. Keys: ← →, **N** speaker notes, **F** full screen, **P** print / save as PDF.
+Decks are edited only in `docs/decks/` (sources, then rebuild). The old claude.ai copies are no longer updated. The HTML files work anywhere: open one in a browser. Keys: ← →, **N** speaker notes, **F** full screen, **P** print / save as PDF.
 
 ## Set up the new laptop
 
-1. `git clone https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory && cd deja-vu-confirmed-memory`. Node 18+, no npm install needed.
+1. The repo is already cloned at `/Users/vamshi/Documents/GitHub/deja-vu`. Node 18+, no npm install needed. This laptop had Node v14 on Nov 2, so `npm test` failed with `bad option: --test` until Node was upgraded.
 2. Copy these git-ignored files from the old laptop privately (AirDrop or USB). **Never** send them through git, chat or an AI tool:
    - `.env`: the Meta Model API key and local settings. Template: `.env.example`.
    - `deploy/deploy.env`: the public link's key and spend caps.
@@ -65,15 +66,18 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 - Every prompt was revised against `prompt-quality.md`. The engine never blocks: every card is used, private ones included.
 - Builder fix and full re-eval. Demos re-recorded and checked at 0 misses. Deployed. Decks updated.
 - The pushed history squashed two commits into `2fb6d0f`. Its message describes only the personas and eval, not the builder fix. No files were lost.
+- QA fixes (`aa6e042`): one pooled 14-person figure (`all` in `eval/summarize.js`, shown in Insights, README, `docs/eval.md`); the 10 synthetic people are no longer called held out; the trace says "Gave the agent N cards that fit" instead of "Used"; a card corrected in chat says "you told me"; the user menu scrolls; model versions on the landing and demo end card; a reworded "to check" note.
+- Repo renamed to `deja-vu-confirmed-memory` (another `deja-vu` exists on GitHub) and every link updated (`c5f8ba2`): Insights method/code links, both deck closers, this file, `.agents/context.md`.
 
 ## Open items, in order
 
-1. **Record the video and the 1-minute demo.** The guided Alex tour takes ~47 s: landing → "Watch the 1-minute demo". Say "Confirmed memory for any agent. Not a chatbot." before the demo.
-2. **Demo day:** set `SPEND_CAP_USD=15` in `deploy/deploy.env` and redeploy. `SPEND_TOTAL_CAP_USD=60` stays.
-3. **Make the repo public** before submitting, so the Insights method/code links work. Then check every link in a private window.
-4. **Submit** (Indie track). Confirm a 2-person team is OK.
-5. Optional: narration audio with the Mac voice "Ava (Premium)". Install it under System Settings → Accessibility → Spoken Content → Manage Voices. Then record clips with `say`, and fall back to `speechSynthesis` when a clip is missing.
-6. Optional: shorten Maria's tour like Alex's. Decide whether to keep the "quiet yes" auto-confirm (it conflicts with "no promotion by repetition"). Look at why Tom loses.
+1. **Test the live chat.** Chat with Pip on the Modal link (real model calls, not the replayed tours) and check that answers, checks and ↻ redo work there. It hasn't been tested yet.
+2. **Reword the "to check" note** on the Memory screen. It now reads "… are counted in “to check”, not twice." (`src/ui/app.js`, the `hero-note` line), which is still awkward.
+3. **Record the video and the 1-minute demo.** The guided Alex tour takes ~47 s: landing → "Watch the 1-minute demo". Say "Confirmed memory for any agent. Not a chatbot." before the demo.
+4. **Demo day:** set `SPEND_CAP_USD=15` in `deploy/deploy.env` and redeploy. `SPEND_TOTAL_CAP_USD=60` stays.
+5. **Submit** (Indie track). Confirm a 2-person team is OK. Check every link in a private window.
+6. Optional: narration audio with the Mac voice "Ava (Premium)". Install it under System Settings → Accessibility → Spoken Content → Manage Voices. Then record clips with `say`, and fall back to `speechSynthesis` when a clip is missing.
+7. Optional: shorten Maria's tour like Alex's. Decide whether to keep the "quiet yes" auto-confirm (it conflicts with "no promotion by repetition"). Look at why Tom loses.
 
 ## Rules that must hold (full list: `.agents/rules.md`)
 
@@ -86,3 +90,4 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 - Personas use first names only. No branded characters. Don't copy other products' navigation.
 - State costs before big runs and respect the spend caps. `REPLAY_DEBUG` stays off on deploy. The public link never stores visitors' answers.
 - Memory never blocks: rules may mark or label a card but never withhold it. An unconfirmed inference is still used.
+- Work happens only in `/Users/vamshi/Documents/GitHub/deja-vu`. Decks are edited only in `docs/decks/`, never on claude.ai.
