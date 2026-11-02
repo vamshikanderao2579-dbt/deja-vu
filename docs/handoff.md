@@ -9,7 +9,7 @@ For the next agent or chat. Read this first, then `.agents/` (README → context
 | What | Where |
 |---|---|
 | Live app (Modal) | https://vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run, running the same code as `main` |
-| Repo | https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory, public (renamed from `deja-vu` on Nov 2; GitHub redirects the old URL) |
+| Repo | https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory, public (renamed from `deja-vu` on Nov 2). Use this name everywhere: app, README, decks, submission. Don't rely on GitHub's redirect |
 | Working folder | `/Users/vamshi/Documents/GitHub/deja-vu`. All work happens here, nowhere else |
 | Full deck, 15 slides | `docs/decks/full.html` |
 | Short deck, 6 slides + Alex demo | `docs/decks/short.html` |
@@ -71,13 +71,17 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 
 ## Open items, in order
 
-1. **Test the live chat.** Chat with Pip on the Modal link (real model calls, not the replayed tours) and check that answers, checks and ↻ redo work there. It hasn't been tested yet.
-2. **Reword the "to check" note** on the Memory screen. It now reads "… are counted in “to check”, not twice." (`src/ui/app.js`, the `hero-note` line), which is still awkward.
-3. **Record the video and the 1-minute demo.** The guided Alex tour takes ~47 s: landing → "Watch the 1-minute demo". Say "Confirmed memory for any agent. Not a chatbot." before the demo.
-4. **Demo day:** set `SPEND_CAP_USD=15` in `deploy/deploy.env` and redeploy. `SPEND_TOTAL_CAP_USD=60` stays.
-5. **Submit** (Indie track). Confirm a 2-person team is OK. Check every link in a private window.
-6. Optional: narration audio with the Mac voice "Ava (Premium)". Install it under System Settings → Accessibility → Spoken Content → Manage Voices. Then record clips with `say`, and fall back to `speechSynthesis` when a clip is missing.
-7. Optional: shorten Maria's tour like Alex's. Decide whether to keep the "quiet yes" auto-confirm (it conflicts with "no promotion by repetition"). Look at why Tom loses.
+1. **Re-record both tours (Alex and Maria)** before deploying. The answer prompts changed on Nov 3 (no booking offers, private guesses labelled), so every recorded answer misses the cache, and Maria's script is shorter. Needs `.env`; about $0.60. Steps: `.agents/skills/record-demo.md`; `replay-check` must show only `[replay hit]`.
+2. **Narration clips:** install "Ava (Premium)" (System Settings → Accessibility → Spoken Content → System voice → Manage Voices), then `node scripts/make-narration.js`. Rerun after any caption edit.
+3. **Test the live chat** on the Modal link after deploying: a memory-off chat, a run question (the knee card should read as a guess, with no booking offer), End session (now tap twice).
+4. **Live answers are slow** (~1–2 minutes in the Nov 3 review). Worth a look before the video: time `selectRelevant` vs the answer call.
+5. **First 30 seconds:** the review found no wow before import plus five messages. Lead the video and landing with the ↻ Memory updated flip and the token trace.
+6. **Record the video and the 1-minute demo.** Say "Confirmed memory for any agent. Not a chatbot." before the demo. In the submission, **quote the pooled 14-person figure only** (81.7% vs 71.8% vs 70.5%); the two separate blocks moved between runs.
+7. **Demo day:** set `SPEND_CAP_USD=15` in `deploy/deploy.env` and redeploy. `SPEND_TOTAL_CAP_USD=60` stays.
+8. **Submit** (Indie track). Confirm a 2-person team is OK. Check every link in a private window.
+9. Optional: look at why Tom loses. A live correction's provenance reads "Learned from" two chats, not "you told me" like the tour card.
+
+**Decided Nov 3:** memory off means no cards used, asked or learned, and nothing carried to other chats; the chat's own messages still count (that's what any agent does). A quiet yes raises confidence but never confirms a card. Insights leads with "answers that needed no correction".
 
 ## Rules that must hold (full list: `.agents/rules.md`)
 

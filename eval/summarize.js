@@ -16,7 +16,7 @@ const PEOPLE = [
   { id: 'vamshi', label: 'Real history B', file: 'data/private/eval/vamshi-latest.json', key: 'data/private/vamshi-answer-key.json' },
 ];
 const read = (f) => JSON.parse(readFileSync(join(ROOT, f), 'utf8'));
-// Synthetic personas added later (eval/PERSONA_BRIEF.md): held out from tuning, reported
+// Synthetic personas added later (eval/PERSONA_BRIEF.md): written after the engine was built, reported
 // apart from the headline so they can't be read as tuned-to results.
 for (const f of readdirSync(join(ROOT, 'data', 'personas'))) {
   const id = f.match(/^(.+)-history\.json$/)?.[1];

@@ -14,7 +14,7 @@ import { addReviewStats, emptyReviewStats } from './src/engine/review.js';
 import { buildMemory, applyBuild } from './src/engine/build.js';
 
 const PUBLIC = join(ROOT, 'src', 'ui');
-const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json' };
+const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.json': 'application/json', '.m4a': 'audio/mp4' };
 // Full-history size per view, for the "x% less than full history" comparison.
 const historyTokens = new WeakMap();
 const fullHistoryTokens = () => {
@@ -213,7 +213,7 @@ const ACTION_WORDS = /\b(book|booking|reserve|reservation|order|buy|purchase|sta
 
 // Running totals of what the memory agent decided, for Insights.
 function countTrace(t = {}, one, drafted) {
-  const out = { answers: 0, checksAsked: 0, quiet: {}, quietYes: 0, drafts: 0, ...t, quiet: { ...(t.quiet ?? {}) } };
+  const out = { answers: 0, checksAsked: 0, checksConfirmed: 0, checksCorrected: 0, quiet: {}, quietYes: 0, drafts: 0, ...t, quiet: { ...(t.quiet ?? {}) } };
   out.answers++;
   if (one.check) out.checksAsked++;
   if (one.quiet && one.mode === 'cards') out.quiet[one.quiet] = (out.quiet[one.quiet] ?? 0) + 1;
@@ -303,7 +303,14 @@ route('POST', '/api/cards/:id', async (body, { id }) => {
   s.updatedAt = new Date().toISOString();
 
   const open = [...s.cueLog].reverse().find((e) => e.cardId === id && !e.outcome);
-  if (open) open.outcome = action;
+  if (open) {
+    open.outcome = action;
+    // How a check ended, for Insights: ✕ or a new wording is a correction; ✓, a note
+    // or a new end date is a yes. Carrying on is counted as a quiet yes in the chat route.
+    const t = (s.trace ??= {});
+    if (action === 'reject' || action === 'edit') t.checksCorrected = (t.checksCorrected ?? 0) + 1;
+    else t.checksConfirmed = (t.checksConfirmed ?? 0) + 1;
+  }
   save();
   return statePayload();
 });

@@ -370,15 +370,17 @@ function addMsg(role, html) {
 // While a model works: a short note on what's happening instead of bare dots. The
 // first notes are the real steps; then a few others, never the same one twice in a row.
 const STEP_NOTES = ['Reading your memory…', 'Picking the cards that fit…'];
+// With memory off: nothing that sounds like reading memory.
+const PLAIN_NOTES = ['Thinking it through…', 'Drafting your answer…', 'Almost there…'];
 const MORE_NOTES = ['Weighing confirmed vs guessed…', 'Checking what changed lately…', 'Connecting the dots…', 'Thinking it through…', 'Drafting your answer…', 'Cross-checking the details…', 'Mulling it over…', 'Cerebrating…', 'Almost there…'];
-function typing(steps = STEP_NOTES) {
+function typing(steps = STEP_NOTES, more = MORE_NOTES) {
   const m = addMsg('assistant typing', '<span class="typing-dots"><span></span><span></span><span></span></span><span class="typing-note"></span>');
   const note = m.querySelector('.typing-note');
   let i = 0, last = '';
   const next = () => {
     if (!m.isConnected) return clearInterval(timer);
     let t = steps[i++];
-    if (!t) { do t = MORE_NOTES[Math.floor(Math.random() * MORE_NOTES.length)]; while (t === last); }
+    if (!t) { do t = more[Math.floor(Math.random() * more.length)]; while (t === last); }
     last = t;
     note.classList.remove('in');
     setTimeout(() => { note.textContent = t; note.classList.add('in'); }, 150);
@@ -395,13 +397,12 @@ async function send(message, { skipCue = false } = {}) {
 }
 async function sendInner(message, { skipCue = false } = {}) {
   if (!skipCue) addMsg('user', esc(message));
-  const t = typing(data.memoryOff ? ['Thinking…'] : skipCue ? ['Using your updated card…'] : STEP_NOTES);
+  const t = chatMode() === 'none' ? typing(['Thinking…'], PLAIN_NOTES) : typing(skipCue ? ['Using your updated card…'] : STEP_NOTES);
   try {
     const res = await api('/api/chat', { message, mode: chatMode(), conversationId, skipCue, demo: demoRunning, ...(demoRunning ? {} : chosenModel()) });
     t.remove();
     rememberChat();
     renderChats();
-    if (res.trace?.quietYes?.confirmed) toast(`Confirmed “${res.trace.quietYes.text}”: you went with it twice.`);
     renderAnswer(res, message);
   } catch (err) {
     t.remove();
@@ -536,10 +537,10 @@ const QUIET = {
   redo: 'redone with your change',
 };
 function traceLine(t) {
-  if (t.mode !== 'cards') return t.mode === 'none' ? 'Memory off: nothing used, asked or learned' : 'Full history, no checks';
+  if (t.mode !== 'cards') return t.mode === 'none' ? 'Memory off: no cards used, asked or learned (this chat’s own messages still count)' : 'Full history, no checks';
   const parts = [`${t.stakes} stakes`];
   parts.push(t.check ? `checked “${esc(t.check)}”` : esc(QUIET[t.quiet] ?? 'no check'));
-  if (t.quietYes) parts.push(`you carried on, so “${esc(t.quietYes.text)}” counts as a yes`);
+  if (t.quietYes) parts.push(`you carried on, so “${esc(t.quietYes.text)}” counts as a quiet yes (still a guess)`);
   return parts.join(' · ');
 }
 
@@ -995,7 +996,7 @@ function renderMemory() {
       <div class="hero-text">
         <h2>${toCheck ? `${count(toCheck, 'card')} to check` : 'All caught up'}</h2>
         <p class="hero-stats"><span><b>${data.cards.length}</b> ${data.cards.length === 1 ? 'card' : 'cards'} in all:</span><span><b>${n.check}</b> to check</span><span><b>${n.confirmed}</b> confirmed</span><span><b>${n.guess}</b> ${n.guess === 1 ? 'guess' : 'guesses'} that look right</span></p>
-        ${locked || recheck ? `<p class="fine hero-note">${[locked ? `${count(locked, 'private card')} not checked yet` : '', recheck ? `${count(recheck, 'confirmed card')} that may have changed` : ''].filter(Boolean).join(' and ')} ${locked + recheck === 1 ? 'is' : 'are'} counted in “to check”, not twice.</p>` : ''}
+        ${locked || recheck ? `<p class="fine hero-note">Each card is counted once. The ${toCheck} to check: ${[locked ? `${locked} private, not checked yet` : '', recheck ? `${recheck} you confirmed before that may have changed` : '', toCheck - locked - recheck ? `${toCheck - locked - recheck} ${toCheck - locked - recheck === 1 ? 'guess' : 'guesses'}` : ''].filter(Boolean).join(' · ')}.</p>` : ''}
         <p class="mem-dates"><span>Since <b>${starts.length ? day(starts[0]) : '—'}</b></span></p>
         ${toCheck ? `<button class="primary review-btn" id="reviewBtn">Review now<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>` : ''}
       </div>
@@ -1256,7 +1257,21 @@ function renderTrace() {
   const parts = [['Asked a quick check', t.checksAsked, 'ask'], ...quiet.map(([k, v], i) => [cap((QUIET[k] ?? k).replace(/^no check: /, '')), v, `q${i % 4}`])].filter(([, v]) => v);
   const total = parts.reduce((a, [, v]) => a + v, 0) || 1;
   box.hidden = false;
-  box.innerHTML = `<h3>When it asked, and when it stayed quiet</h3>
+  // The north star: answers that needed no correction. A redo is the fix for an earlier
+  // answer, so it isn't counted as an answer of its own.
+  const answered = t.answers - (t.quiet?.redo ?? 0);
+  const corrected = t.checksCorrected ?? 0;
+  const confirmed = (t.checksConfirmed ?? 0) + (t.quietYes ?? 0);
+  const pct = (n) => `${Math.round((n / (answered || 1)) * 100)}%`;
+  box.innerHTML = `<h3>Answers that needed no correction</h3>
+    <div class="north"><b>${pct(answered - corrected)}</b><span>${answered - corrected} of ${count(answered, 'answer')} were right as they were</span></div>
+    <ul class="split-legend">
+      <li><i class="sw ok"></i>No check needed<b>${answered - t.checksAsked}</b></li>
+      <li><i class="sw ask"></i>Checked, and you went with it (✓ or carried on)<b>${confirmed}</b></li>
+      <li><i class="sw fix"></i>Checked, and you corrected it (✕)<b>${corrected}</b></li>
+      ${t.checksAsked - confirmed - corrected > 0 ? `<li><i class="sw q2"></i>Checked, no answer yet<b>${t.checksAsked - confirmed - corrected}</b></li>` : ''}
+    </ul>
+    <h3 class="trace-h">When it asked, and when it stayed quiet</h3>
     <div class="split">${parts.map(([l, v, k]) => `<i class="${k}" style="flex:${v}" data-tip="${esc(l)}: ${v}"></i>`).join('')}</div>
     <ul class="split-legend">${parts.map(([l, v, k]) => `<li><i class="sw ${k}"></i>${esc(l)}<b>${Math.round((v / total) * 100)}%</b></li>`).join('')}</ul>
     <div class="chips-row"><span class="chip-stat">${t.answers} answers</span><span class="chip-stat">${t.drafts} picks from memory</span><span class="chip-stat">${t.quietYes} quiet yeses</span></div>`;
@@ -1334,7 +1349,7 @@ function renderCombinedEval(box, ev) {
       ${barChart('Answer accuracy', 'Share of checklist items each setup got right, all people', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}
       ${rows.some((r) => r.accuracyDrifted != null) ? barChart('Preferences that changed outside chat', 'Only a confirmation can catch these', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100) : ''}
       ${barChart('Memory sent per question', 'Tokens of memory in each prompt (average per person)', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.avgContextTokens, emph: r.mode === 'confirmed' })), (v) => `${v.toLocaleString()} tok`)}
-      ${ev.heldOut ? (() => { const h = MODE_ORDER.map((m) => ev.heldOut.combined.find((x) => x.mode === m)).filter(Boolean); const all = (m) => ev.all?.combined.find((x) => x.mode === m); return `<h3 class="held-h">${ev.heldOut.people} more synthetic people, ${ev.heldOut.checks} checks</h3><p class="fine">Written after the engine was built. The builder was fixed after reading two of their builds, so they are not fully held out.</p>${ev.all ? `<p class="fine"><b>All ${ev.all.people} people, ${ev.all.checks} checks, each counted once:</b> ${MODE_ORDER.map((m) => all(m) && `${MODE_NAMES[m]} ${all(m).accuracy}%`).filter(Boolean).join(' · ')}. Changed outside chat: ${MODE_ORDER.map((m) => all(m) && `${all(m).accuracyDrifted}%`).filter(Boolean).join(' · ')}.</p>` : ''}${barChart('Answer accuracy', 'These 10 people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}${barChart('Preferences that changed outside chat', 'These 10 people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}`; })() : ''}
+      ${ev.heldOut ? (() => { const h = MODE_ORDER.map((m) => ev.heldOut.combined.find((x) => x.mode === m)).filter(Boolean); const all = (m) => ev.all?.combined.find((x) => x.mode === m); return `<h3 class="held-h">${ev.heldOut.people} more synthetic people, ${ev.heldOut.checks} checks</h3><p class="fine">Written after the engine was built. The builder was fixed after reading two of their builds.</p>${ev.all ? `<p class="fine"><b>All ${ev.all.people} people, ${ev.all.checks} checks, each counted once:</b> ${MODE_ORDER.map((m) => all(m) && `${MODE_NAMES[m]} ${all(m).accuracy}%`).filter(Boolean).join(' · ')}. Changed outside chat: ${MODE_ORDER.map((m) => all(m) && `${all(m).accuracyDrifted}%`).filter(Boolean).join(' · ')}.</p>` : ''}${barChart('Answer accuracy', 'These 10 people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}${barChart('Preferences that changed outside chat', 'These 10 people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}`; })() : ''}
       ${ev.projection ? lineChart(ev.projection) : ''}
       <details class="table-view"><summary>Each person</summary>
         <table><thead><tr><th>Person</th><th>Checks</th>${rows.map((r) => `<th>${MODE_NAMES[r.mode]}</th>`).join('')}</tr></thead>
@@ -1428,9 +1443,9 @@ function showTour() {
     b('.t-eye', tourPrefs.hidden ? 'eye' : 'eye-off', tourPrefs.hidden ? 'Show captions' : 'Hide captions');
     b('.t-pause', tourPaused ? 'resume' : 'pause', tourPaused ? 'Play' : 'Pause');
   };
-  tourBar.querySelector('.t-voice').addEventListener('click', () => { tourPrefs.voice = !tourPrefs.voice; if (!tourPrefs.voice) speechSynthesis?.cancel(); saveTourPrefs(); sync(); });
+  tourBar.querySelector('.t-voice').addEventListener('click', () => { tourPrefs.voice = !tourPrefs.voice; if (!tourPrefs.voice) { speechSynthesis?.cancel(); stopClip(); } saveTourPrefs(); sync(); });
   tourBar.querySelector('.t-eye').addEventListener('click', () => { tourPrefs.hidden = !tourPrefs.hidden; saveTourPrefs(); sync(); });
-  tourBar.querySelector('.t-pause').addEventListener('click', () => { tourPaused = !tourPaused; if (tourPaused) speechSynthesis?.pause(); else speechSynthesis?.resume(); sync(); });
+  tourBar.querySelector('.t-pause').addEventListener('click', () => { tourPaused = !tourPaused; if (tourPaused) { speechSynthesis?.pause(); clip?.pause(); } else { speechSynthesis?.resume(); clip?.play().catch(() => {}); } sync(); });
   tourBar.querySelector('.t-stop').addEventListener('click', stopTour);
   sync();
 }
@@ -1438,6 +1453,7 @@ function stopTour() {
   demoRunning = false; tourPaused = false;
   document.body.classList.remove('touring');
   try { speechSynthesis.cancel(); } catch {}
+  stopClip();
   tourBar?.remove(); tourBar = null;
   document.querySelectorAll('.tour-cursor, .tour-ripple').forEach((n) => n.remove());
   // Leave everything matching what the tour did: fresh counts, no tutorial popping up after.
@@ -1453,9 +1469,31 @@ function bestVoice() {
   return voices.map((v) => [v, rank(v)]).filter(([, r]) => r >= 0).sort((a, b) => a[1] - b[1])[0]?.[0] ?? voices[0] ?? null;
 }
 try { speechSynthesis.getVoices(); } catch {}
+// Recorded clips (scripts/make-narration.js): the same voice on every computer.
+// A caption without a clip falls back to the browser's own voice.
+let clips = {};
+fetch('narration/index.json').then((r) => (r.ok ? r.json() : {})).then((x) => { clips = x; }).catch(() => {});
+let clip = null;
+let clipDone = () => {};
+function playClip(file) {
+  return new Promise((resolve) => {
+    stopClip();
+    clipDone = resolve;
+    clip = new Audio(`narration/${file}`);
+    clip.onended = () => resolve(true);
+    clip.onerror = () => resolve(false);
+    clip.onloadedmetadata = () => setTimeout(() => resolve(true), (clip?.duration ?? 20) * 1000 + 3000); // if it stalls
+    clip.play().catch(() => resolve(false));
+  });
+}
+// Stopping resolves the wait as done, so the tour never falls back to a second voice.
+const stopClip = () => { clip?.pause(); clip = null; clipDone(true); };
+
 // Read a caption aloud; resolves when it's done (or right away when narration is off).
-function narrate(text) {
-  if (!tourPrefs.voice || !('speechSynthesis' in window)) return Promise.resolve();
+async function narrate(text) {
+  if (!tourPrefs.voice) return;
+  if (clips[text] && await playClip(clips[text])) return;
+  if (!('speechSynthesis' in window)) return;
   return new Promise((resolve) => {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text.replace(/ⓘ/g, 'The info button').replace(/~/g, 'about '));
@@ -1813,10 +1851,22 @@ function renderSettings() {
     ? 'Déjà Vu · prototype for the Meta Global AI Developer Hackathon. Your imported chats stay in this session only.'
     : 'Déjà Vu · prototype for the Meta Global AI Developer Hackathon. Demo chat history is made up.';
 }
+// Tap twice, in the app: a browser dialog can be blocked (embedded or automated
+// browsers), which made the button look broken.
+let endArmed = null;
 $('#endSessionBtn').addEventListener('click', async () => {
-  if (!confirm('End this session? Your upload, cards and chats here are deleted.')) return;
-  await api('/api/session/end', {}).catch(() => {});
-  try { Object.keys(localStorage).filter((k) => k.startsWith('dv-chat-')).forEach((k) => localStorage.removeItem(k)); } catch {}
+  const btn = $('#endSessionBtn');
+  const sub = btn.querySelector('.fine');
+  if (!endArmed) {
+    sub.textContent = 'Tap again to delete your upload, cards and chats';
+    btn.classList.add('armed');
+    endArmed = setTimeout(() => { endArmed = null; sub.textContent = 'Deletes your upload and cards'; btn.classList.remove('armed'); }, 5000);
+    return;
+  }
+  clearTimeout(endArmed);
+  sub.textContent = 'Ending…';
+  try { await api('/api/session/end', {}); } catch (err) { endArmed = null; btn.classList.remove('armed'); sub.textContent = 'Deletes your upload and cards'; return toast(`Couldn’t end the session: ${err.message}`); }
+  try { Object.keys(localStorage).filter((k) => k.startsWith('dv-chat')).forEach((k) => localStorage.removeItem(k)); sessionStorage.setItem('dv-ended', '1'); } catch {}
   location.reload();
 });
 $('#demoBtn').addEventListener('click', async () => {
@@ -2137,4 +2187,5 @@ $('#importGo').addEventListener('click', async () => {
 (async () => {
   const state = await api('/api/state');
   showLanding(state.needsChoice ? state : await api('/api/profiles'));
+  try { if (sessionStorage.getItem('dv-ended')) { sessionStorage.removeItem('dv-ended'); toast('Session ended: your upload, cards and chats are deleted.'); } } catch {}
 })();

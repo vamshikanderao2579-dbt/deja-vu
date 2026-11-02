@@ -1,8 +1,8 @@
-# Brief: 10 held-out synthetic personas for the Déjà Vu eval
+# Brief: 10 synthetic personas, written after the engine was built, for the Déjà Vu eval
 
 Hand this whole file to Claude. It generates **chat histories and answer keys only**. It does not run anything or invent any scores: scores come from running the real pipeline afterwards (`node eval/run.js`).
 
-Everything here is **SYNTHETIC TEST DATA**, held out: not used in the demo, and the builder is not tuned on these personas before their first eval run.
+Everything here is **SYNTHETIC TEST DATA**, written after the engine was built: not used in the demo, and the builder is not tuned on these personas before their first eval run.
 
 ## What to produce, per persona
 
@@ -17,7 +17,7 @@ Two JSON files, in the exact shape of the existing Maria files (`data/personas/m
 
 ```json
 {
-  "_label": "SYNTHETIC TEST DATA, held out. Persona Daniel.",
+  "_label": "SYNTHETIC TEST DATA, written after the engine was built. Persona Daniel.",
   "user": { "name": "Daniel" },
   "conversations": [
     { "id": "d01", "date": "2026-10-20", "time": "07:40", "title": "Coffee order",
@@ -43,7 +43,7 @@ Two JSON files, in the exact shape of the existing Maria files (`data/personas/m
 
 ```json
 {
-  "_label": "SYNTHETIC TEST DATA, held out. Ground truth for persona Daniel.",
+  "_label": "SYNTHETIC TEST DATA, written after the engine was built. Ground truth for persona Daniel.",
   "today": "2026-11-02",
   "facts": [
     { "id": "D01", "category": "food", "text": "Drinks black coffee, no sugar", "sources": ["d001", "d031"] },
@@ -109,4 +109,4 @@ node eval/run.js --persona daniel
 node eval/summarize.js
 ```
 
-The summary reports these personas as **"synthetic, held out"**, pooled separately from the headline numbers, and each person's row is shown, including where Déjà Vu loses.
+The summary reports these personas as **"synthetic, written after the engine was built"**, pooled separately from the headline numbers, and each person's row is shown, including where Déjà Vu loses.

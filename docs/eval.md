@@ -36,7 +36,7 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 
 ### 10 more synthetic people, 200 questions, 236 checks
 
-Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](../eval/PERSONA_BRIEF.md) after the engine was built. The first run used them untouched (72.5% vs 69.5%). The Nov 2 builder fix below was made after reading two of their builds (Grace, James), so these numbers are no longer fully held out. Each has 9 to 13 days of chats (about 50 messages), 20 questions (8 stable, 4 changed outside chat, 2 changed in chat, 2 short-term, 2 sensitive, 2 one-off) and only first names. The same Meta model family writes them, answers and judges, which is a limit of this eval.
+Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](../eval/PERSONA_BRIEF.md) after the engine was built. The first run used them untouched (72.5% vs 69.5%). The Nov 2 builder fix below was made after reading two of their builds (Grace, James), so these numbers come after that fix. Each has 9 to 13 days of chats (about 50 messages), 20 questions (8 stable, 4 changed outside chat, 2 changed in chat, 2 short-term, 2 sensitive, 2 one-off) and only first names. The same Meta model family writes them, answers and judges, which is a limit of this eval.
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
@@ -55,7 +55,7 @@ Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`ev
 | Stale answers | **7** | 13 | 11 |
 | Memory tokens per message | **~138** | ~395 | ~1,650 |
 
-Builder fix (Nov 2): the first run on these 10 people lost on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards from about 50 messages. The writer now makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Builds went from 6–10 to 11–16 cards per person; Grace 48% → 76%, James 63% → 92%. Déjà Vu now loses only on Tom. Earlier runs: Oct 28 one-pass build 84.5% / 82.5% / 73% (4 people); Oct 31 77.6% all three; Nov 2 before the builder fix 80.3% / 72.4% / 73.7% (main) and 72.5% / 69.5% / 69.5% (held out). Treat single-run differences of a few points as noise.
+Builder fix (Nov 2): the first run on these 10 people lost on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards from about 50 messages. The writer now makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Builds went from 6–10 to 11–16 cards per person; Grace 48% → 76%, James 63% → 92%. Déjà Vu now loses only on Tom. Earlier runs: Oct 28 one-pass build 84.5% / 82.5% / 73% (4 people); Oct 31 77.6% all three; Nov 2 before the builder fix 80.3% / 72.4% / 73.7% (main) and 72.5% / 69.5% / 69.5% (the 10 synthetic people). Treat single-run differences of a few points as noise.
 
 ## What it shows
 

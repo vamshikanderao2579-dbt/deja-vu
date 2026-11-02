@@ -9,6 +9,8 @@ It plugs into any chat agent (Muse, Claude, ChatGPT) without changing how the ag
 
 Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/global-hackathon) · Theme 1: Build for Your World
 
+**Try it:** [live demo](https://vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run) · **Code:** [github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory](https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory)
+
 ---
 
 ## The engine, end to end
@@ -31,7 +33,7 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
  │ answer (+ draft)    │── booking/order DRAFT through a tool call, built from the cards.
  └─────────────────────┘   The check line sits above the answer: ✓ / ✕ / carry on
       │                         ✕ → "what changed?" → new confirmed card → ↻ redo → the draft
-      │                         visibly changes. Carrying on = a quiet yes; two confirm a guess.
+      │                         visibly changes. Carrying on = a quiet yes: more confidence, never confirmed.
       ▼
  ┌─────────────────────┐   after the answer, never blocking it:
  │ background learning │── writer proposes cards → code rules → grader model accepts,
@@ -58,7 +60,7 @@ Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every 
 | … preferences that changed outside chat | **82.3%** | 49.2% | 48.4% |
 | Memory tokens per question | **~138–153** | ~395–486 | ~1,650–39,000 |
 
-The held-out people (each a week of chats, 20 questions) were written after the engine was built. Their first, untouched run: 72.5% vs 69.5%, with Déjà Vu losing on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards. We then fixed the builder (a second pass for missed facts; the grader rewords instead of rejecting), so the numbers above are after a fix made by reading two of their builds: no longer fully held out. Per person Déjà Vu is now best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the held-out personas are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
+The 10 more synthetic people (each a week of chats, 20 questions) were written after the engine was built. Their first, untouched run: 72.5% vs 69.5%, with Déjà Vu losing on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards. We then fixed the builder (a second pass for missed facts; the grader rewords instead of rejecting), so the numbers above come after a fix made by reading two of their builds. Per person Déjà Vu is now best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the 10 synthetic people are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
 
 ## Building memory from a whole history
 
@@ -122,6 +124,8 @@ curl -X POST localhost:3000/api/cards/travel-4 -H 'content-type: application/jso
 Requires Node 18+. No dependencies.
 
 ```bash
+git clone https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory.git
+cd deja-vu-confirmed-memory
 cp .env.example .env     # add MAIN_API_KEY from dev.meta.ai
 npm run check-api        # lists your models, makes one test call
 npm run dev              # http://localhost:3000

@@ -162,7 +162,7 @@ export function renderContext(cards) {
   if (!list.length) return '';
   const groups = groupByCategory(list);
   const body = Object.entries(groups)
-    .map(([cat, cs]) => `${cat}:\n` + cs.map((c) => `- ${c.status === 'confirmed' ? '✓' : '~'} ${c.text}${c.note ? ` (note: ${c.note})` : ''}${c.until ? ` (until ${c.until})` : ''}`).join('\n'))
+    .map(([cat, cs]) => `${cat}:\n` + cs.map((c) => `- ${c.status === 'confirmed' ? '✓' : '~'} ${c.text}${c.note ? ` (note: ${c.note})` : ''}${c.until ? ` (until ${c.until})` : ''}${c.sensitive && c.status !== 'confirmed' ? ' (private, a guess)' : ''}`).join('\n'))
     .join('\n');
   return `${prompt('context.header')}\n${body}`;
 }

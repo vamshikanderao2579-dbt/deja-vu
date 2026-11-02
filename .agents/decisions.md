@@ -27,7 +27,7 @@
 | Discord | Vague intro, no mechanics revealed | Public channel of 20K builders |
 | Unanswered checks | No answer within 8 s, or typing a new message, counts as skip; the agent answers anyway | Never block the user |
 | Demo realism | One ✕ + Chat about it, two unanswered checks, across three "days" | All-✓ demos feel fake |
-| Answer first, check after (built Oct 29) | One call; the check line above the answer; carrying on = quiet yes, two confirm; ✕ → chat → **redo only on request** | Blocking checks were slow and boring and cost a second call |
+| Answer first, check after (built Oct 29) | One call; the check line above the answer; carrying on = quiet yes (+confidence; Nov 3: never confirms on its own, no promotion by repetition); ✕ → chat → **redo only on request** | Blocking checks were slow and boring and cost a second call |
 | Next: Seasonal topic | Occasion sub-topics with recurring windows | Cards that matter every year, dormant otherwise (user idea, agreed) |
 | Card gate | Writer proposes, code rules + a **different** grader model approve; uncertain → reject; grader failure → rules only | A wrong card gets acted on; a missing one is learned later. Same model shouldn't approve its own work |
 | Grader model | **Muse Wonder 1.0** (Oct 29) | Writer and grader are now different models. Live A/B on 7 cards: identical verdicts, 2.9 s vs 4.5 s, $0.007 vs $0.0035 a batch. Cards are tiny, so the cost is negligible; the spend guard prices Wonder separately |

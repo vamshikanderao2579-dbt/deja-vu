@@ -82,6 +82,9 @@ test('answer first, check after: a high-stakes request answers at once, with one
   assert.equal(r.trace.check, r.check.card.text);
   const confirmed = await post(`/api/cards/${r.check.cardId}`, { action: 'confirm' });
   assert.equal(confirmed.cards.find((c) => c.id === r.check.cardId).status, 'confirmed');
+  // Insights counts how the check ended: ✓ is a yes, not a correction.
+  assert.equal(confirmed.trace.checksConfirmed, 1);
+  assert.equal(confirmed.trace.checksCorrected, 0);
 });
 
 test('the same conversation is never asked twice, and the trace says why', async () => {
@@ -91,7 +94,7 @@ test('the same conversation is never asked twice, and the trace says why', async
   assert.equal(again.trace.quiet, 'asked_this_chat');
 });
 
-test('carrying on without ✕ counts as a quiet yes; two of them confirm a guess', async () => {
+test('carrying on without ✕ counts as a quiet yes, which never confirms a guess on its own', async () => {
   const first = await post('/api/chat', { message: 'Book us a hotel in Miami for spring break', conversationId: 'q1' });
   if (!first.check) return; // the mock picked nothing to check: nothing to count
   const id = first.check.cardId;

@@ -48,16 +48,12 @@ export function cueDecision({ relevant, stakes, conversationId, cueLog, now = to
   return { cue: { cardId: card.id, reason, question: questionFor(card, reason) }, why: 'asked' };
 }
 
-// Answer first, check after: carrying on without ✕ counts as a quiet yes. Two quiet
-// yeses confirm a guessed card, the same as a ✓.
-export const IMPLICIT_YES_TO_CONFIRM = 2;
-export function implicitYes(card, now = new Date().toISOString()) {
+// Answer first, check after: carrying on without ✕ counts as a quiet yes. It raises a
+// guess's confidence but never confirms it: no promotion by repetition. Only a ✓ or
+// the person saying it confirms a card.
+export function implicitYes(card) {
   card.implicit_yes = (card.implicit_yes ?? 0) + 1;
-  card.confidence = Math.min(1, (card.confidence ?? 0.6) + 0.1);
-  if (card.implicit_yes >= IMPLICIT_YES_TO_CONFIRM && card.status === 'inferred') {
-    Object.assign(card, { status: 'confirmed', confidence: 1, last_confirmed: now });
-    delete card.changed_from;
-  }
+  card.confidence = Math.min(0.9, (card.confidence ?? 0.6) + 0.1);
 }
 
 function questionFor(card, reason) {

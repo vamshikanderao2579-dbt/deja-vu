@@ -1,4 +1,4 @@
-// Writes held-out synthetic personas for the eval (see eval/PERSONA_BRIEF.md): a week
+// Writes synthetic personas (written after the engine was built) for the eval (see eval/PERSONA_BRIEF.md): a week
 // and more of chats plus an answer key, per person. Muse Spark writes them; this script
 // checks every file (real message ids, counts, fact links) and asks again on a problem.
 //
@@ -139,12 +139,12 @@ for (const id of wanted) {
   else {
     console.log(`${id}: writing a week of chats…`);
     history = await ask(HISTORY_SYSTEM, historyPrompt(x), (h) => checkHistory(h, x), `${id} history`);
-    history._label = `SYNTHETIC TEST DATA, held out. Persona ${x.life}`;
+    history._label = `SYNTHETIC TEST DATA, written after the engine was built. Persona ${x.life}`;
     history.user = { name: x.name };
   }
   console.log(`${id}: writing the answer key…`);
   const key = await ask(KEY_SYSTEM, keyPrompt(x, history), (k) => checkKey(k, history), `${id} key`);
-  const out = { _label: `SYNTHETIC TEST DATA, held out. Ground truth for ${x.name}.`, today: TODAY, facts: key.facts, _current_truth: `What ${x.name} answers when shown each card. These changes never came up in chat.`, current_truth: key.current_truth, questions: key.questions };
+  const out = { _label: `SYNTHETIC TEST DATA, written after the engine was built. Ground truth for ${x.name}.`, today: TODAY, facts: key.facts, _current_truth: `What ${x.name} answers when shown each card. These changes never came up in chat.`, current_truth: key.current_truth, questions: key.questions };
   writeFileSync(hPath, JSON.stringify(history, null, 2) + '\n');
   writeFileSync(kPath, JSON.stringify(out, null, 2) + '\n');
   const users = history.conversations.flatMap((c) => c.messages).filter((m) => m.role === 'user').length;

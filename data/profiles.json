@@ -60,11 +60,7 @@
     ],
     "script": [
       {
-        "say": "Meet Maria: a night-shift nurse with a teen son. An everyday question first.",
-        "text": "hey! how many hours are in a 3 day stretch of 12 hour shifts?"
-      },
-      {
-        "say": "Short-term memory: in July Maria said “no takeout for 3 months”. Today is the end date, so Déjà Vu asks once: extend it, change it or let it end.",
+        "say": "Meet Maria, a night-shift nurse with a teen son. In July she said “no takeout for 3 months”. Today is the end date, so Déjà Vu asks once: extend it, change it or let it end.",
         "ending": "1"
       },
       {
@@ -72,12 +68,7 @@
         "text": "book me a dentist appointment next week"
       },
       {
-        "say": "ⓘ shows the cards it used. Tap one to see the message it came from.",
-        "info": "after 3pm"
-      },
-      {
         "say": "A life change, said in passing, becomes a memory card.",
-        "back": true,
         "text": "btw my mom moved in with us last month"
       },
       {

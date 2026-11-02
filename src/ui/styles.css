@@ -325,6 +325,7 @@ h1.big { font-size: 34px; letter-spacing: -0.02em; margin: 56px 4px 16px; }
 .srow .right { margin-left: auto; text-align: right; }
 .srow.static { cursor: default; font-size: 15px; padding: 11px 18px; }
 .srow.danger { color: var(--no); }
+.srow.danger.armed { background: color-mix(in srgb, var(--no) 14%, transparent); }
 .srow .new { font-size: 11px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 8px; padding: 2px 7px; }
 .srow.featured .new + .chev { margin-left: auto; }
 .plan { padding: 18px 20px 6px; }
@@ -831,6 +832,11 @@ svg.line path.s3 { stroke: var(--series-3); }
 .split-legend li { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
 .split-legend b { margin-left: auto; font-weight: 600; }
 .split-legend .sw, .legend-row .sw { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+.north { display: flex; align-items: baseline; gap: 10px; margin-top: 6px; }
+.north b { font-size: 34px; font-weight: 700; color: var(--confirmed-fg); }
+.north span { font-size: 13.5px; color: var(--muted); }
+.card-box h3.trace-h { margin: 22px 0 10px; }
+.split-legend .sw.fix { background: var(--no); }
 .chips-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .chip-stat { font-size: 12.5px; padding: 4px 10px; border-radius: 999px; background: var(--accent-bg); color: var(--text); }
 @media (min-width: 1100px) { #insights.page { padding-left: max(32px, calc((100% - 1120px) / 2)); padding-right: max(32px, calc((100% - 1120px) / 2)); } }

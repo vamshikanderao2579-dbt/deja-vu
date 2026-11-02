@@ -1,4 +1,4 @@
-// Saves each held-out persona's built cards (from its eval run) as the memory a visitor
+// Saves each synthetic persona's built cards (from its eval run) as the memory a visitor
 // starts with when they pick that person: data/personas/<id>-memory.json.
 //
 //   node eval/run.js --persona daniel        # builds data/private/eval-build/daniel/cards.json

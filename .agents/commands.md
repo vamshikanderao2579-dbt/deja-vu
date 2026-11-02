@@ -1,7 +1,7 @@
 # Commands
 
 ```bash
-cd ~/Desktop/personal-context-hackathon/deja-vu
+cd /Users/vamshi/Documents/GitHub/deja-vu
 npm run dev                                   # app at http://localhost:3000 (reloads on change)
 npm test                                      # 50 tests, mock mode, $0, own state file
 npm run check-api                             # key + model IDs + one test call
