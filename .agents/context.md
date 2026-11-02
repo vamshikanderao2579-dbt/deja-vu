@@ -34,7 +34,7 @@ confirmed **84.5%** vs summary 82.5% vs full history 73% · changed outside chat
 Real data: 5 weeks of Vamshi's Muse chats (~113,600 tokens) → ~44 cards (~400 tokens); sensitive cards (income, loans, visa, taxes, religious food rules) locked automatically.
 
 ## Where things are
-- Repo: `~/Desktop/personal-context-hackathon/deja-vu` (remote: github.com/vamshikanderao2579-dbt/deja-vu). The user commits and pushes.
+- Repo: `~/Desktop/personal-context-hackathon/deja-vu` (remote: github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory). The user commits and pushes.
 - Deck (claude.ai artifact, private until shared): https://claude.ai/artifact/DJKtjUyCdDRghS4rW61hJr. 12+ slides, navy + cyan→blue gradient, Geist, speaker notes. `read` it before editing.
 - App: `npm run dev` → http://localhost:3000. Demos recorded Oct 29 for **Vamshi** and **Alex** in the new flow (replay ~1 s); Maria and Sreenidhi need re-recording.
 - Private (git-ignored): `data/private/` (real histories, answer keys, eval results, replay cache, profiles), `.env`, `data/spend.json`, `EYI Package*` exports.

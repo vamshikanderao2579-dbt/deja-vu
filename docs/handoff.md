@@ -9,7 +9,7 @@ For the next agent or chat. Read this first, then `.agents/` (README → context
 | What | Where |
 |---|---|
 | Live app (Modal) | https://vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run, running the same code as `main` |
-| Repo | https://github.com/vamshikanderao2579-dbt/deja-vu (`main` @ `2fb6d0f`) |
+| Repo | https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory (renamed from `deja-vu` on Nov 2; GitHub redirects the old URL) |
 | Full deck, 15 slides | `docs/decks/full.html`; editable on claude.ai: https://claude.ai/artifact/DJKtjUyCdDRghS4rW61hJr |
 | Short deck, 6 slides + Alex demo | `docs/decks/short.html`; editable on claude.ai: https://claude.ai/artifact/LdZGeaPK3WJ1BA1gf5xsAv |
 | Deck sources | `docs/decks/full/`, `docs/decks/short/` (`deck.json` + `slides/*.html`). After editing, run `python3 scripts/build-decks.py` |
@@ -21,7 +21,7 @@ The claude.ai deck links are private to the account that made them. The HTML fil
 
 ## Set up the new laptop
 
-1. `git clone https://github.com/vamshikanderao2579-dbt/deja-vu && cd deja-vu`. Node 18+, no npm install needed.
+1. `git clone https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory && cd deja-vu-confirmed-memory`. Node 18+, no npm install needed.
 2. Copy these git-ignored files from the old laptop privately (AirDrop or USB). **Never** send them through git, chat or an AI tool:
    - `.env`: the Meta Model API key and local settings. Template: `.env.example`.
    - `deploy/deploy.env`: the public link's key and spend caps.

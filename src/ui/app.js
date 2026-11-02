@@ -1340,7 +1340,7 @@ function renderCombinedEval(box, ev) {
         <table><thead><tr><th>Person</th><th>Checks</th>${rows.map((r) => `<th>${MODE_NAMES[r.mode]}</th>`).join('')}</tr></thead>
         <tbody>${ev.perPerson.map((p) => `<tr><td>${esc(p.label)}</td><td>${p.checks}</td>${rows.map((r) => `<td>${p.summary.find((s) => s.mode === r.mode)?.accuracy ?? '–'}%</td>`).join('')}</tr>`).join('')}</tbody></table>
       </details>
-      <p class="fine eval-note">A check is one thing an answer should get right, like “suggests an Airbnb” or “keeps it mild for Maya”. <a href="https://github.com/vamshikanderao2579-dbt/deja-vu/blob/main/docs/eval.md" target="_blank" rel="noopener">How it’s measured ↗</a> · <a href="https://github.com/vamshikanderao2579-dbt/deja-vu" target="_blank" rel="noopener">Code ↗</a></p>
+      <p class="fine eval-note">A check is one thing an answer should get right, like “suggests an Airbnb” or “keeps it mild for Maya”. <a href="https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory/blob/main/docs/eval.md" target="_blank" rel="noopener">How it’s measured ↗</a> · <a href="https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory" target="_blank" rel="noopener">Code ↗</a></p>
       <p class="fine eval-note">${lost.length ? `Honest note: for ${lost.map((p) => esc(p.label)).join(' and ')}, another setup scored higher than confirmed cards. ` : ''}Confirmed cards here went through one simulated review; stale errors with confirmed cards: ${conf?.staleErrors ?? '–'}.</p>
     </div>`;
   wireTips(box);
