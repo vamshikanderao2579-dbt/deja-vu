@@ -433,7 +433,7 @@ function renderAnswer(res, question) {
     if (res.mode === 'cards') {
       const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
       const conf = used.filter((c) => c.status === 'confirmed').length;
-      line = used.length ? `Used ${count(used.length, 'card')} (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
+      line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
     } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory off';
     const u = res.tokens.usage;
     if (u?.prompt_tokens) line += `<div class="tok-row"><span>⬆ ${u.prompt_tokens.toLocaleString()} tokens in</span><span>⬇ ${(u.completion_tokens ?? 0).toLocaleString()} out</span>${res.model ? `<span>${esc(modelName(res.model))}</span>` : ''}</div>`;
@@ -995,7 +995,7 @@ function renderMemory() {
       <div class="hero-text">
         <h2>${toCheck ? `${count(toCheck, 'card')} to check` : 'All caught up'}</h2>
         <p class="hero-stats"><span><b>${data.cards.length}</b> ${data.cards.length === 1 ? 'card' : 'cards'} in all:</span><span><b>${n.check}</b> to check</span><span><b>${n.confirmed}</b> confirmed</span><span><b>${n.guess}</b> ${n.guess === 1 ? 'guess' : 'guesses'} that look right</span></p>
-        ${locked || recheck ? `<p class="fine hero-note">${[locked ? `${count(locked, 'private card')} not checked yet` : '', recheck ? `${count(recheck, 'confirmed card')} that may have changed` : ''].filter(Boolean).join(' and ')} ${locked + recheck === 1 ? 'is' : 'are'} in “to check”.</p>` : ''}
+        ${locked || recheck ? `<p class="fine hero-note">${[locked ? `${count(locked, 'private card')} not checked yet` : '', recheck ? `${count(recheck, 'confirmed card')} that may have changed` : ''].filter(Boolean).join(' and ')} ${locked + recheck === 1 ? 'is' : 'are'} counted in “to check”, not twice.</p>` : ''}
         <p class="mem-dates"><span>Since <b>${starts.length ? day(starts[0]) : '—'}</b></span></p>
         ${toCheck ? `<button class="primary review-btn" id="reviewBtn">Review now<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>` : ''}
       </div>
@@ -1183,7 +1183,7 @@ function renderCatList() {
 
 function listCard(c) {
   const row = el(`<div class="ccard" data-card="${esc(c.id)}"><div class="top"><div>${c.imported ? '<span class="tag-imported">Imported</span>' : ''}<div class="txt">${esc(c.text)}</div>
-    <div class="kind">${c.type === 'lesson' ? 'Lesson' : 'Preference'} · from ${c.sources.length} message${c.sources.length === 1 ? '' : 's'}${c.changed_from ? ` · was “${esc(c.changed_from)}”` : ''}</div>
+    <div class="kind">${c.type === 'lesson' ? 'Lesson' : 'Preference'} · ${c.sources.length ? `from ${count(c.sources.length, 'message')}` : 'you told me'}${c.changed_from ? ` · was “${esc(c.changed_from)}”` : ''}</div>
     ${c.note ? `<div class="kind">💬 ${esc(c.note)}</div>` : ''}
     <div class="kind">${esc(dateLine(c))}</div>${seasonBadge(c)}${untilBadge(c)}</div>
     <span class="badge ${c.status}">${STATUS_LABEL[c.status]}</span></div>
@@ -1334,7 +1334,7 @@ function renderCombinedEval(box, ev) {
       ${barChart('Answer accuracy', 'Share of checklist items each setup got right, all people', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}
       ${rows.some((r) => r.accuracyDrifted != null) ? barChart('Preferences that changed outside chat', 'Only a confirmation can catch these', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100) : ''}
       ${barChart('Memory sent per question', 'Tokens of memory in each prompt (average per person)', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.avgContextTokens, emph: r.mode === 'confirmed' })), (v) => `${v.toLocaleString()} tok`)}
-      ${ev.heldOut ? (() => { const h = MODE_ORDER.map((m) => ev.heldOut.combined.find((x) => x.mode === m)).filter(Boolean); return `<h3 class="held-h">Held out: ${ev.heldOut.people} more synthetic people, ${ev.heldOut.checks} checks</h3><p class="fine">Written after the engine was built and never used to tune it.</p>${barChart('Answer accuracy', 'Held-out people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}${barChart('Preferences that changed outside chat', 'Held-out people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}`; })() : ''}
+      ${ev.heldOut ? (() => { const h = MODE_ORDER.map((m) => ev.heldOut.combined.find((x) => x.mode === m)).filter(Boolean); const all = (m) => ev.all?.combined.find((x) => x.mode === m); return `<h3 class="held-h">${ev.heldOut.people} more synthetic people, ${ev.heldOut.checks} checks</h3><p class="fine">Written after the engine was built. The builder was fixed after reading two of their builds, so they are not fully held out.</p>${ev.all ? `<p class="fine"><b>All ${ev.all.people} people, ${ev.all.checks} checks, each counted once:</b> ${MODE_ORDER.map((m) => all(m) && `${MODE_NAMES[m]} ${all(m).accuracy}%`).filter(Boolean).join(' · ')}. Changed outside chat: ${MODE_ORDER.map((m) => all(m) && `${all(m).accuracyDrifted}%`).filter(Boolean).join(' · ')}.</p>` : ''}${barChart('Answer accuracy', 'These 10 people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}${barChart('Preferences that changed outside chat', 'These 10 people only', h.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}`; })() : ''}
       ${ev.projection ? lineChart(ev.projection) : ''}
       <details class="table-view"><summary>Each person</summary>
         <table><thead><tr><th>Person</th><th>Checks</th>${rows.map((r) => `<th>${MODE_NAMES[r.mode]}</th>`).join('')}</tr></thead>
@@ -1701,7 +1701,7 @@ function showDemoEnd() {
     <div class="ct-icon">${ico('logo')}</div><h3>That’s Déjà Vu</h3>
     <p>Memory any agent can add: it uses what it learned, checks once when it matters, and you fix it in one tap.</p>
     <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button></div>
-    <p class="fine">Answers by Muse Spark · cards graded by Muse Wonder · voice by Muse Voice Transcribe</p></div></div>`);
+    <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice by Muse Voice Transcribe 1.0</p></div></div>`);
   box.addEventListener('click', (e) => {
     const x = e.target.closest('[data-x]')?.dataset.x;
     if (!x && e.target !== box) return;

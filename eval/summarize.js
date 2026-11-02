@@ -22,7 +22,7 @@ for (const f of readdirSync(join(ROOT, 'data', 'personas'))) {
   const id = f.match(/^(.+)-history\.json$/)?.[1];
   if (!id || PEOPLE.some((p) => p.id === id) || !existsSync(join(ROOT, 'data', 'personas', `${id}-answer-key.json`))) continue;
   const name = read(`data/personas/${id}-history.json`).user?.name ?? id;
-  PEOPLE.push({ id, label: `${name} (synthetic, held out)`, heldOut: true, file: `eval/results/${id}-latest.json`, key: `data/personas/${id}-answer-key.json` });
+  PEOPLE.push({ id, label: `${name} (synthetic)`, heldOut: true, file: `eval/results/${id}-latest.json`, key: `data/personas/${id}-answer-key.json` });
 }
 // `drifted`: facts that changed outside chat (only a confirmation can catch them).
 const runs = PEOPLE.filter((p) => existsSync(join(ROOT, p.file))).map((p) => ({ ...p, r: read(p.file), drifted: new Set(Object.keys(read(p.key).current_truth ?? {})) }));
@@ -59,11 +59,14 @@ const out = {
   questions: core.reduce((a, { r }) => a + r.questions, 0),
   checks: core.reduce((a, { r }) => a + r.checks, 0),
   combined,
+  // Every person, every check, counted once: the one headline figure for the whole eval.
+  ...(heldOut.length ? { all: { people: runs.length, checks: runs.reduce((a, { r }) => a + r.checks, 0), combined: pool(runs) } } : {}),
   ...(heldOut.length ? { heldOut: { people: heldOut.length, checks: heldOut.reduce((a, { r }) => a + r.checks, 0), combined: pool(heldOut) } } : {}),
   perPerson: runs.map(({ label, r }) => ({ label, questions: r.questions, checks: r.checks, cards: r.cards.built, summary: r.summary.map(({ mode, accuracy, accuracyDrifted, staleErrors, avgContextTokens }) => ({ mode, accuracy, accuracyDrifted, staleErrors, avgContextTokens })) })),
   projection: alex.projection,
 };
 writeFileSync(join(ROOT, 'data', 'eval-summary.json'), JSON.stringify(out, null, 2) + '\n');
 console.table(Object.fromEntries(combined.map((c) => [c.mode, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
+if (heldOut.length) console.table(Object.fromEntries(out.all.combined.map((c) => [`all ${out.all.people}: ${c.mode}`, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
 if (heldOut.length) console.table(Object.fromEntries(out.heldOut.combined.map((c) => [`held out: ${c.mode}`, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
 console.log('Saved data/eval-summary.json');

@@ -54,6 +54,7 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 | … changed outside chat | **81.3%** | 48.2% | 49.1% |
 | Memory tokens per message | ~140–150 | ~400–490 | ~1.6K–39K |
 
+- **One headline over all 14 people, 312 checks, each counted once:** 81.7% vs 71.8% summary vs 70.5% full history; changed outside chat 82.3% vs 49.2% vs 48.4%. It's in `data/eval-summary.json` under `all` and in Insights. Quote this one, not a number averaged from the two blocks.
 - Déjà Vu memory is best or tied for 13 of 14 people. It loses on Tom (65% vs 70% full history).
 - **Say this honestly:** the 10 synthetic people were written after the engine was built. Their first, untouched run was 72.5% vs 69.5%. The builder fix (the writer makes a second pass; the grader rewords instead of rejecting) came after reading two of their builds (Grace, James). So they're no longer fully "held out". The README, `docs/eval.md` and both decks already say so.
 - Spend so far: about $43 of the $150 Meta credit, tracked in `data/spend.json` (local, git-ignored). Keep $40+ for the demo.

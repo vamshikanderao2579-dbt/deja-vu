@@ -34,7 +34,7 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 | Stale answers | **0** | 4 | 4 |
 | Memory tokens per message | **~150** | ~490 | ~39,000 |
 
-### Held out: 10 synthetic people, 200 questions, 236 checks
+### 10 more synthetic people, 200 questions, 236 checks
 
 Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](../eval/PERSONA_BRIEF.md) after the engine was built. The first run used them untouched (72.5% vs 69.5%). The Nov 2 builder fix below was made after reading two of their builds (Grace, James), so these numbers are no longer fully held out. Each has 9 to 13 days of chats (about 50 messages), 20 questions (8 stable, 4 changed outside chat, 2 changed in chat, 2 short-term, 2 sensitive, 2 one-off) and only first names. The same Meta model family writes them, answers and judges, which is a limit of this eval.
 
@@ -55,11 +55,11 @@ Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`ev
 | Stale answers | **7** | 13 | 11 |
 | Memory tokens per message | **~138** | ~395 | ~1,650 |
 
-Builder fix (Nov 2): the first held-out run lost on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards from about 50 messages. The writer now makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Builds went from 6–10 to 11–16 cards per person; Grace 48% → 76%, James 63% → 92%. Déjà Vu now loses only on Tom. Earlier runs: Oct 28 one-pass build 84.5% / 82.5% / 73% (4 people); Oct 31 77.6% all three; Nov 2 before the builder fix 80.3% / 72.4% / 73.7% (main) and 72.5% / 69.5% / 69.5% (held out). Treat single-run differences of a few points as noise.
+Builder fix (Nov 2): the first run on these 10 people lost on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards from about 50 messages. The writer now makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Builds went from 6–10 to 11–16 cards per person; Grace 48% → 76%, James 63% → 92%. Déjà Vu now loses only on Tom. Earlier runs: Oct 28 one-pass build 84.5% / 82.5% / 73% (4 people); Oct 31 77.6% all three; Nov 2 before the builder fix 80.3% / 72.4% / 73.7% (main) and 72.5% / 69.5% / 69.5% (held out). Treat single-run differences of a few points as noise.
 
 ## What it shows
 
-- **Confirmation catches what inference can't.** When a preference changed and never came up in chat, the summary and full history got it right about half the time (50% main set, 47–48% held out); Déjà Vu memory got 92% and 72%.
+- **Confirmation catches what inference can't.** When a preference changed and never came up in chat, the summary and full history got it right about half the time (42–58% main set, 48–49% for the other 10 people); Déjà Vu memory got 92% and 81%. Over all 14 people and 312 checks, each counted once: Déjà Vu memory 81.7%, summary 71.8%, full history 70.5%; changed outside chat 82.3% vs 49.2% vs 48.4%.
 - **Reading only what's needed is cheaper without costing accuracy.** Déjà Vu memory reads ~3× fewer tokens per message than a summary and far fewer than full history, while scoring higher than both on each set.
 - **Full history is the worst of both.** It's the most expensive *and* the least accurate: years of noise drown the signal.
 - **Honest caveat.** On one real history where nothing had changed, the summary scored higher (93% vs 86%). A good summary is strong when life is static; confirmed memory wins on cost everywhere and on accuracy as soon as things change.

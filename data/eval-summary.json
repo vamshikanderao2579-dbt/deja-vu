@@ -39,6 +39,39 @@
       "avgLatencyMs": 9818
     }
   ],
+  "all": {
+    "people": 14,
+    "checks": 312,
+    "combined": [
+      {
+        "mode": "full",
+        "accuracy": 70.5,
+        "accuracyDrifted": 48.4,
+        "staleErrors": 15,
+        "avgContextTokens": 12329,
+        "maxContextTokens": 113619,
+        "avgLatencyMs": 4745
+      },
+      {
+        "mode": "summary",
+        "accuracy": 71.8,
+        "accuracyDrifted": 49.2,
+        "staleErrors": 17,
+        "avgContextTokens": 421,
+        "maxContextTokens": 583,
+        "avgLatencyMs": 4331
+      },
+      {
+        "mode": "confirmed",
+        "accuracy": 81.7,
+        "accuracyDrifted": 82.3,
+        "staleErrors": 7,
+        "avgContextTokens": 143,
+        "maxContextTokens": 177,
+        "avgLatencyMs": 9059
+      }
+    ]
+  },
   "heldOut": {
     "people": 10,
     "checks": 236,
@@ -190,7 +223,7 @@
       ]
     },
     {
-      "label": "Aisha (synthetic, held out)",
+      "label": "Aisha (synthetic)",
       "questions": 20,
       "checks": 25,
       "cards": 14,
@@ -219,7 +252,7 @@
       ]
     },
     {
-      "label": "Daniel (synthetic, held out)",
+      "label": "Daniel (synthetic)",
       "questions": 20,
       "checks": 24,
       "cards": 14,
@@ -248,7 +281,7 @@
       ]
     },
     {
-      "label": "Ethan (synthetic, held out)",
+      "label": "Ethan (synthetic)",
       "questions": 20,
       "checks": 23,
       "cards": 15,
@@ -277,7 +310,7 @@
       ]
     },
     {
-      "label": "Fatima (synthetic, held out)",
+      "label": "Fatima (synthetic)",
       "questions": 20,
       "checks": 23,
       "cards": 11,
@@ -306,7 +339,7 @@
       ]
     },
     {
-      "label": "Grace (synthetic, held out)",
+      "label": "Grace (synthetic)",
       "questions": 20,
       "checks": 25,
       "cards": 13,
@@ -335,7 +368,7 @@
       ]
     },
     {
-      "label": "James (synthetic, held out)",
+      "label": "James (synthetic)",
       "questions": 20,
       "checks": 24,
       "cards": 11,
@@ -364,7 +397,7 @@
       ]
     },
     {
-      "label": "Luis (synthetic, held out)",
+      "label": "Luis (synthetic)",
       "questions": 20,
       "checks": 23,
       "cards": 14,
@@ -393,7 +426,7 @@
       ]
     },
     {
-      "label": "Rosa (synthetic, held out)",
+      "label": "Rosa (synthetic)",
       "questions": 20,
       "checks": 23,
       "cards": 14,
@@ -422,7 +455,7 @@
       ]
     },
     {
-      "label": "Sofia (synthetic, held out)",
+      "label": "Sofia (synthetic)",
       "questions": 20,
       "checks": 23,
       "cards": 14,
@@ -451,7 +484,7 @@
       ]
     },
     {
-      "label": "Tom (synthetic, held out)",
+      "label": "Tom (synthetic)",
       "questions": 20,
       "checks": 23,
       "cards": 13,

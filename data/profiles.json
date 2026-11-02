@@ -41,7 +41,7 @@
         "redo": true
       },
       {
-        "say": "Everything it knows lives in Memory, by topic: guesses, confirmed cards, private ones kept out of view, and short-term ones with an end date.",
+        "say": "Everything it knows lives in Memory, by topic: guesses, confirmed cards, private ones used carefully, and short-term ones with an end date.",
         "glance": true
       }
     ]
