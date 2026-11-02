@@ -268,7 +268,10 @@ async function followRoute(r, state) {
 window.addEventListener('hashchange', async () => {
   const r = parseRoute();
   if (r?.screen === 'home') { if (demoRunning) stopTour(); return showLanding(await api('/api/profiles'), { canGoBack: !!data }); }
-  followRoute(r, data ? null : await api('/api/state'));
+  // A link with nothing to open: the address goes back to the screen you're on.
+  if (!(await followRoute(r, data ? null : await api('/api/state')))) {
+    if (!$('#landing').hidden || !data) setRoute('home'); else syncChrome();
+  }
 });
 
 // Laptop: the menu button opens and closes the sidebar (remembered). Phone and iPad: it slides over.
