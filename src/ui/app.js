@@ -479,9 +479,8 @@ function renderAnswer(res, question) {
     if (!detail.classList.contains('hidden')) return detail.classList.add('hidden');
     let line;
     if (res.mode === 'cards') {
-      const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
       const conf = used.filter((c) => c.status === 'confirmed').length;
-      line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
+      line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">vs ~${full.toLocaleString()} to re-read every chat</span>` : 'No cards needed for this one';
     } else line = res.mode === 'full' ? `Full history: re-read every past chat · ~${ctx.toLocaleString()} tokens` : `Today’s agents: answered from a summary it wrote about you · ~${ctx.toLocaleString()} tokens · you never see or check it`;
     const u = res.tokens.usage;
     if (u?.prompt_tokens) line += `<div class="tok-row"><span>⬆ ${u.prompt_tokens.toLocaleString()} tokens in</span><span>⬇ ${(u.completion_tokens ?? 0).toLocaleString()} out</span>${res.model ? `<span>${esc(modelName(res.model))}</span>` : ''}</div>`;
@@ -1626,16 +1625,15 @@ async function playDemo() {
     setTimeout(() => ripple.remove(), 600);
     node.click();
   };
-  // The caption for a step. With captions only, it stays up long enough to read before
-  // the step plays. With voice, the clip and the step play together, so you hear each
-  // line while it happens on screen; the next step waits for both.
+  // The caption for a step and its action play together, so each line shows or speaks
+  // while it happens on screen; the next step waits for both, and for the line to be read.
   const say = async (text, i) => {
     await whilePaused();
     if (!tourBar || !text) return;
     tourBar.querySelector('.tour-step').textContent = `${i + 1} of ${steps.length}`;
     tourBar.querySelector('p').textContent = text;
     if (tourPrefs.voice) return narrate(text);
-    await sleep(tourPrefs.hidden ? 300 : Math.min(1800, 600 + text.length * 8));
+    await sleep(tourPrefs.hidden ? 300 : Math.min(9000, 1200 + text.length * 40));
   };
   const lastCard = (sel) => [...document.querySelectorAll(sel)].at(-1);
   // Back to chat the way a person would: the back arrow on each open page.
@@ -1647,8 +1645,7 @@ async function playDemo() {
   for (const [i, step] of steps.entries()) {
     if (!demoRunning) break;
     const spoken = say(step.say, i);
-    if (!tourPrefs.voice) await spoken;
-    else await sleep(700); // the line starts just before its action
+    await sleep(700); // the line starts just before its action
     if (!demoRunning) break;
     if (step.newChat) { conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); renderMemChip(); }
     if (step.mode) {
@@ -1665,7 +1662,7 @@ async function playDemo() {
       await press($('#memChip'));
       await sleep(500);
       await press($('#memMenu [data-m="cards"]'));
-      await sleep(1600); // time to read what it will do
+      await sleep(4500); // time to read what turning it on means
       await press($('#turnOnGo'));
       const ok = await until('#tobOk:not([hidden])', 180000);
       await sleep(2500); // time to see the cards it wrote
@@ -1874,7 +1871,7 @@ $('#turnOnGo').addEventListener('click', async () => {
     await sleep(250);
   }
   const topics = new Set(data.cards.map((c) => c.category)).size;
-  $('#tobDone').textContent = `${data.cards.length} cards in ${topics} topics${data.cards.length > show.length ? ` (${data.cards.length - show.length} more in Memory)` : ''}. Each one is a guess until you confirm it.`;
+  $('#tobDone').textContent = `${data.cards.length} cards in ${topics} topics, all in Memory${data.cards.length > show.length ? ` (the first ${show.length} above)` : ''}. Each one is a guess until you confirm it.`;
   $('#tobOk').hidden = false;
 });
 $('#tobOk').addEventListener('click', () => { close('turnOnSheet'); toast('Déjà Vu is on.'); });

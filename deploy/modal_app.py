@@ -62,7 +62,7 @@ def web():
         "SESSION_DIR": "/data/sessions",
         "BUILD_DIR": "/data/build",
         "SPEND_FILE": "/data/spend.json",
-        "DEMO_TODAY": os.environ.get("DEMO_TODAY", "2026-10-27"),  # the demo personas' "today"
+        "DEMO_TODAY": os.environ.get("DEMO_TODAY", "2026-11-17"),  # the demo personas' "today"
         "SPEND_CAP_USD": os.environ.get("SPEND_CAP_USD", "15"),
         "SPEND_TOTAL_CAP_USD": os.environ.get("SPEND_TOTAL_CAP_USD", "60"),
     }
