@@ -63,7 +63,8 @@ function rebuildPlan() {
   const allConfirmed = s.cards.length && s.cards.every((c) => c.status === 'confirmed');
   const confirmedThrough = allConfirmed ? s.cards.map((c) => c.last_seen).filter(Boolean).sort().at(-1) ?? null : null;
   const base = { lastAt: s.build?.at ?? null, nextAt: last ? new Date(last + REBUILD_DAYS * DAY_MS).toISOString() : null, cards: s.cards.length, confirmed: s.cards.filter((c) => c.status === 'confirmed').length };
-  if (!last || Date.now() - last >= REBUILD_DAYS * DAY_MS) return { ...base, allowed: true, mode: 'full', since: confirmedThrough };
+  // On the public link a demo person (Alex, Maria) can always rebuild: the build is recorded, so it's free.
+  if (!last || (config.publicDemo && getProfile().script?.length) || Date.now() - last >= REBUILD_DAYS * DAY_MS) return { ...base, allowed: true, mode: 'full', since: confirmedThrough };
   if (growth >= REBUILD_GROWTH_TOKENS) return { ...base, allowed: true, mode: 'new', since: s.build.readThrough ?? null, growth };
   return { ...base, allowed: false, mode: 'wait', growth, needTokens: REBUILD_GROWTH_TOKENS - growth };
 }
@@ -385,6 +386,8 @@ route('POST', '/api/demo/load', async (body) => {
   if (!loadSeed()) throw httpError(409, 'Build this profile’s memory first (Memory → Build from my chats).');
   // The guided tour starts with Déjà Vu off: no cards until it's turned on.
   if (body?.empty) { Object.assign(getState(), { cards: [], rejected: [], cueLog: [], learned: [] }); save(); }
+  // A visit to a demo person starts clean: their starting cards, no chats from last time.
+  if (body?.fresh && getProfile().script?.length) { Object.assign(getState(), { live: [], build: null }); save(); }
   // A fresh start picks cards fresh too, so a recorded demo replays exactly.
   current().relevanceCache = [];
   return statePayload();

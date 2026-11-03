@@ -14,50 +14,58 @@
     ],
     "script": [
       {
-        "say": "Meet Alex. Déjà Vu is off and Memory is empty, so Alex’s agent works like today’s agents: a summary it wrote from the chats goes out with every message, and Alex never sees it.",
+        "say": "Welcome to Déjà Vu. This is a short demo, and it plays by itself. You’ll follow Alex, a parent in Chicago, who asks an agent for help with everyday plans. Like most agents today, this one remembers Alex through a summary it wrote from past chats. Alex never gets to see that summary."
+      },
+      {
+        "say": "It’s a Tuesday morning, and Alex wants to plan winter break for the whole family: Alex, Sam, their daughter Maya, and Biscuit the dog.",
         "mode": "summary",
-        "text": "plan our winter break trip, all three of us plus biscuit",
+        "text": "plan our winter break trip, all three of us plus biscuit"
+      },
+      {
+        "say": "A reasonable answer. But let’s look at what the agent was given. Tap the info button. It was sent a summary about Alex, with every message. Alex can’t see it, check it, or fix it.",
         "info": true
       },
       {
-        "say": "Now turn Déjà Vu on. Alex agrees, and it reads the same chats once: Muse Spark writes short cards, Muse Wonder grades each one. Every card stays a guess until Alex confirms it.",
+        "say": "Now Alex turns on Déjà Vu. It asks first. Then it reads Alex’s past chats once and writes short cards, one fact each. One Muse model writes them, and another grades them. Every card stays a guess until Alex says it’s right.",
         "build": true
       },
       {
-        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, and one line checks the guess the pick depends on.",
+        "say": "Same question, in a fresh chat. This time the agent gets only the few cards that fit the question.",
         "newChat": "New chat",
-        "text": "plan our winter break trip, all three of us plus biscuit",
+        "text": "plan our winter break trip, all three of us plus biscuit"
+      },
+      {
+        "say": "Open the info button again. These are the exact cards it used, and the tokens it really sent. Under the answer, one short line checks the guess this plan leans on most.",
         "info": true
       },
       {
-        "say": "That changed. Your turn: tap ✕ Not anymore.",
+        "say": "Alex used to love warm beaches, but that’s changed. Your turn: tap Not anymore.",
         "back": true,
         "yourTurn": "no"
       },
       {
-        "say": "Say what changed, in one tap.",
+        "say": "Now tell it what’s true, in one tap.",
         "choose": [
           "we want snow this year, Maya wants to learn to ski",
           "somewhere we can drive to, no flights this time"
         ]
       },
       {
-        "say": "The pick updates. Nothing was booked without Alex.",
+        "say": "The plan updates right away, and the card is fixed for next time. And nothing was booked without Alex saying so.",
         "redo": true
       },
       {
-        "say": "A small question gets no check: nothing is at stake, so it doesn’t nag.",
-        "text": "what should we watch tonight?",
-        "info": true
+        "say": "Now a small question. Nothing is at stake here, so Déjà Vu doesn’t interrupt with a check. It only asks when it matters.",
+        "text": "what should we watch tonight?"
       },
       {
-        "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
+        "say": "Everything the agent knows about Alex lives in Memory, sorted by topic. Flip any card to see the exact chat it came from.",
         "memory": true,
         "section": "food",
         "why": true
       },
       {
-        "say": "Swipe right if it’s still true, left if it’s not.",
+        "say": "Checking cards is quick. Swipe right if it’s still true, and left if it isn’t.",
         "swipes": [
           "no",
           "no",
@@ -66,7 +74,7 @@
         ]
       },
       {
-        "say": "Then say what’s true now, in your own words. Both cards update, confirmed.",
+        "say": "Or just say what’s true now, in your own words. Both cards update and are marked confirmed. That’s Déjà Vu: memory Alex can see, check, and fix.",
         "chat": [
           "we cook at home most nights, takeout maybe once a month",
           "we go where friends recommend, reviews matter less"
@@ -88,50 +96,58 @@
     ],
     "script": [
       {
-        "say": "Meet Maria. Déjà Vu is off and Memory is empty, so Maria’s agent works like today’s agents: a summary it wrote from the chats goes out with every message, and Maria never sees it.",
+        "say": "Welcome to Déjà Vu. This is a short demo, and it plays by itself. You’ll follow Maria, a night-shift nurse in Phoenix with a teenage son, Leo. Like most agents today, Maria’s agent remembers her through a summary it wrote from past chats. Maria never gets to see that summary."
+      },
+      {
+        "say": "It’s a Tuesday morning, and Maria needs a dentist appointment next week.",
         "mode": "summary",
-        "text": "book me a dentist appointment next week",
+        "text": "book me a dentist appointment next week"
+      },
+      {
+        "say": "A reasonable answer. But let’s look at what the agent was given. Tap the info button. It was sent a summary about Maria, with every message. Maria can’t see it, check it, or fix it.",
         "info": true
       },
       {
-        "say": "Now turn Déjà Vu on. Maria agrees, and it reads the same chats once: Muse Spark writes short cards, Muse Wonder grades each one. Every card stays a guess until Maria confirms it.",
+        "say": "Now Maria turns on Déjà Vu. It asks first. Then it reads Maria’s past chats once and writes short cards, one fact each. One Muse model writes them, and another grades them. Every card stays a guess until Maria says it’s right.",
         "build": true
       },
       {
-        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, and one line checks the guess the pick depends on.",
+        "say": "Same question, in a fresh chat. This time the agent gets only the few cards that fit the question.",
         "newChat": "New chat",
-        "text": "book me a dentist appointment next week",
+        "text": "book me a dentist appointment next week"
+      },
+      {
+        "say": "Open the info button again. These are the exact cards it used, and the tokens it really sent. Under the answer, one short line checks the guess this booking leans on most.",
         "info": true
       },
       {
-        "say": "That changed. Your turn: tap ✕ Not anymore.",
+        "say": "Maria’s afternoons-only rule has changed. Your turn: tap Not anymore.",
         "back": true,
         "yourTurn": "no"
       },
       {
-        "say": "Say what changed, in one tap.",
+        "say": "Now tell it what’s true, in one tap.",
         "choose": [
           "on my days off, mornings are best",
           "any weekday works, just not Fridays"
         ]
       },
       {
-        "say": "The pick updates. Nothing was booked without Maria.",
+        "say": "The pick updates right away, and the card is fixed for next time. And nothing was booked without Maria saying so.",
         "redo": true
       },
       {
-        "say": "A small question gets no check: nothing is at stake, so it doesn’t nag.",
-        "text": "any show ideas for tonight?",
-        "info": true
+        "say": "Now a small question. Nothing is at stake here, so Déjà Vu doesn’t interrupt with a check. It only asks when it matters.",
+        "text": "any show ideas for tonight?"
       },
       {
-        "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
+        "say": "Everything the agent knows about Maria lives in Memory, sorted by topic. Flip any card to see the exact chat it came from.",
         "memory": true,
         "section": "family",
         "why": true
       },
       {
-        "say": "Swipe right if it’s still true, left if it’s not.",
+        "say": "Checking cards is quick. Swipe right if it’s still true, and left if it isn’t.",
         "swipes": [
           "no",
           "no",
@@ -139,7 +155,7 @@
         ]
       },
       {
-        "say": "Then say what’s true now, in your own words. Both cards update, confirmed.",
+        "say": "Or just say what’s true now, in your own words. Both cards update and are marked confirmed. That’s Déjà Vu: memory Maria can see, check, and fix.",
         "chat": [
           "she’s into cooking shows these days",
           "Ana moved to Phoenix, she lives near us"

@@ -203,6 +203,8 @@ const OVERLAYS = ['importSheet', 'drawer', 'settings', 'memory', 'category', 'in
 function open(id) {
   if (id === 'chat') return closeAll();
   if (id !== 'drawer') $('#drawer').classList.remove('open');
+  // Anything stacked above this page would hide it (Insights over Your cards): close it.
+  if (id !== 'drawer') OVERLAYS.slice(OVERLAYS.indexOf(id) + 1).forEach((o) => $(`#${o}`).classList.remove('open'));
   $(`#${id}`).classList.add('open');
   $('#scrim').classList.toggle('on', id === 'drawer');
   if (id === 'memory') renderMemory();
@@ -462,9 +464,7 @@ function renderAnswer(res, question) {
   // Answer first, check after: the pick reads as a normal reply, the check sits under it.
   addMsg('assistant', md(res.text) + (res.draft ? pickHtml(res.draft, question) : ''));
   if (res.check) renderCheck(res.check, question);
-  const ctx = res.tokens.context;
-  const full = res.tokens.fullHistory;
-  sessionLog.push({ question, mode: res.mode, tokens: ctx, full, cards: res.usedCards.length });
+  sessionLog.push({ question, mode: res.mode, tokensIn: res.tokens.usage?.prompt_tokens, cards: res.usedCards.length });
   scheduleLearnedCheck();
 
   const used = res.usedCards;
@@ -480,8 +480,8 @@ function renderAnswer(res, question) {
     let line;
     if (res.mode === 'cards') {
       const conf = used.filter((c) => c.status === 'confirmed').length;
-      line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">vs ~${full.toLocaleString()} to re-read every chat</span>` : 'No cards needed for this one';
-    } else line = res.mode === 'full' ? `Full history: re-read every past chat · ~${ctx.toLocaleString()} tokens` : `Today’s agents: answered from a summary it wrote about you · ~${ctx.toLocaleString()} tokens · you never see or check it`;
+      line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'})` : 'No cards needed for this one';
+    } else line = res.mode === 'full' ? 'Full history: re-read every past chat' : `Today’s agents: answered from a summary it wrote about you · you never see or check it`;
     const u = res.tokens.usage;
     if (u?.prompt_tokens) line += `<div class="tok-row"><span>⬆ ${u.prompt_tokens.toLocaleString()} tokens in</span><span>⬇ ${(u.completion_tokens ?? 0).toLocaleString()} out</span>${res.model ? `<span>${esc(modelName(res.model))}</span>` : ''}</div>`;
     detail.innerHTML = `<div>${line}</div>${res.trace ? `<div class="trace-line">${traceLine(res.trace)}</div>` : ''}`;
@@ -843,6 +843,7 @@ function makeSwipeable(card, onAction) {
 function fling(card, action, after) {
   const dir = action === 'confirm' ? 1 : -1;
   const stamp = card.querySelector(action === 'confirm' ? '.stamp.yes' : '.stamp.no');
+  card.classList.add('leaving');
   const fly = () => {
     card.style.transition = 'transform .35s ease-in, opacity .35s ease-in';
     card.style.transform = `translate(${dir * 520}px, -30px) rotate(${dir * 24}deg)`;
@@ -893,8 +894,10 @@ $('#composer').addEventListener('submit', (e) => {
 $('#plusBtn').addEventListener('click', () => { if (!thread.querySelector('.suggestions')) renderWelcome(); });
 voiceButton($('#micBtn'), (v) => { if (v.transcript) { $('#input').value = v.transcript; $('#input').focus(); } else toast('Didn’t catch that.'); }, $('#micBtn').innerHTML);
 const newChat = () => { demoRunning = false; conversationId = newId(); try { localStorage.removeItem(chatKey()); } catch {} renderWelcome(); renderChats(); closeAll(); $('#view-chat').scrollTop = 0; $('#input').value = ''; growInput(); if (wide.matches) $('#input').focus(); };
-$('#newChatBtn').addEventListener('click', newChat);
-$('#drawerNewChat').addEventListener('click', newChat);
+// Pressed on a chat that's still empty: say so, instead of seeming to do nothing.
+const newChatPressed = () => { const empty = !thread.querySelector('.msg.user'); newChat(); if (empty) toast('You’re already in a new chat.'); };
+$('#newChatBtn').addEventListener('click', newChatPressed);
+$('#drawerNewChat').addEventListener('click', newChatPressed);
 
 // The memory chip in the message box: this chat only.
 function renderMemChip() {
@@ -1085,12 +1088,12 @@ function renderMemory() {
 }
 $$('#topicSeg button').forEach((b) => b.addEventListener('click', () => { topicFilter = b.dataset.f; renderMemory(); }));
 
-// "Updated Nov 2 · Confirmed Oct 27": when these cards last changed, and were last confirmed.
+// "Updated Nov 2 · Last confirmed Oct 27": when these cards last changed, and were last confirmed.
 function stampLine(cards, extra) {
   const latest = (xs) => xs.filter(Boolean).sort().at(-1);
   const updated = latest([extra, ...cards.map((c) => c.updated ?? c.created)]);
   const confirmed = latest(cards.map((c) => c.last_confirmed));
-  return `Updated ${updated ? fmtDay(updated) : '—'} · Confirmed ${confirmed ? fmtDay(confirmed) : 'not yet'}`;
+  return `Updated ${updated ? fmtDay(updated) : '—'} · ${confirmed ? `Last confirmed ${fmtDay(confirmed)}` : 'Not confirmed yet'}`;
 }
 
 // Every card that needs a look, across topics, in one deck: changed first, then private ones.
@@ -1139,6 +1142,7 @@ function setSeg(v) {
   $$('#catSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
   $('#catDeckWrap').classList.toggle('hidden', v !== 'deck');
   $('#catList').classList.toggle('hidden', v !== 'list');
+  $('#catProgress').classList.toggle('hidden', v !== 'deck'); // "2 of 4" is about the swipe deck
   if (v === 'list') renderCatList();
   else renderDeck();
 }
@@ -1191,10 +1195,11 @@ function renderDeck() {
 async function deckAct(act) {
   const card = currentCard();
   if (!card || (act !== 'confirm' && act !== 'reject')) return;
-  await refresh(await api(`/api/cards/${card.id}`, { action: act }));
+  // The next card shows at once; saving the choice happens behind it.
   if (act === 'reject') deck.removed.push(card);
   deck.i++;
   renderDeck();
+  try { await refresh(await api(`/api/cards/${card.id}`, { action: act })); } catch (err) { toast(err.message); }
 }
 voiceButton($('#deckMic'), async (v) => {
   const card = currentCard();
@@ -1222,10 +1227,9 @@ function renderCatList() {
     ? deck.ids.map((id) => data.cards.find((c) => c.id === id)).filter((c) => c?.checkReason)
     : data.cards.filter((c) => c.category === deck.cat && (!deck.sub || c.sub === deck.sub));
   const max = data.budget.limits.maxCardsPerCategory;
-  const tokens = data.budget.categories[deck.cat]?.tokens ?? 0;
   const sec = deck.review
     ? el(`<section class="category"><header><h2>To check</h2><span class="budget">${cards.length} left</span></header></section>`)
-    : el(`<section class="category"><header><h2>${esc(catLabel(deck.cat))}</h2><span class="budget">${cards.length}/${count(max, 'card')} · ~${tokens} tokens</span></header><div class="meter"><i style="width:${Math.min(100, (cards.length / max) * 100)}%"></i></div></section>`);
+    : el(`<section class="category"><header><h2>${esc(catLabel(deck.cat))}</h2><span class="budget">${cards.length}/${count(max, 'card')}</span></header><div class="meter"><i style="width:${Math.min(100, (cards.length / max) * 100)}%"></i></div></section>`);
   let lastSub;
   // Awake seasons first, then the rest by sub-topic.
   const asleep = (c) => (c.seasonState?.active === false ? 1 : 0);
@@ -1265,14 +1269,12 @@ function renderInsights() {
   const n = { check: 0, confirmed: 0, guess: 0 };
   for (const c of cards) n[bucketOf(c)]++;
   const pct = cards.length ? Math.round((n.confirmed / cards.length) * 100) : 0;
-  const full = data.fullHistoryTokens || 1;
-  const saved = Math.max(0, Math.round((1 - data.budget.totalTokens / full) * 100));
   const shortTerm = cards.filter((c) => c.untilState && !c.untilState.ended).length;
   const t = data.trace;
   const kpi = (icon, value, label, viz = '') => `<div class="kpi"><div class="kpi-top"><span class="kpi-icon">${icon}</span>${viz}</div><div class="kpi-n">${value}</div><div class="kpi-l">${label}</div></div>`;
   $('#stats').innerHTML =
     kpi(ico('check'), `${pct}%`, `confirmed by you · ${n.confirmed} of ${cards.length}`, `<span class="mini-ring" style="--p:${pct}"></span>`) +
-    kpi(ico('bolt'), `${saved}%`, `smaller than your full history`, `<span class="mini-bars"><i style="height:100%"></i><i class="emph" style="height:${Math.max(6, 100 - saved)}%"></i></span>`) +
+    kpi(ico('bolt'), n.check, `${n.check === 1 ? 'card' : 'cards'} waiting for your check`) +
     kpi(ico('chat'), t?.answers ? `${t.checksAsked}<small>/${t.answers}</small>` : '0', 'answers that asked a quick check') +
     kpi(ico('hourglass'), shortTerm, `short-term ${shortTerm === 1 ? 'card' : 'cards'} with an end date`);
   renderTopics();
@@ -1348,14 +1350,16 @@ function renderGate() {
   wireTips(box);
 }
 
-// This session: memory sent per answer vs the full history.
+// This session: tokens really sent per answer (from the API), for each kind of memory used.
 function renderSession() {
   const box = $('#sessionLog');
-  const turns = sessionLog.filter((l) => l.mode === 'cards');
-  if (!turns.length) { box.hidden = true; return; }
-  const avg = Math.round(turns.reduce((a, l) => a + l.tokens, 0) / turns.length);
+  const bars = MODES.map((m) => {
+    const ins = sessionLog.filter((l) => l.mode === m.id && l.tokensIn).map((l) => l.tokensIn);
+    return ins.length && { label: `${m.label} (avg)`, value: Math.round(ins.reduce((a, b) => a + b, 0) / ins.length), emph: m.id === 'cards' };
+  }).filter(Boolean);
+  if (!bars.length) { box.hidden = true; return; }
   box.hidden = false;
-  box.innerHTML = `<h3>This session</h3>${barChart('', '', [{ label: 'Full history', value: data.fullHistoryTokens }, { label: 'Your cards (avg)', value: avg, emph: true }], (v) => `${v.toLocaleString()} tok`)}`;
+  box.innerHTML = `<h3>This session: tokens in per answer</h3>${barChart('', '', bars, (v) => `${v.toLocaleString()} tok`)}`;
   wireTips(box);
 }
 
@@ -1554,7 +1558,7 @@ async function narrate(text) {
     const u = new SpeechSynthesisUtterance(text.replace(/ⓘ/g, 'The info button').replace(/~/g, 'about '));
     const voice = bestVoice();
     if (voice) u.voice = voice;
-    u.rate = 0.96;
+    u.rate = 0.65;
     u.pitch = 1.05;
     u.onend = u.onerror = () => resolve();
     speechSynthesis.speak(u);
@@ -1562,10 +1566,9 @@ async function narrate(text) {
   });
 }
 
-// Before the first play: voice or captions, so sound is never a surprise in a meeting.
+// Before every play: voice or captions, so sound is never a surprise in a meeting.
 // Voice tucks the captions away; captions-only stays silent. The bar can switch either.
 function askNarration() {
-  if (tourPrefs.asked || !('speechSynthesis' in window)) return Promise.resolve();
   return new Promise((resolve) => {
     const box = el(`<div class="narr-ask" role="dialog" aria-label="How to play the demo"><div class="narr-card">
       <div class="ct-icon">${ico('sound')}</div><h3>Play the demo with voice?</h3>
@@ -1580,7 +1583,7 @@ function askNarration() {
       resolve();
     });
     document.body.append(box);
-    box.querySelector('.primary').focus();
+    box.querySelector(tourPrefs.asked && !tourPrefs.voice ? '.ghost' : '.primary').focus();
   });
 }
 
@@ -1633,7 +1636,7 @@ async function playDemo() {
     tourBar.querySelector('.tour-step').textContent = `${i + 1} of ${steps.length}`;
     tourBar.querySelector('p').textContent = text;
     if (tourPrefs.voice) return narrate(text);
-    await sleep(tourPrefs.hidden ? 300 : Math.min(9000, 1200 + text.length * 40));
+    await sleep(tourPrefs.hidden ? 300 : Math.min(15000, 1500 + text.length * 50));
   };
   const lastCard = (sel) => [...document.querySelectorAll(sel)].at(-1);
   // Back to chat the way a person would: the back arrow on each open page.
@@ -1647,7 +1650,8 @@ async function playDemo() {
     const spoken = say(step.say, i);
     await sleep(700); // the line starts just before its action
     if (!demoRunning) break;
-    if (step.newChat) { conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); renderMemChip(); }
+    // A fresh chat, as a person would see it: the old one is gone from the screen.
+    if (step.newChat) { conversationId = `demo-${newId()}`; thread.innerHTML = ''; $('#view-chat').scrollTop = 0; renderMemChip(); }
     if (step.mode) {
       // Pick what this chat uses from the chip, the way a person would.
       await backToChat();
@@ -1901,9 +1905,9 @@ $$('#themeSeg button').forEach((b) => b.classList.toggle('on', b.dataset.t === (
 // ---------------- settings ----------------
 function renderSettings() {
   const b = data.budget.limits;
-  const ceiling = Math.round(b.maxCategories * b.maxCardsPerCategory * b.maxWordsPerCard * 1.4);
-  const pct = Math.round((data.budget.totalTokens / ceiling) * 100);
-  $('#budgetPct').textContent = `${pct}% used`;
+  const room = b.maxCategories * b.maxCardsPerCategory;
+  const pct = Math.round((data.cards.length / room) * 100);
+  $('#budgetPct').textContent = `${data.cards.length} of ${room} cards`;
   $('#budgetBar').style.width = `${Math.min(100, pct)}%`;
   $('#engineInfo').innerHTML = `
     <div class="srow static">Mode<span class="fine right">${data.mock ? 'Mock (no API key yet)' : data.museEnabled ? 'Live (Muse)' : 'Replay (saved Muse answers)'}</span></div>
@@ -1992,6 +1996,12 @@ function describeUser() {
   $('#userGo').textContent = id === NEW_USER ? 'Continue: import my chats' : `Continue as ${p?.name ?? 'this user'}`;
 }
 function hideLanding() {
+  // The welcome page's tips point at the welcome page: they end when it goes.
+  if (!$('#landing').hidden && document.querySelector('.coach-tip')) {
+    document.querySelectorAll('.coach-spot, .coach-tip').forEach((n) => n.remove());
+    coaching = false;
+    markSeen('dv-tour-land');
+  }
   $('#landing').hidden = true;
   app.classList.remove('landing-on');
   syncChrome();
@@ -2024,8 +2034,12 @@ async function openUserPicker(e) {
   if (!menu.hidden) return (menu.hidden = true);
   let choice;
   try { choice = await api('/api/profiles'); } catch (err) { return toast(err.message); }
-  const row = (p) => `<button role="menuitemradio" aria-checked="${p.id === data.profile.id}" data-id="${esc(p.id)}"><span class="um-av">${esc(p.name[0])}</span><span><b>${esc(p.name)}</b><small>${p.demo ? 'Demo user' : p.real ? 'On this computer' : 'Your chats'}</small></span>${p.id === data.profile.id ? '<i>✓</i>' : ''}</button>`;
-  menu.innerHTML = choice.profiles.map(row).join('') +
+  // The guided demos come first and stand out; everyone else is there to explore.
+  const row = (p) => `<button role="menuitemradio" aria-checked="${p.id === data.profile.id}" data-id="${esc(p.id)}"${p.tour ? ' class="um-tour"' : ''}><span class="um-av">${esc(p.name[0])}</span><span><b>${esc(p.name)}</b><small>${p.tour ? '▶ Guided demo' : p.demo ? 'Sample memory to explore' : p.real ? 'On this computer' : 'Your chats'}</small></span>${p.id === data.profile.id ? '<i>✓</i>' : ''}</button>`;
+  const tours = choice.profiles.filter((p) => p.tour);
+  const others = choice.profiles.filter((p) => !p.tour);
+  const section = (label, list) => (list.length ? `<p class="um-label">${label}</p>${list.map(row).join('')}` : '');
+  menu.innerHTML = section('Guided demos', tours) + section(tours.length ? 'More people to explore' : 'People', others) +
     `<div class="mm-sep"></div><button data-id="${NEW_USER}"><span class="um-av">+</span><span><b>New user</b><small>Import my chats</small></span></button>
     <button data-id="__welcome"><span class="um-av"><svg aria-hidden="true"><use href="#i-play"/></svg></span><span><b>Welcome page</b><small>How it works</small></span></button>`;
   menu.hidden = false;
@@ -2049,6 +2063,10 @@ document.addEventListener('click', () => { $('#userMenu').hidden = true; });
 async function enterApp(state) {
   hideLanding();
   demoRunning = false;
+  // Alex and Maria start fresh on every visit: their starting cards, no chats, the demo ready.
+  if (state.profile?.script?.length) {
+    try { state = await api('/api/demo/load', { fresh: true }); } catch {}
+  }
   await refresh(state);
   learnedSeen = data.learned?.at(-1)?.at ?? '';
   sessionLog.length = 0;
@@ -2056,7 +2074,7 @@ async function enterApp(state) {
   renderModelChip();
   // Come back to the chat you were in.
   let last = null;
-  try { last = localStorage.getItem(chatKey()); } catch {}
+  try { last = data.profile?.script?.length ? null : localStorage.getItem(chatKey()); } catch {}
   if (last) await openChat(last); else { conversationId = newId(); renderWelcome(); }
   renderChats();
   // A build still running (a reload mid-import): keep showing its progress.
@@ -2115,7 +2133,7 @@ const LAND_TIPS = [
   { at: '#landSide', icon: 'cards', title: 'What happens inside', text: 'It learns short cards from chats, uses only the ones that fit, and asks once when a guess matters.' },
 ];
 const APP_TIPS = [
-  { at: '#thread .play-demo', icon: 'play', title: 'Watch a 2-minute demo', text: 'A recorded conversation plays by itself and shows every part of the app.' },
+  { at: '#thread .play-demo', icon: 'play', title: 'Watch the demo', text: 'A recorded conversation plays by itself and shows every part of the app.' },
   { at: ['#drawer .drow[data-go="memory"]', '#menuBtn'], icon: 'memory', title: 'Your memory lives here', text: 'Your cards: every card by topic. Swipe to check them.' },
   { at: '#composer', icon: 'chat', title: 'Or just chat', text: 'Ask for a plan or a booking. ⓘ under an answer shows the cards it used.' },
 ];

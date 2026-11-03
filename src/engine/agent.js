@@ -273,7 +273,9 @@ export async function answer(message, mode, relevantCards, { summary, recent = [
     { role: 'user', content: message },
   ];
   // More thinking needs more room, or the reply comes back empty.
-  const res = await complete('main', messages, { maxTokens: effort === 'low' ? 2000 : 6000, temperature: 0.4, reasoning: effort, tools: actions ? ACTION_TOOLS : null, model });
+  let res = await complete('main', messages, { maxTokens: effort === 'low' ? 2000 : 6000, temperature: 0.4, reasoning: effort, tools: actions ? ACTION_TOOLS : null, model });
+  // Thinking can use up the room and leave no reply at all: once more, with more room.
+  if (!res.text.trim() && !res.toolCalls?.length) res = await complete('main', messages, { maxTokens: 6000, temperature: 0.4, reasoning: effort, tools: actions ? ACTION_TOOLS : null, model });
   const draft = toDraft(res.toolCalls?.[0]);
   // A tool call can come with no text; give the draft a short lead-in.
   const text = res.text.trim() || (draft ? `Here's a draft${draft.title ? ` for ${draft.title}` : ''}, based on what I know. Want me to change anything?` : '');

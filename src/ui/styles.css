@@ -144,7 +144,6 @@ main { position: absolute; inset: 0; }
 .meta .fb { display: flex; gap: 8px; margin-top: 8px; }
 .meta .fb button { border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 3px 12px; font-size: 13px; }
 .meta .fb button.done { opacity: .5; pointer-events: none; }
-.savings { font-weight: 600; color: var(--yes); }
 
 .suggestions { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .suggestions button { text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 18px; padding: 12px 16px; font-size: 15px; }
@@ -369,6 +368,8 @@ h1.big { font-size: 34px; letter-spacing: -0.02em; margin: 56px 4px 16px; }
 #catList { margin-top: 14px; }
 /* Stacked cards behind the top one: solid, contents hidden */
 .deck .swipe-card:not(:last-child) > * { visibility: hidden; }
+/* The card underneath shows its words as soon as the top one moves away. */
+.deck .swipe-card:nth-last-child(2):has(+ .dragging, + .leaving) > * { visibility: visible; }
 .deck .swipe-card:nth-last-child(2) { opacity: 1; background: var(--surface); filter: brightness(.97); }
 .deck .swipe-card:nth-last-child(n+3) { opacity: 1; filter: brightness(.93); }
 
@@ -739,7 +740,7 @@ svg.line path.s3 { stroke: var(--series-3); }
 .land-tip { margin: 0 4px 24px; line-height: 1.5; }
 .mem-credit { margin: 4px 0 14px; }
 .eval-note { margin-top: 10px; line-height: 1.45; }
-.play-demo .pd-sub { font-weight: 500; font-size: 12.5px; opacity: .8; margin-left: 6px; }
+.play-demo .pd-sub { font-weight: 500; font-size: 12.5px; opacity: .8; margin-left: 6px; white-space: nowrap; display: inline-block; }
 
 /* Play demo: a caption before each step */
 .demo-say { margin: 18px auto 8px; max-width: 520px; padding: 10px 14px; border-radius: 12px; background: var(--accent-soft, rgba(0,130,251,.08)); color: var(--text); font-size: 14px; line-height: 1.45; text-align: center; }
@@ -934,6 +935,12 @@ svg.line path.s3 { stroke: var(--series-3); }
 .user-menu b { display: block; font-size: 14px; }
 .user-menu small { font-size: 12px; color: var(--muted); }
 .user-menu i { margin-left: auto; font-style: normal; color: var(--accent); }
+.user-menu .um-label { margin: 8px 10px 4px; font: 500 11px/1.2 "Geist Mono", ui-monospace, monospace; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); }
+.user-menu .um-label:first-child { margin-top: 4px; }
+/* The guided demos are the place to start: they glow a little. */
+.user-menu button.um-tour { background: var(--accent-bg); box-shadow: inset 0 0 0 1px var(--accent); margin-bottom: 6px; }
+.user-menu button.um-tour small { color: var(--accent); font-weight: 600; }
+.user-menu button.um-tour .um-av { box-shadow: 0 0 0 3px var(--accent-bg), 0 0 14px rgba(92, 200, 255, .55); }
 .um-av { width: 30px; height: 30px; flex: none; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #5cc8ff, #0082fb); color: #fff; font-weight: 700; font-size: 13px; }
 .um-av { width: 30px; min-width: 30px; box-sizing: border-box; font-size: 15px; }
 .um-av svg { width: 16px; height: 16px; stroke: #fff; vertical-align: 0; }
@@ -992,3 +999,15 @@ body.touring #modelChip { display: none; }
 .land-demo { margin-top: 8px; border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); color: var(--accent); background: transparent; border-radius: 999px; padding: 12px; font-weight: 600; }
 .eval-note a { color: var(--accent); }
 .held-h { margin: 22px 0 2px; font-size: 16px; }
+
+/* Phones: the two chips squeezed the message box to a sliver. Type on the top row,
+   with the buttons and chips on a row under it. */
+@media (max-width: 520px) {
+  .composer { flex-wrap: wrap; row-gap: 0; padding-top: 4px; }
+  .composer textarea { order: -1; flex: 1 0 100%; padding: 8px 10px 4px; }
+  .composer #micBtn { margin-left: auto; }
+  .view { padding-bottom: 140px; }
+}
+/* A long card line in a topic tile pushed the tile past the screen's edge on phones. */
+.cat-grid { grid-template-columns: minmax(0, 1fr); }
+.cat-tile { min-width: 0; }

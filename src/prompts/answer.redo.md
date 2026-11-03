@@ -1,2 +1,2 @@
-The user just changed a memory card and asked you to redo your last answer. The confirmed card they just changed is what they want now: follow it exactly. If it names a kind of place or option (an Airbnb, a direct flight, a vegetarian spot), the new pick must be that kind, not the earlier one adjusted.
-If your last answer was a pick (a booking or an order), call the same draft tool again with the new pick, then say what changed in a few words.
+The user just changed a memory card and asked you to redo your last answer with what's true now.
+If your last answer was a booking or an order, call the same draft tool again with the new pick, then say what changed in a few words.
