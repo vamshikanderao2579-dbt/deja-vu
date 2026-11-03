@@ -381,8 +381,10 @@ route('POST', '/api/reset', () => {
 // Loads the ready-made synthetic memory (mixed statuses) for demos.
 // Resets the active profile to its starting memory (Alex: the demo memory; others:
 // the memory as first built from their chats).
-route('POST', '/api/demo/load', async () => {
+route('POST', '/api/demo/load', async (body) => {
   if (!loadSeed()) throw httpError(409, 'Build this profile’s memory first (Memory → Build from my chats).');
+  // The guided tour starts with Déjà Vu off: no cards until it's turned on.
+  if (body?.empty) { Object.assign(getState(), { cards: [], rejected: [], cueLog: [], learned: [] }); save(); }
   // A fresh start picks cards fresh too, so a recorded demo replays exactly.
   current().relevanceCache = [];
   return statePayload();

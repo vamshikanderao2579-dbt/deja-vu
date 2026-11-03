@@ -141,7 +141,8 @@ let data = null;
 // history to compare. Kept per chat in this browser; memory switched off overrides it.
 let chatModes = {};
 try { chatModes = JSON.parse(localStorage.getItem('dv-chat-modes') || '{}'); } catch {}
-const chatMode = () => (MODES.some((x) => x.id === chatModes[conversationId]) ? chatModes[conversationId] : 'cards');
+// With no cards yet, Déjà Vu is off: the chat answers like today's agents until it's turned on.
+const chatMode = () => (MODES.some((x) => x.id === chatModes[conversationId]) ? chatModes[conversationId] : data?.cards?.length ? 'cards' : 'summary');
 let conversationId = newId();
 const sessionLog = [];
 
@@ -197,7 +198,7 @@ function el(html) {
 }
 
 // ---------------- navigation: drawer, sheet, pages ----------------
-const OVERLAYS = ['importSheet', 'drawer', 'settings', 'memory', 'category', 'insights', 'rebuildSheet'];
+const OVERLAYS = ['importSheet', 'drawer', 'settings', 'memory', 'category', 'insights', 'rebuildSheet', 'turnOnSheet'];
 
 function open(id) {
   if (id === 'chat') return closeAll();
@@ -503,6 +504,10 @@ function renderAnswer(res, question) {
   scrollDown();
 }
 
+// A card named in chat opens that card in Memory.
+const cardLink = (c) => `<button type="button" class="card-link" data-open-card="${esc(c.id)}">“${esc(c.text)}”</button>`;
+thread.addEventListener('click', (e) => { const b = e.target.closest('[data-open-card]'); if (b) openCard(b.dataset.openCard); });
+
 // Jump from a chip to that exact card in Memory (list view, highlighted).
 function openCard(id) {
   const card = data.cards.find((c) => c.id === id);
@@ -723,7 +728,7 @@ async function applyUpdates(items, message) {
   }
   t.remove();
   addMsg('assistant', saved.length
-    ? `<p>Got it. Saved:</p><ul>${saved.map((c) => `<li><b>${esc(catLabel(c.category))}</b>: “${esc(c.text)}” ✓</li>`).join('')}</ul>`
+    ? `<p>Got it. Saved:</p><ul>${saved.map((c) => `<li><b>${esc(catLabel(c.category))}</b>: ${cardLink(c)} ✓</li>`).join('')}</ul>`
     : `<p>Okay, nothing new to save for now.</p>`);
 }
 
@@ -734,7 +739,7 @@ async function applyUpdate(info, message) {
     t.remove();
     await refresh(res);
     addMsg('assistant', res.card
-      ? `<p>Got it. Saved to <b>${esc(catLabel(info.category))}</b>: “${esc(res.card.text)}” ✓</p>`
+      ? `<p>Got it. Saved to <b>${esc(catLabel(info.category))}</b>: ${cardLink(res.card)} ✓</p>`
       : `<p>Okay. I won’t keep anything about that for now.</p>`);
   } catch (err) {
     t.remove();
@@ -911,6 +916,8 @@ $('#memMenu').addEventListener('click', (e) => {
   e.stopPropagation();
   const id = e.target.closest('[data-m]')?.dataset.m;
   if (!id) return;
+  $('#memMenu').hidden = true;
+  if (id === 'cards' && !data.cards.length) return askTurnOn();
   if (id === 'cards') delete chatModes[conversationId]; else chatModes[conversationId] = id;
   try { localStorage.setItem('dv-chat-modes', JSON.stringify(chatModes)); } catch {}
   $('#memMenu').hidden = true;
@@ -1586,7 +1593,7 @@ async function playDemo() {
   coaching = false;
   closeAll();
   try {
-    await refresh(await api('/api/demo/load', {}));
+    await refresh(await api('/api/demo/load', { empty: true }));
   } catch (err) {
     demoRunning = false;
     return toast(err.message);
@@ -1594,6 +1601,7 @@ async function playDemo() {
   learnedSeen = data.learned?.at(-1)?.at ?? '';
   conversationId = `demo-${newId()}`;
   thread.innerHTML = '';
+  renderMemChip();
   document.body.classList.add('touring'); // model and memory pickers out of the way
   showTour();
   const input = $('#input');
@@ -1652,17 +1660,17 @@ async function playDemo() {
       await sleep(400);
     }
     if (step.build) {
-      // Déjà Vu reads the same chats from an empty memory; Memory shows the progress.
+      // Turn Déjà Vu on the way a person would: the chip, the sheet, agree, watch it build.
       await backToChat();
-      if (!wide.matches) { open('drawer'); await sleep(300); }
-      await press(onScreen(['#drawer .drow[data-go="memory"]', '#menuBtn']));
-      if (!$('#memory').classList.contains('open')) open('memory');
-      let job = await api('/api/demo/build', {});
-      for (let t = 0; t < 180000 && demoRunning && job && !job.done; t += 600) { showBuild(job); await sleep(600); job = await fetch('/api/build').then((r) => r.json()).catch(() => null); }
-      if (job) showBuild(job);
-      await refresh(await api('/api/state'));
-      renderMemory();
-      await sleep(1800);
+      await press($('#memChip'));
+      await sleep(500);
+      await press($('#memMenu [data-m="cards"]'));
+      await sleep(1600); // time to read what it will do
+      await press($('#turnOnGo'));
+      const ok = await until('#tobOk:not([hidden])', 180000);
+      await sleep(2500); // time to see the cards it wrote
+      await press(ok);
+      await sleep(300);
     }
     if (step.ending) {
       // A short-term card's end date: show the prompt, then answer it.
@@ -1818,6 +1826,58 @@ function showDemoEnd() {
   });
   document.body.append(box);
 }
+
+// ---------------- turning Déjà Vu on ----------------
+// With no cards yet, picking Déjà Vu asks first, then builds the cards while you watch:
+// each stage stays up long enough to read, then the cards appear as they were written.
+function askTurnOn() {
+  $('#turnOnAsk').hidden = false;
+  $('#turnOnBuild').hidden = true;
+  open('turnOnSheet');
+}
+const BUILD_STEPS = [
+  ['scan', 'Reading your chats'],
+  ['draft', 'Muse Spark writes short cards'],
+  ['review', 'Cleaning up the draft'],
+  ['grade', 'Muse Wonder grades every card'],
+  ['contract', 'Final checks'],
+];
+$('#turnOnGo').addEventListener('click', async () => {
+  $('#turnOnAsk').hidden = true;
+  $('#turnOnBuild').hidden = false;
+  $('#tobOk').hidden = true;
+  $('#tobCards').innerHTML = '';
+  $('#tobDone').textContent = '';
+  $('#tobSteps').innerHTML = BUILD_STEPS.map(([, label]) => `<li>${esc(label)}</li>`).join('');
+  const steps = [...$('#tobSteps').children];
+  let job;
+  try { job = await api(demoRunning ? '/api/demo/build' : '/api/build', demoRunning ? {} : { confirm: true }); } catch (err) { close('turnOnSheet'); return toast(err.message); }
+  const at = (stage) => Math.max(0, BUILD_STEPS.findIndex(([s]) => s === ({ guard: 'scan', done: 'contract' }[stage] ?? stage)));
+  let shown = -1;
+  for (;;) {
+    const target = job?.done ? BUILD_STEPS.length : at(job?.stage);
+    if (shown < target) {
+      shown++;
+      steps.forEach((li, k) => { li.className = k < shown ? 'done' : k === shown ? 'now' : ''; });
+      if (shown === 0 && job?.label?.startsWith('Reading')) steps[0].textContent = job.label;
+      await sleep(900);
+    } else if (job?.done) break;
+    else await sleep(500);
+    if (!job?.done) job = await fetch('/api/build').then((r) => r.json()).catch(() => job);
+  }
+  if (job.error) { close('turnOnSheet'); return toast(`I couldn’t finish building your memory: ${job.error}`); }
+  await refresh(await api('/api/state'));
+  renderMemChip();
+  const show = data.cards.filter((c) => !c.sensitive && c.status !== 'pending').slice(0, 10);
+  for (const c of show) {
+    $('#tobCards').append(el(`<div class="ff-card"><span class="cat-icon">${catIcon(c.category)}</span><span>${esc(c.text)}</span></div>`));
+    await sleep(250);
+  }
+  const topics = new Set(data.cards.map((c) => c.category)).size;
+  $('#tobDone').textContent = `${data.cards.length} cards in ${topics} topics${data.cards.length > show.length ? ` (${data.cards.length - show.length} more in Memory)` : ''}. Each one is a guess until you confirm it.`;
+  $('#tobOk').hidden = false;
+});
+$('#tobOk').addEventListener('click', () => { close('turnOnSheet'); toast('Déjà Vu is on.'); });
 
 // ---------------- profiles ----------------
 const PROFILE_COLORS = ['#0082FB', '#E5484D', '#1FA36A', '#B5541C', '#6250D6', '#0F7B8A'];

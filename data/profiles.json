@@ -14,13 +14,13 @@
     ],
     "script": [
       {
-        "say": "Meet Alex. Today’s agents remember you with a summary they write from your chats. It goes out with every message, and Alex never sees it.",
+        "say": "Meet Alex. Déjà Vu is off and Memory is empty, so Alex’s agent works like today’s agents: a summary it wrote from the chats goes out with every message, and Alex never sees it.",
         "mode": "summary",
         "text": "plan our winter break trip, all three of us plus biscuit",
         "info": true
       },
       {
-        "say": "Now add Déjà Vu. It reads the same chats once and writes short cards Alex can see. Each one stays a guess until Alex confirms it.",
+        "say": "Now turn Déjà Vu on. Alex agrees, and it reads the same chats once: Muse Spark writes short cards, Muse Wonder grades each one. Every card stays a guess until Alex confirms it.",
         "build": true
       },
       {
@@ -88,13 +88,13 @@
     ],
     "script": [
       {
-        "say": "Meet Maria. Today’s agents remember you with a summary they write from your chats. It goes out with every message, and Maria never sees it.",
+        "say": "Meet Maria. Déjà Vu is off and Memory is empty, so Maria’s agent works like today’s agents: a summary it wrote from the chats goes out with every message, and Maria never sees it.",
         "mode": "summary",
         "text": "book me a dentist appointment next week",
         "info": true
       },
       {
-        "say": "Now add Déjà Vu. It reads the same chats once and writes short cards Maria can see. Each one stays a guess until Maria confirms it.",
+        "say": "Now turn Déjà Vu on. Maria agrees, and it reads the same chats once: Muse Spark writes short cards, Muse Wonder grades each one. Every card stays a guess until Maria confirms it.",
         "build": true
       },
       {

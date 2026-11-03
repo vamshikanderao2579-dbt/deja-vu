@@ -249,6 +249,29 @@
     </section>
 
 
+    <section class="sheet" id="turnOnSheet" aria-label="Turn on Déjà Vu">
+      <button class="circle line close" data-close="turnOnSheet" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div class="intro-mark"><svg viewBox="0 0 24 24"><use href="#i-logo"/></svg></div>
+      <div id="turnOnAsk">
+        <h1 class="big">Turn on Déjà Vu?</h1>
+        <p class="sub">I’ll read your chats once and write short cards you can see. Each one stays a guess until you confirm it.</p>
+        <ul class="intro-list easy">
+          <li><svg class="ico sm"><use href="#i-eye"/></svg>You see every card, and the chat it came from</li>
+          <li><svg class="ico sm"><use href="#i-chat"/></svg>I check once, only when a guess shapes a plan</li>
+          <li><svg class="ico sm"><use href="#i-swipe"/></svg>Swipe to keep or remove any card</li>
+        </ul>
+        <button class="primary wide" id="turnOnGo">Turn on and build my cards</button>
+        <button class="link center" data-close="turnOnSheet">Not now</button>
+      </div>
+      <div id="turnOnBuild" hidden>
+        <h1 class="big">Building your memory</h1>
+        <ol class="build-steps" id="tobSteps"></ol>
+        <div class="ff-cards" id="tobCards"></div>
+        <p class="fine" id="tobDone"></p>
+        <button class="primary wide" id="tobOk" hidden>Start chatting</button>
+      </div>
+    </section>
+
     <div class="toast" id="toast"></div>
 
     <!-- Shared icons -->
