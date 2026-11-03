@@ -585,7 +585,7 @@ const QUIET = {
 function traceLine(t) {
   if (t.mode !== 'cards') return 'No cards you can see, so nothing to check';
   const parts = [`${t.stakes} stakes`];
-  parts.push(t.check ? `checked “${esc(t.check)}”` : esc(QUIET[t.quiet] ?? 'no check'));
+  parts.push(t.check ? `checked “${esc(t.check)}”${t.picked > 1 ? `, and only that: one check per chat, the other ${t.picked - 1} ${t.picked - 1 === 1 ? 'card' : 'cards'} weren’t asked about` : ''}` : esc(QUIET[t.quiet] ?? 'no check'));
   if (t.quietYes) parts.push(`you carried on, so “${esc(t.quietYes.text)}” counts as a quiet yes (still a guess)`);
   return parts.join(' · ');
 }
@@ -1582,7 +1582,7 @@ async function playDemo() {
   if (demoRunning) return;
   await askNarration();
   demoRunning = true;
-  document.querySelectorAll('.coach-spot, .coach-tip').forEach((n) => n.remove());
+  document.querySelectorAll('.coach-spot, .coach-tip, .demo-end').forEach((n) => n.remove());
   coaching = false;
   closeAll();
   try {
@@ -2058,7 +2058,7 @@ const LAND_TIPS = [
   { at: '#landSide', icon: 'cards', title: 'What happens inside', text: 'It learns short cards from chats, uses only the ones that fit, and asks once when a guess matters.' },
 ];
 const APP_TIPS = [
-  { at: '#thread .play-demo', icon: 'play', title: 'Watch a 1-minute demo', text: 'A recorded conversation plays by itself and shows every part of the app.' },
+  { at: '#thread .play-demo', icon: 'play', title: 'Watch a 2-minute demo', text: 'A recorded conversation plays by itself and shows every part of the app.' },
   { at: ['#drawer .drow[data-go="memory"]', '#menuBtn'], icon: 'memory', title: 'Your memory lives here', text: 'Your cards: every card by topic. Swipe to check them.' },
   { at: '#composer', icon: 'chat', title: 'Or just chat', text: 'Ask for a plan or a booking. ⓘ under an answer shows the cards it used.' },
 ];

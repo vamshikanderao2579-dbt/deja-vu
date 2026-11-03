@@ -204,7 +204,8 @@ route('POST', '/api/chat', async (body) => {
   const res = await answer(message, mode, relevant, { summary, recent: prior, actions, redo: skipCue, model, effort });
   const used = relevant.filter(usable);
   for (const c of used) c.last_used = new Date().toISOString();
-  s.trace = countTrace(s.trace, trace, !!res.draft);
+  // Insights counts what Déjà Vu decided; the two comparison modes decide nothing.
+  if (mode === 'cards') s.trace = countTrace(s.trace, trace, !!res.draft);
   // Keep the exchange, then learn from it in the background (never blocks the answer).
   const { conv } = addLiveMessage(conversationId, 'user', message);
   addLiveMessage(conversationId, 'assistant', res.text, res.draft ? { draft: res.draft } : {});

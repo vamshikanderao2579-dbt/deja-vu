@@ -14,9 +14,9 @@
     ],
     "script": [
       {
-        "say": "Meet Alex. Today’s agents remember you with a summary they write from your chats: about 450 tokens with every message, and Alex never sees it.",
+        "say": "Meet Alex. Today’s agents remember you with a summary they write from your chats. It goes out with every message, and Alex never sees it.",
         "mode": "summary",
-        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs",
+        "text": "plan our winter break trip, all three of us plus biscuit",
         "info": true
       },
       {
@@ -24,9 +24,9 @@
         "build": true
       },
       {
-        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, about 150 tokens, and one line checks the guess the pick depends on.",
+        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, and one line checks the guess the pick depends on.",
         "newChat": "New chat",
-        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs",
+        "text": "plan our winter break trip, all three of us plus biscuit",
         "info": true
       },
       {
@@ -37,8 +37,8 @@
       {
         "say": "Say what changed, in one tap.",
         "choose": [
-          "we're fine with an Airbnb with a kitchen, Maya is picky",
-          "any place with free cancellation is fine"
+          "we want snow this year, Maya wants to learn to ski",
+          "somewhere we can drive to, no flights this time"
         ]
       },
       {
@@ -68,8 +68,8 @@
       {
         "say": "Then say what’s true now, in your own words. Both cards update, confirmed.",
         "chat": [
-          "TODO 1",
-          "TODO 2"
+          "we cook at home most nights, takeout maybe once a month",
+          "we go where friends recommend, reviews matter less"
         ]
       }
     ]
@@ -88,7 +88,7 @@
     ],
     "script": [
       {
-        "say": "Meet Maria. Today’s agents remember you with a summary they write from your chats: about 450 tokens with every message, and Maria never sees it.",
+        "say": "Meet Maria. Today’s agents remember you with a summary they write from your chats. It goes out with every message, and Maria never sees it.",
         "mode": "summary",
         "text": "book me a dentist appointment next week",
         "info": true
@@ -98,7 +98,7 @@
         "build": true
       },
       {
-        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, about 150 tokens, and one line checks the guess the pick depends on.",
+        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, and one line checks the guess the pick depends on.",
         "newChat": "New chat",
         "text": "book me a dentist appointment next week",
         "info": true
@@ -111,8 +111,8 @@
       {
         "say": "Say what changed, in one tap.",
         "choose": [
-          "I'm on day shifts now, 7am to 3pm",
-          "I only work weekends now"
+          "I'm off night shifts, mornings are best",
+          "any weekday works, just not Fridays"
         ]
       },
       {
@@ -127,7 +127,7 @@
       {
         "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
         "memory": true,
-        "section": "food",
+        "section": "family",
         "why": true
       },
       {
@@ -135,15 +135,14 @@
         "swipes": [
           "no",
           "no",
-          "yes",
           "yes"
         ]
       },
       {
         "say": "Then say what’s true now, in your own words. Both cards update, confirmed.",
         "chat": [
-          "TODO 1",
-          "TODO 2"
+          "she’s into cooking shows these days",
+          "Ana moved to Phoenix, she lives near us"
         ]
       }
     ],
