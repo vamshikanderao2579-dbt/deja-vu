@@ -68,5 +68,5 @@ const out = {
 writeFileSync(join(ROOT, 'data', 'eval-summary.json'), JSON.stringify(out, null, 2) + '\n');
 console.table(Object.fromEntries(combined.map((c) => [c.mode, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
 if (heldOut.length) console.table(Object.fromEntries(out.all.combined.map((c) => [`all ${out.all.people}: ${c.mode}`, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
-if (heldOut.length) console.table(Object.fromEntries(out.heldOut.combined.map((c) => [`held out: ${c.mode}`, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
+if (heldOut.length) console.table(Object.fromEntries(out.heldOut.combined.map((c) => [`10 synthetic: ${c.mode}`, { 'accuracy %': c.accuracy, 'changed outside chat %': c.accuracyDrifted, 'stale errors': c.staleErrors, 'avg tokens': c.avgContextTokens }])));
 console.log('Saved data/eval-summary.json');

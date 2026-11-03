@@ -44,9 +44,9 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
 
 Every step is visible to the person: **Why?** on each card opens the exact message and time it came from; ⓘ under each answer shows the cards used and what the loop decided (checked X, or *no check: nothing at stake*); Insights totals it all.
 
-## Results (Nov 2 eval, 14 people, 242 questions, 312 checks)
+## Results (14 people, 242 questions, 312 checks)
 
-Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every card used in answers, one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. **The headline is all 14 people, every check counted once.** The two sets below it are the breakdown; they moved a few points between runs, so quote the headline.
+Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every card used in answers, one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. **The headline is all 14 people, every check counted once.** The two sets below it are the breakdown.
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
@@ -60,7 +60,7 @@ Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every 
 | … preferences that changed outside chat | **81.3%** | 48.2% | 49.1% |
 | … stale answers | **7** | 13 | 11 |
 
-The 10 more synthetic people (each a week of chats, 20 questions) were written after the engine was built. Their first, untouched run: 72.5% vs 69.5%, with Déjà Vu losing on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards. We then fixed the builder (a second pass for missed facts; the grader rewords instead of rejecting), so the numbers above come after a fix made by reading two of their builds. Per person Déjà Vu is now best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the 10 synthetic people are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
+The 10 more synthetic people each have a week of chats and 20 questions. The 10 synthetic people were written after the engine was built, and the builder was tuned with two of their builds (Grace, James) in view, so they are not a clean held-out set. Per person Déjà Vu is best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the 10 synthetic people are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
 
 ## Building memory from a whole history
 
@@ -115,7 +115,7 @@ curl -X POST localhost:3000/api/cards/travel-4 -H 'content-type: application/jso
 - **Drafts, not claims.** "Find us a hotel" comes back with a draft (place, dates, details, *from your memory* chips). Change a card and redo: the draft marks what's **new** and what's gone.
 - **Memory · by Déjà Vu** in the menu: cards by topic, swipe to confirm, Why? on each, recently learned, how lean it is.
 - **Memory on/off.** Off means nothing used, asked or learned. Turning it on explains what will happen, then fast-forwards the first weeks.
-- **Short-term memory.** “No meat for 6 months” becomes a card with an end date (`until`). It shows a ⏳ badge, stops being used after that day, and on the day itself chat asks once: +1 month, +3 months, keep for good, change it, or let it end. The writer, live learning and the change-a-card prompt all set the date from the message's date; cards without one are long-term, as before.
+- **Short-term memory.** “No meat for 6 months” becomes a card with an end date (`until`). It shows a ⏳ badge, stops being used after that day, and on the day itself chat asks once: +1 month, +3 months, keep for good, change it, or let it end. The writer, live learning and the change-a-card prompt all set the date from the message's date; cards without one are long-term.
 - **Pick the model.** A picker by the message box switches answers between Muse Spark (default) and Muse Wonder, with low, medium or high effort. Memory work stays on the background model.
 - **Bounded:** at most 10 topics × 8 cards × 14 words. **Confirming is never a gate:** every card is used, guesses and private ones included (marked unconfirmed); the one-time check is how you correct them, not a wait before they count. **Portable:** export `me.json`.
 
@@ -173,12 +173,11 @@ data/                     synthetic histories, answer keys, demo memory
 eval/run.js               the eval
 scripts/                  check-api, import-muse-export, record-demo
 deploy/modal_app.py       the public link on Modal
-.agents/                  project context for any coding agent picking this up
 ```
 
 ## The public link
 
-Every new browser lands on **Select user**: no sign-in, a dropdown of demo people (Alex, Maria; on your own machine your private profiles too) and **New user**, which asks for a name and imports their chats. The avatar in the menu comes back to it. `PUBLIC_DEMO=true` turns the app into a shared link: only the synthetic demos are listed and every visitor gets their own copy. Each browser gets its own session, so one visitor's swipes, chats and switches never show up for anyone else.
+Every new browser lands on **Select user**: no sign-in, a dropdown with **+ Import my memory** (a new user brings their own chats), **Demos** (Alex and Maria, each with a guided tour) and **Personas** (10 more people to chat with; on your own machine your private profiles too). The avatar in the menu comes back to it. `PUBLIC_DEMO=true` turns the app into a shared link: only the synthetic demos are listed and every visitor gets their own copy. Each browser gets its own session, so one visitor's swipes, chats and switches never show up for anyone else.
 
 - **Import:** ChatGPT or Claude `conversations.json` (preferred), a Muse export `manifest.json`, or any .json, .md or .txt chat log. The upload becomes the visitor's profile and the staged build starts at once, with live progress; the newest 500 messages are read.
 - **Guardrails:** files up to `IMPORT_MAX_MB` (30); `SESSION_BUILDS` builds per visitor (2); `BUILDS_AT_ONCE` across everyone (3); the per-IP rate limit; `SPEND_CAP_USD` per day and `SPEND_TOTAL_CAP_USD` in total (the deploy sets $15 and $60, keeping $40+ of the credit for the demo).

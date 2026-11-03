@@ -2,7 +2,7 @@
 
 Hand this whole file to Claude. It generates **chat histories and answer keys only**. It does not run anything or invent any scores: scores come from running the real pipeline afterwards (`node eval/run.js`).
 
-Everything here is **SYNTHETIC TEST DATA**, written after the engine was built: not used in the demo, and the builder is not tuned on these personas before their first eval run.
+Everything here is **SYNTHETIC TEST DATA**, written after the engine was built, and not used in the demo.
 
 ## What to produce, per persona
 

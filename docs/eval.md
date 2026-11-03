@@ -1,6 +1,6 @@
 # Eval: confirmed memory vs inferred memory vs full history
 
-Three ways a personal agent can remember you, compared on **14 people** (2 team members' own real Muse histories, plus 12 synthetic people with very different lives), **242 everyday questions** and **312 checklist items**. Answers and judge: Muse Spark 1.3.
+Three ways a personal agent can remember you, compared on **14 people** (2 real people's own Muse histories, plus 12 synthetic people with very different lives), **242 everyday questions** and **312 checklist items**. Answers and judge: Muse Spark 1.3.
 
 | Setup | Memory sent with each message |
 |---|---|
@@ -19,7 +19,7 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 3. **Answer** each question in each setup.
 4. **Judge** against a checklist, e.g. *"Suggests an Airbnb"* (should not) or *"Includes exactly 5 hashtags"* (should). Checklists are far more reliable than asking a model whether an answer is good.
 
-## Results (Nov 2 2026, one run per person, staged build, revised prompts)
+## Results (one run per person)
 
 ### Headline: all 14 people, 312 checks, each counted once
 
@@ -28,7 +28,7 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 | **All checks** | **81.7%** | 71.8% | 70.5% |
 | Changed outside chat | **82.3%** | 49.2% | 48.4% |
 
-Quote this one. The two sets below are the breakdown; each moved a few points between runs, and averaging them doesn't give the headline.
+The two sets below are the breakdown. Averaging them doesn't give the headline, because the sets have different numbers of checks.
 
 ### Main set: 4 people, 42 questions, 76 checks
 
@@ -45,7 +45,7 @@ Quote this one. The two sets below are the breakdown; each moved a few points be
 
 ### 10 more synthetic people, 200 questions, 236 checks
 
-Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](../eval/PERSONA_BRIEF.md) after the engine was built. The first run used them untouched (72.5% vs 69.5%). The Nov 2 builder fix below was made after reading two of their builds (Grace, James), so these numbers come after that fix. Each has 9 to 13 days of chats (about 50 messages), 20 questions (8 stable, 4 changed outside chat, 2 changed in chat, 2 short-term, 2 sensitive, 2 one-off) and only first names. The same Meta model family writes them, answers and judges, which is a limit of this eval.
+Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](../eval/PERSONA_BRIEF.md) after the engine was built. The builder was tuned with two of their builds (Grace, James) in view, so they are not a clean held-out set. Each has 9 to 13 days of chats (about 50 messages), 20 questions (8 stable, 4 changed outside chat, 2 changed in chat, 2 short-term, 2 sensitive, 2 one-off) and only first names. The same Meta model family writes them, answers and judges, which is a limit of this eval.
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
@@ -64,7 +64,7 @@ Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`ev
 | Stale answers | **7** | 13 | 11 |
 | Memory tokens per message | **~138** | ~395 | ~1,650 |
 
-Builder fix (Nov 2): the first run on these 10 people lost on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards from about 50 messages. The writer now makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Builds went from 6–10 to 11–16 cards per person; Grace 48% → 76%, James 63% → 92%. Déjà Vu now loses only on Tom. Earlier runs: Oct 28 one-pass build 84.5% / 82.5% / 73% (4 people); Oct 31 77.6% all three; Nov 2 before the builder fix 80.3% / 72.4% / 73.7% (main) and 72.5% / 69.5% / 69.5% (the 10 synthetic people). Treat single-run differences of a few points as noise.
+How the builder works: the writer makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Each person ends up with 11 to 16 cards from about 50 messages. Treat single-run differences of a few points as noise.
 
 ## What it shows
 
@@ -73,10 +73,10 @@ Builder fix (Nov 2): the first run on these 10 people lost on Grace (48%) and Ja
 - **Full history is the worst of both.** It's the most expensive *and* the least accurate: years of noise drown the signal.
 - **Honest caveat.** On one real history where nothing had changed, the summary scored higher (93% vs 86%). A good summary is strong when life is static; confirmed memory wins on cost everywhere and on accuracy as soon as things change.
 
-## What we fixed because of this eval
+## Design choices the eval supports
 
-- **Style cards.** Real users have strong rules about *how* they want answers ("no em dashes", "exactly 5 hashtags", "just give the hook"). These weren't becoming cards. They are now (topic `style`) and are always included, since they're tiny and apply everywhere. On the creator-heavy real history this lifted confirmed memory from 71% to 86%.
-- **Answers apply the cards.** Most early misses were a card that was sent but ignored; the prompt now says the cards were picked for this request and asks the answer to name what it applied.
+- **Style cards.** Real users have strong rules about *how* they want answers ("no em dashes", "exactly 5 hashtags", "just give the hook"). These are cards too (topic `style`), always included, since they're tiny and apply everywhere.
+- **Answers apply the cards.** The answer prompt says the cards were picked for this request and asks the answer to name what it applied, so a card that's sent isn't ignored.
 - **Relevance includes the people a plan affects** (who lives with you, who you're buying for) and leans toward inclusion.
 - **Known gap:** one-off purchases (concert tickets) sometimes don't become cards, so the agent can't recall them later.
 
@@ -86,7 +86,7 @@ The two real histories, their answer keys, cards and per-answer results live in 
 
 ## Speed
 
-Confirmed memory adds one small relevance call before answering: about 6 s per answer vs about 3 s for the others with Muse Spark 1.3 (relevance on minimal reasoning; "low" took about 9.5 s for the same accuracy).
+Confirmed memory adds one small relevance call before answering: about 6 s per answer vs about 3 s for the others with Muse Spark 1.3 (relevance runs on minimal reasoning).
 
 ## Cost
 

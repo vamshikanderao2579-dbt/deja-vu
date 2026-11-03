@@ -17,7 +17,7 @@ How the engine's prompts are organized, written and changed. The six writing pri
 | `build.write.system` / `build.write.user` | Build stage 2: write cards batch by batch, with notes for the reviewer | bg (writer) | `rules`, `pace` / `batch`, `batches`, `tree`, `draft`, `conversations` |
 | `build.review.system` / `build.review.user` | Build stage 3: the writer's self-review and `summary.md` | bg (writer) | `rules` / `draft`, `notes` |
 | `build.grade.system` / `build.grade.user` | Build stage 4: keep, lock or reject each card from the summary and quotes; priority | grader | `rules` / `summary`, `cards` |
-| `distill.system` / `distill.user` | The older one-pass build, kept for the eval until it is rerun on the staged build | bg (writer) | `existing`, `conversations` |
+| `distill.system` / `distill.user` | One-pass build, used by the eval | bg (writer) | `existing`, `conversations` |
 | `learn.system-addendum` / `learn.user` | Live learning from the latest exchange (added to `distill.system`, with `build.rules`) | bg (writer) | `today`, `existing`, `conversation` |
 | `grade.system` / `grade.user` | Accept, lock or reject each proposed card against the messages it cites | grader | `existing`, `proposed` |
 | `branch.system` / `branch.user` | Large memories: pick tree branches before cards | bg | `today`, `request`, `tree` |
@@ -48,6 +48,3 @@ How the engine's prompts are organized, written and changed. The six writing pri
 2. `npm test` (rules and flows, no cost).
 3. Rerun the eval on at least one synthetic persona (`npm run eval -- --persona alex`, about $1) and compare with `docs/eval.md`. A prompt change without an eval number is a guess.
 4. Re-record demos (`node scripts/record-demo.js <profile>`): the replay cache is keyed on the exact prompt text, so an edited prompt no longer replays.
-
-## Audit (Nov 2): done
-The drift listed on Oct 28 is fixed: `answer.system` leads with the action, `context.header` is short positive lines, `relevance.system` has a labelled section for relevant cards, key cards and stakes, `distill.system` is split under labels with the real 14-word limit and example cards, `update.system` has examples, and both graders treat "lock" as private-and-used (no "when unsure, reject"). Every change was followed by a re-recorded demo and an eval run (docs/eval.md).

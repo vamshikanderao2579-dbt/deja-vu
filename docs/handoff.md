@@ -11,7 +11,8 @@ For the next agent or chat. Read this first, then `.agents/` (README → context
 | Live app (Modal) | https://vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run, running the same code as `main` |
 | Repo | https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory, public (renamed from `deja-vu` on Nov 2). Use this name everywhere: app, README, decks, submission. Don't rely on GitHub's redirect |
 | Working folder | `/Users/vamshi/Documents/GitHub/deja-vu`. All work happens here, nowhere else |
-| Full deck, 15 slides | `docs/decks/full.html` |
+| **Pitch deck, 6 slides (present and submit this one)** | `docs/decks/pitch.html`: the short deck with Muse's Nov 3 fixes |
+| Full deck, 15 slides | `docs/decks/full.html` | (appendix / deep dive only)
 | Short deck, 6 slides + Alex demo | `docs/decks/short.html` |
 | Deck sources | `docs/decks/full/`, `docs/decks/short/` (`deck.json` + `slides/*.html`). After editing, run `python3 scripts/build-decks.py` |
 | Eval method and per-person tables | `docs/eval.md`; results in `data/eval-summary.json` (also in the app under Insights) |
@@ -79,7 +80,7 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 5. **First 30 seconds:** the review found no wow before import plus five messages. Lead the video and landing with the ↻ Memory updated flip and the token trace.
 6. **Record the video and the 1-minute demo.** Say "Confirmed memory for any agent. Not a chatbot." before the demo. In the submission, **quote the pooled 14-person figure only** (81.7% vs 71.8% vs 70.5%); the two separate blocks moved between runs.
 7. **Demo day:** set `SPEND_CAP_USD=15` in `deploy/deploy.env` and redeploy. `SPEND_TOTAL_CAP_USD=60` stays.
-8. **Submit** (Indie track). Confirm a 2-person team is OK. Check every link in a private window.
+8. **Submit** (Indie track) as a solo entry: Vamshi Kanderao, the only approved entrant. Present with `docs/decks/pitch.html`. Check every link in a private window.
 9. Optional: look at why Tom loses. A live correction's provenance reads "Learned from" two chats, not "you told me" like the tour card.
 
 **Decided Nov 3:** memory off means no cards used, asked or learned, and nothing carried to other chats; the chat's own messages still count (that's what any agent does). The UI says "Memory cards off — current chat still applies". The submission should say the saving is across chats: a new chat gets ~150 tokens of cards instead of re-reading ~39K of history. A quiet yes raises confidence but never confirms a card. Insights leads with "answers that needed no correction".

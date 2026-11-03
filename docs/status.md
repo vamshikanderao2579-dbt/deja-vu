@@ -24,10 +24,10 @@ Spend today: **$7.79** of the $10 cap. Nothing committed since your push. All ch
 | Stale answers | **1** | 2 | 5 |
 | Tokens per message | **~147** | ~488 | ~38,900 |
 
-Honest notes: on Nidhi's real history the summary wins (93 vs 86), because nothing in her key changed outside chat. On Vamshi's they tie at 69. Full history is worst everywhere. Details: `docs/eval.md`.
+Honest notes: on real history A the summary wins (93 vs 86), because nothing in its key changed outside chat. On real history B they tie at 69. Full history is worst everywhere. Details: `docs/eval.md`.
 
 **5. Fixes the eval forced (good story for judges)**
-- **Style cards.** "No em dashes", "exactly 5 hashtags" and "just give the hook" weren't becoming cards. Now topic `style`, always included. Nidhi's confirmed score went from 71% to 86%.
+- **Style cards.** "No em dashes", "exactly 5 hashtags" and "just give the hook" weren't becoming cards. Now topic `style`, always included. Real history A's confirmed score went from 71% to 86%.
 - Answers now *apply* the cards and say which ones they used. Relevance includes the people a plan affects. Duplicate edits merge.
 - Speed: confirmed answers went from about 9.5 s to **about 6.4 s** at the same accuracy. Summary and full history take about 3 s.
 
@@ -40,7 +40,7 @@ Honest notes: on Nidhi's real history the summary wins (93 vs 86), because nothi
 3. **Retake app screenshots** for slides 6 and 7 (the current ones show the old 3-button card) with the avatar set to Pip, not Sparky.
 4. **Deploy:** Render or Railway, `npm start`, env vars from `.env`, spend cap on. Add the live URL to the README and last slide.
 5. **Video (3 min):** follow the deck's speaker notes. Demo beats: quick check → ✕ → chat about it → answer changes; Memory deck with "Why?" and the exact conversation; one voice reply; slide 10 numbers.
-6. **Submit Nov 3** (not Nov 4). List both of you; confirm a 2-person team is OK in the indie track.
+6. **Submit Nov 3** (not Nov 4). Solo entry: Vamshi Kanderao.
 
 ## What else could win points
 

@@ -26,3 +26,10 @@ public/charmander*.png
 deploy/deploy.env
 .venv-deploy/
 deploy/.modal.toml
+
+# Working notes: kept locally, not part of the published repo
+plan.md
+docs/plan.md
+docs/status.md
+docs/handoff.md
+.agents/

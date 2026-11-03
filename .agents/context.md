@@ -1,8 +1,8 @@
 # Context
 
 ## The project
-- **Déjà Vu**: confirmed memory for personal AI agents. Team: Sreenidhi (Nidhi) Durgam + Vamshi Kanderao (Vamshi presents).
-- **Meta Global AI Developer Hackathon** (Cerebral Valley), Theme 1: Build for Your World. Indie track (2-person team: confirm eligibility with organizers).
+- **Déjà Vu**: confirmed memory for personal AI agents. Entrant: Vamshi Kanderao, solo.
+- **Meta Global AI Developer Hackathon** (Cerebral Valley), Theme 1: Build for Your World. Indie track, solo entry.
 - **Deadline:** Wed **Nov 4, 2026, 9:00 PM ET**. Submit **Nov 3** (last full support day). Needs: public GitHub repo, live URL, **3-minute video**, everyone listed.
 - **Judging:** Impact 30 · Use of Meta AI tooling 25 (beyond basic integration, "surprise us") · Technical depth 20 · Demo 25. Top 5 per track go to a live final. Bonus prizes: Most Viral on X ($20K), Open-weights build ($10K), Community vote ($10K), Agentic use ($5K).
 - **The team is traveling** Oct 27–Nov 2 (anniversary trip: San Diego → Las Vegas → Zion), on one laptop. Keep their time asks small.
