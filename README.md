@@ -46,19 +46,19 @@ Every step is visible to the person: **Why?** on each card opens the exact messa
 
 ## Results (Nov 2 eval, 14 people, 242 questions, 312 checks)
 
-Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every card used in answers, one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. Pooled over every check. Two sets, reported apart:
+Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every card used in answers, one simulated review pass, answers by Muse Spark 1.3, judged by Muse Spark. **The headline is all 14 people, every check counted once.** The two sets below it are the breakdown; they moved a few points between runs, so quote the headline.
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| **Main set: 4 people** (2 synthetic, 2 real histories), 76 checks | **88.2%** | 78.9% | 73.7% |
+| **All 14 people, 312 checks, each counted once** | **81.7%** | 71.8% | 70.5% |
+| … preferences that changed outside chat | **82.3%** | 49.2% | 48.4% |
+| Memory tokens per question | **~138–153** | ~395–486 | ~1,650–39,000 |
+| *Breakdown:* **Main set, 4 people** (2 synthetic, 2 real histories), 76 checks | **88.2%** | 78.9% | 73.7% |
 | … preferences that changed outside chat | **91.7%** | 58.3% | 41.7% |
 | … stale answers | **0** | 4 | 4 |
 | **10 more synthetic people**, 236 checks | **79.7%** | 69.5% | 69.5% |
 | … preferences that changed outside chat | **81.3%** | 48.2% | 49.1% |
 | … stale answers | **7** | 13 | 11 |
-| **All 14 people, 312 checks, each counted once** | **81.7%** | 71.8% | 70.5% |
-| … preferences that changed outside chat | **82.3%** | 49.2% | 48.4% |
-| Memory tokens per question | **~138–153** | ~395–486 | ~1,650–39,000 |
 
 The 10 more synthetic people (each a week of chats, 20 questions) were written after the engine was built. Their first, untouched run: 72.5% vs 69.5%, with Déjà Vu losing on Grace (48%) and James (63%), whose builds kept only 6 and 7 cards. We then fixed the builder (a second pass for missed facts; the grader rewords instead of rejecting), so the numbers above come after a fix made by reading two of their builds. Per person Déjà Vu is now best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the 10 synthetic people are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
 

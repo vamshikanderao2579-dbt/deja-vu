@@ -1,6 +1,6 @@
 # Eval: confirmed memory vs inferred memory vs full history
 
-Three ways a personal agent can remember you, compared on **4 people** (2 synthetic personas with very different lives, plus 2 team members' own real Muse histories), **42 everyday questions** and **76 checklist items**. Answers and judge: Muse Spark 1.3.
+Three ways a personal agent can remember you, compared on **14 people** (2 team members' own real Muse histories, plus 12 synthetic people with very different lives), **242 everyday questions** and **312 checklist items**. Answers and judge: Muse Spark 1.3.
 
 | Setup | Memory sent with each message |
 |---|---|
@@ -21,6 +21,15 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 
 ## Results (Nov 2 2026, one run per person, staged build, revised prompts)
 
+### Headline: all 14 people, 312 checks, each counted once
+
+| | Déjà Vu memory | Memory summary | Full history |
+|---|---|---|---|
+| **All checks** | **81.7%** | 71.8% | 70.5% |
+| Changed outside chat | **82.3%** | 49.2% | 48.4% |
+
+Quote this one. The two sets below are the breakdown; each moved a few points between runs, and averaging them doesn't give the headline.
+
 ### Main set: 4 people, 42 questions, 76 checks
 
 | | Déjà Vu memory | Memory summary | Full history |
@@ -29,7 +38,7 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 | Maria · synthetic | **95%** | 90% | 70% |
 | Real history A · 194 user msgs | **93%** | 86% | 71% |
 | Real history B · 304 user msgs | **69%** | 54% | **69%** |
-| **Pooled** | **88.2%** | 78.9% | 73.7% |
+| **This set** | **88.2%** | 78.9% | 73.7% |
 | Changed outside chat | **91.7%** | 58.3% | 41.7% |
 | Stale answers | **0** | 4 | 4 |
 | Memory tokens per message | **~150** | ~490 | ~39,000 |
@@ -50,7 +59,7 @@ Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`ev
 | Luis | **74%** | **74%** | **74%** |
 | Daniel | **67%** | **67%** | 63% |
 | Tom | 65% | 61% | **70%** |
-| **Pooled** | **79.7%** | 69.5% | 69.5% |
+| **This set** | **79.7%** | 69.5% | 69.5% |
 | Changed outside chat | **81.3%** | 48.2% | 49.1% |
 | Stale answers | **7** | 13 | 11 |
 | Memory tokens per message | **~138** | ~395 | ~1,650 |
@@ -59,7 +68,7 @@ Builder fix (Nov 2): the first run on these 10 people lost on Grace (48%) and Ja
 
 ## What it shows
 
-- **Confirmation catches what inference can't.** When a preference changed and never came up in chat, the summary and full history got it right about half the time (42–58% main set, 48–49% for the other 10 people); Déjà Vu memory got 92% and 81%. Over all 14 people and 312 checks, each counted once: Déjà Vu memory 81.7%, summary 71.8%, full history 70.5%; changed outside chat 82.3% vs 49.2% vs 48.4%.
+- **Confirmation catches what inference can't.** Over all 14 people and 312 checks, each counted once: Déjà Vu memory 81.7%, summary 71.8%, full history 70.5%. When a preference changed and never came up in chat, the summary and full history got it right about half the time (49.2% and 48.4%); Déjà Vu memory got 82.3%.
 - **Reading only what's needed is cheaper without costing accuracy.** Déjà Vu memory reads ~3× fewer tokens per message than a summary and far fewer than full history, while scoring higher than both on each set.
 - **Full history is the worst of both.** It's the most expensive *and* the least accurate: years of noise drown the signal.
 - **Honest caveat.** On one real history where nothing had changed, the summary scored higher (93% vs 86%). A good summary is strong when life is static; confirmed memory wins on cost everywhere and on accuracy as soon as things change.

@@ -67,6 +67,7 @@ Demo replay: record with the `record-replay` launch config (port 3002), then che
 - Builder fix and full re-eval. Demos re-recorded and checked at 0 misses. Deployed. Decks updated.
 - The pushed history squashed two commits into `2fb6d0f`. Its message describes only the personas and eval, not the builder fix. No files were lost.
 - QA fixes (`aa6e042`): one pooled 14-person figure (`all` in `eval/summarize.js`, shown in Insights, README, `docs/eval.md`); the 10 synthetic people are no longer called held out; the trace says "Gave the agent N cards that fit" instead of "Used"; a card corrected in chat says "you told me"; the user menu scrolls; model versions on the landing and demo end card; a reworded "to check" note.
+- Nov 3: both decks' results slides, the README and `docs/eval.md` now lead with the 14-person figure (81.7% / 82.3%); the 4-person and 10-person sets are labelled as the breakdown.
 - Repo renamed to `deja-vu-confirmed-memory` (another `deja-vu` exists on GitHub) and every link updated (`c5f8ba2`): Insights method/code links, both deck closers, this file, `.agents/context.md`.
 
 ## Open items, in order
