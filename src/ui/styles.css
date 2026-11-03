@@ -863,7 +863,7 @@ svg.line path.s3 { stroke: var(--series-3); }
 .mm-effort .seg button { padding: 4px 10px; font-size: 12.5px; }
 .tok-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; font-size: 12.5px; color: var(--muted); }
 
-/* Turn on memory: a small example instead of a list */
+/* A small example instead of a list */
 .intro-demo { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 8px 0 18px; padding: 16px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); }
 .id-bubble { align-self: flex-end; max-width: 85%; padding: 9px 13px; border-radius: 16px 16px 4px 16px; background: var(--accent); color: #fff; font-size: 14px; }
 .id-bubble.agent { align-self: flex-start; border-radius: 16px 16px 16px 4px; background: var(--accent-bg); color: var(--text); }
@@ -954,7 +954,7 @@ html { zoom: var(--z, 1); }
 
 /* Memory chip (this chat) beside the model picker; date stamps */
 .mem-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--confirmed-fg); margin-right: 6px; }
-.mem-chip[data-mode="none"] .dot, .mem-chip[data-mode="off"] .dot { background: var(--muted); }
+.mem-chip[data-mode="summary"] .dot { background: var(--muted); }
 .mem-chip[data-mode="full"] .dot { background: #f5a623; }
 #memMenu { right: auto; left: 8px; }
 .mm-note { margin: 4px 12px 8px; font-size: 12.5px; color: var(--muted); }
@@ -967,7 +967,7 @@ html { zoom: var(--z, 1); }
 .not-bot .ico.sm { width: 18px; height: 18px; stroke: url(#dv-grad); margin-top: 1px; flex: none; }
 
 /* Guided demo v2: pickers hidden, the viewer's tap, one-tap answers, the ending */
-body.touring #modelChip, body.touring #memChip { display: none; }
+body.touring #modelChip { display: none; }
 .tour-tap { animation: tour-tap 1s ease-in-out infinite; outline: 3px solid var(--accent); outline-offset: 3px; }
 @keyframes tour-tap { 50% { transform: scale(1.06); } }
 .tour-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }

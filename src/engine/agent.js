@@ -294,6 +294,7 @@ function mockAnswer(message, mode, cards) {
   const note = '(Mock answer. Add MAIN_API_KEY in .env for real Muse Spark answers.)';
   if (mode === 'none') return `Here are some general suggestions for “${message}”. I don't know your preferences yet. ${note}`;
   if (mode === 'full') return `I scanned your entire chat history to answer “${message}”. ${note}`;
+  if (mode === 'summary') return `From the notes I keep about you, for “${message}”: here's what I'd pick. ${note}`;
   if (!cards.length) return `Here are a few options for “${message}”. ${note}`;
   return `For “${message}”, I took into account:\n${cards.map((c) => `• ${c.text}`).join('\n')}\n${note}`;
 }

@@ -119,14 +119,13 @@ test('plug-in API: recall returns the cards and prompt text for a message; remem
   assert.equal(m.queued, true);
 });
 
-test('memory off: no cards used, no checks, nothing learned', async () => {
-  await post('/api/memory/switch', { on: false });
-  const r = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 'off1' });
-  assert.equal(r.mode, 'none');
+test('hidden summary, how agents work today: no cards shown, no checks, a summary in the prompt', async () => {
+  const r = await post('/api/chat', { message: 'Grab my usual drink on the way in', conversationId: 'sum1', mode: 'summary' });
+  assert.equal(r.mode, 'summary');
   assert.equal(r.check, null);
   assert.equal(r.usedCards.length, 0);
-  const s = await post('/api/memory/switch', { on: true });
-  assert.equal(s.memoryOff, false);
+  assert.ok(r.tokens.context > 0, 'the summary is sent with the message');
+  assert.equal((await post('/api/chat', { message: 'hi', conversationId: 'sum2', mode: 'none' })).mode, 'cards', 'memory is never off');
 });
 
 test('a casual question is never interrupted', async () => {

@@ -108,7 +108,6 @@
     <section class="page" id="memory" aria-label="Memory">
       <div class="page-head"><button class="circle line" data-close="memory" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button></div>
       <div class="mem-title"><h1 class="big">Memory</h1><p class="fine mem-stamp" id="memStamp"></p></div>
-      <div class="mem-switch" id="memSwitch"><div><b>Memory</b><span class="fine" id="memSwitchSub"></span></div><button class="switch" id="memToggle" role="switch" aria-checked="true" aria-label="Memory on or off"><i></i></button></div>
       <div class="mem-dates" id="memDates"></div>
       <p class="sub mem-sub">What I know about you, in short cards. Open a topic and swipe: right if it’s still true, left if it’s not.</p>
       <div class="build-box" id="buildBox" hidden><div class="build-top"><span id="buildLabel">Starting</span><b id="buildPct">0%</b></div><div class="build-bar"><i id="buildFill"></i></div><p class="fine">Runs in the background. Keep chatting; I'll tell you in chat when it's done.</p></div>
@@ -246,36 +245,6 @@
       <button class="link center" data-close="rebuildSheet" id="rebuildCancel">Not now</button>
     </section>
 
-    <section class="sheet" id="memoryIntro" aria-label="Turn on memory">
-      <button class="circle line close" data-close="memoryIntro" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-      <div class="intro-mark"><svg viewBox="0 0 24 24"><use href="#i-logo"/></svg></div>
-      <h1 class="big">Turn on memory?</h1>
-      <p class="sub">I’ll keep short notes from our chats, so you don’t have to repeat yourself.</p>
-      <div class="intro-demo" aria-label="Example: a chat message becomes a card">
-        <div class="id-bubble">“I’m vegetarian on Tuesdays”</div>
-        <div class="id-arrow" aria-hidden="true">↓</div>
-        <div class="id-card"><span><svg class="ico"><use href="#i-leaf"/></svg></span><b>Vegetarian on Tuesdays</b><i>✓ you can check it</i></div>
-        <div class="id-arrow" aria-hidden="true">↓</div>
-        <div class="id-bubble agent">Tuesday dinner? Here are 3 veggie spots near you.</div>
-      </div>
-      <ul class="intro-list easy">
-        <li><svg class="ico sm"><use href="#i-eye"/></svg>You see every card, and where it came from</li>
-        <li><svg class="ico sm"><use href="#i-swipe"/></svg>Swipe to keep or remove one</li>
-        <li><svg class="ico sm"><use href="#i-lock"/></svg>Private cards are used carefully, and you can remove any</li>
-      </ul>
-      <button class="primary wide" id="memOnBtn">Turn on memory</button>
-      <button class="link center" data-close="memoryIntro">Not now</button>
-    </section>
-    <div class="ff" id="fastForward" hidden>
-      <div class="ff-inner">
-        <svg class="ff-mark" viewBox="0 0 24 24"><use href="#i-logo"/></svg>
-        <p class="ff-week" id="ffWeek">Week 1</p>
-        <p class="ff-count"><b id="ffCards">0</b> cards · <b id="ffTopics">0</b> topics</p>
-        <div class="ff-cards" id="ffCardsList"></div>
-        <p class="ff-done fine" id="ffDone"></p>
-        <button class="primary wide" id="ffGo" hidden>Start chatting</button>
-      </div>
-    </div>
 
     <div class="toast" id="toast"></div>
 

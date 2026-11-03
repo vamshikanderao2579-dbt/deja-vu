@@ -5,7 +5,7 @@ import { config, ROOT } from './src/platform/config.js';
 import { getState, save, reset, findMessage, findConversation, addLiveMessage, historyAsText, saveSeed, loadSeed, chatTitle, current, runIn, getProfile, getHistory, userName } from './src/platform/store.js';
 import { sessionFor, viewFor, profilesFor, choose, saveImport, countBuild, endSession, clearCookie, buildsRunning } from './src/platform/sessions.js';
 import { importHistory, isChat } from './src/platform/importers.js';
-import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned } from './src/engine/agent.js';
+import { selectRelevant, answer, rewriteCard, proposeFrom, applyLearned, summarizeHistory } from './src/engine/agent.js';
 import { cueDecision, checkReason, applyFeedback, implicitYes } from './src/engine/cue.js';
 import { transcribe, interpret, VOICE_MODEL } from './src/platform/voice.js';
 import { renderMarkdown, budgetStats, estimateTokens, publicCard, usable, applyCardAction, mergeCards, seasonState, untilState, renderContext, similarity } from './src/engine/cards.js';
@@ -22,6 +22,20 @@ const fullHistoryTokens = () => {
   if (!historyTokens.has(v)) historyTokens.set(v, estimateTokens(historyAsText()));
   return historyTokens.get(v);
 };
+// "How agents work today": a memory summary written once from the whole history, kept
+// hidden and never checked. Saved with the state; written again only if the history grows.
+const summaryJobs = new WeakMap();
+async function hiddenSummary(s) {
+  const size = fullHistoryTokens();
+  if (s.summary?.historyTokens === size) return s.summary.text;
+  const v = current();
+  if (!summaryJobs.has(v)) {
+    summaryJobs.set(v, (config.mock ? Promise.resolve('Mock summary: likes direct flights, hotels over Airbnbs, mild food for the kids.') : summarizeHistory())
+      .then((text) => { s.summary = { text, historyTokens: size, at: new Date().toISOString() }; save(); return text; })
+      .finally(() => summaryJobs.delete(v)));
+  }
+  return summaryJobs.get(v);
+}
 
 // ---------- tiny router ----------
 const routes = [];
@@ -140,8 +154,9 @@ route('POST', '/api/chat', async (body) => {
   // so a replay sees exactly the memory the recorded run saw.
   if (demo) await current().learning;
   const s = getState();
-  // Memory switched off: answer like an agent with no memory, ask nothing, learn nothing.
-  const mode = s.memoryOff ? 'none' : (body.mode ?? 'cards');
+  // Memory cards by default; the other two are there to compare: a hidden summary (how
+  // agents work today) or re-reading every chat.
+  const mode = ['summary', 'full'].includes(body.mode) ? body.mode : 'cards';
   const trace = { mode, stakes: 'low', picked: 0, check: null, quiet: null, quietYes: null };
 
   // Answer first, check after: carrying on in the same chat without ✕ is a quiet yes.
@@ -185,7 +200,8 @@ route('POST', '/api/chat', async (body) => {
   const model = config.answerModels.includes(body.model) && body.model !== config.providers.main.model ? body.model : null;
   // A redo after a change thinks a little harder, so it switches to what the user now wants.
   const effort = ['medium', 'high'].includes(body.effort) ? body.effort : skipCue ? 'medium' : 'low';
-  const res = await answer(message, mode, relevant, { recent: prior, actions, redo: skipCue, model, effort });
+  const summary = mode === 'summary' ? await hiddenSummary(s) : undefined;
+  const res = await answer(message, mode, relevant, { summary, recent: prior, actions, redo: skipCue, model, effort });
   const used = relevant.filter(usable);
   for (const c of used) c.last_used = new Date().toISOString();
   s.trace = countTrace(s.trace, trace, !!res.draft);
@@ -193,8 +209,8 @@ route('POST', '/api/chat', async (body) => {
   const { conv } = addLiveMessage(conversationId, 'user', message);
   addLiveMessage(conversationId, 'assistant', res.text, res.draft ? { draft: res.draft } : {});
   save();
-  // Memory off, for everything or just this chat: nothing is learned from it.
-  if (!s.memoryOff && mode !== 'none') learnInBackground(conv);
+  // Only Déjà Vu memory learns cards; the other two are there to compare.
+  if (mode === 'cards') learnInBackground(conv);
   return {
     type: 'answer',
     text: res.text,
@@ -228,7 +244,6 @@ function countTrace(t = {}, one, drafted) {
 route('POST', '/api/recall', async ({ message, conversationId = 'external' }) => {
   if (!message?.trim()) throw httpError(400, 'message is required');
   const s = getState();
-  if (s.memoryOff) return { stakes: 'low', cards: [], context: '', check: null };
   const { relevant, key = [], stakes } = await selectRelevant(message, s.cards);
   const askable = key.filter((c) => c.category !== 'style' && c.category !== 'assistant' && c.status !== 'pending' && !c.sensitive);
   const { cue } = cueDecision({ relevant: askable, stakes, conversationId, cueLog: s.cueLog });
@@ -239,7 +254,6 @@ route('POST', '/api/recall', async ({ message, conversationId = 'external' }) =>
 // remember: hand over an exchange; cards are written, graded and merged in the background.
 route('POST', '/api/remember', ({ messages, conversationId = 'external' }) => {
   if (!Array.isArray(messages) || !messages.length) throw httpError(400, 'messages is required: [{ role, text }]');
-  if (getState().memoryOff) return { queued: false };
   let conv;
   for (const m of messages) ({ conv } = addLiveMessage(conversationId, m.role === 'assistant' ? 'assistant' : 'user', String(m.text ?? '')));
   save();
@@ -247,23 +261,6 @@ route('POST', '/api/remember', ({ messages, conversationId = 'external' }) => {
   return { queued: true };
 });
 // confirm / reject: POST /api/cards/:id { action: 'confirm' | 'reject' } (below).
-
-// Off keeps every card and learns nothing (chats from that time stay unlearned). Back on
-// picks up from the cards it has: nothing is re-read. Only chats newer than the last
-// build (a new import, say) are read, and only those.
-route('POST', '/api/memory/switch', (body) => {
-  const s = getState();
-  s.memoryOff = !body.on;
-  let resume = null;
-  if (body.on && s.cards.length) {
-    const since = s.build?.readThrough ?? null;
-    const newer = since ? getHistory().conversations.filter((c) => `${c.date}T${c.time ?? '12:00'}` > since).length : 0;
-    resume = { kept: s.cards.length, updatedAt: s.updatedAt ?? null, newChats: newer, since };
-    if (newer && !current().buildJob?.running) startBuild({ mode: 'new', since });
-  }
-  save();
-  return { ...statePayload(), resume };
-});
 
 function learnInBackground(conv) {
   // One at a time per memory, so two quick messages don't overwrite each other's cards.
@@ -390,6 +387,17 @@ route('POST', '/api/demo/load', async () => {
   return statePayload();
 });
 
+// The guided tour builds memory the way a new user would: from an empty memory, over the
+// same chats. Only for a demo person with a tour; the recorded build replays for free.
+route('POST', '/api/demo/build', () => {
+  if (!getProfile().script?.length) throw httpError(404, 'not found');
+  if (current().buildJob?.running) return jobView(current().buildJob);
+  Object.assign(getState(), { cards: [], rejected: [], cueLog: [], learned: [] });
+  current().relevanceCache = [];
+  save();
+  return jobView(startBuild());
+});
+
 route('GET', '/api/profiles', (_, __, { session }) => ({ active: viewFor(session)?.profile.id ?? null, profiles: profilesFor(session), importMaxMb: config.importMaxMb }));
 
 route('POST', '/api/profile', async ({ id }, _, { session }) => {
@@ -447,7 +455,6 @@ function statePayload() {
     // How the writer → grader gate has screened cards (counts only; dropped texts in `screened`).
     review: s.review ?? emptyReviewStats(),
     trace: s.trace ?? null,
-    memoryOff: !!s.memoryOff,
     updatedAt: s.updatedAt ?? null,
     topicUpdated: s.topicUpdated ?? {},
     screened: s.screened ?? [],

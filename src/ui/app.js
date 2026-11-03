@@ -3,9 +3,9 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const app = $('.app');
 
 const MODES = [
-  { id: 'cards', label: 'Memory on', chip: 'Memory', about: 'Uses the few cards that fit each message' },
-  { id: 'none', label: 'Off for this chat', chip: 'No memory', about: 'A fresh start: nothing used or learned' },
-  { id: 'full', label: 'Read full history', chip: 'Full history', about: 'To compare: slower, reads every chat' },
+  { id: 'cards', label: 'Déjà Vu memory', chip: 'Déjà Vu', about: 'Short cards you can see and confirm, only the ones that fit' },
+  { id: 'summary', label: 'Today’s agents', chip: 'Today’s agents', about: 'A summary it wrote about you, sent every message. You never see or check it' },
+  { id: 'full', label: 'Full history', chip: 'Full history', about: 'Re-reads every past chat, every message. The most expensive' },
 ];
 const SUGGESTIONS = [
   'What should we have for dinner tonight?',
@@ -141,7 +141,7 @@ let data = null;
 // history to compare. Kept per chat in this browser; memory switched off overrides it.
 let chatModes = {};
 try { chatModes = JSON.parse(localStorage.getItem('dv-chat-modes') || '{}'); } catch {}
-const chatMode = () => (data?.memoryOff ? 'none' : chatModes[conversationId] ?? 'cards');
+const chatMode = () => (MODES.some((x) => x.id === chatModes[conversationId]) ? chatModes[conversationId] : 'cards');
 let conversationId = newId();
 const sessionLog = [];
 
@@ -197,14 +197,14 @@ function el(html) {
 }
 
 // ---------------- navigation: drawer, sheet, pages ----------------
-const OVERLAYS = ['importSheet', 'drawer', 'settings', 'memory', 'category', 'insights', 'memoryIntro', 'rebuildSheet'];
+const OVERLAYS = ['importSheet', 'drawer', 'settings', 'memory', 'category', 'insights', 'rebuildSheet'];
 
 function open(id) {
   if (id === 'chat') return closeAll();
   if (id !== 'drawer') $('#drawer').classList.remove('open');
   $(`#${id}`).classList.add('open');
   $('#scrim').classList.toggle('on', id === 'drawer');
-  if (id === 'memory') { renderMemory(); renderMemSwitch(); }
+  if (id === 'memory') renderMemory();
   if (id === 'insights') renderInsights();
   if (id === 'settings') renderSettings();
   if (id === 'drawer') renderDrawer();
@@ -416,7 +416,7 @@ function addMsg(role, html) {
 // While a model works: a short note on what's happening instead of bare dots. The
 // first notes are the real steps; then a few others, never the same one twice in a row.
 const STEP_NOTES = ['Reading your memory…', 'Picking the cards that fit…'];
-// With memory off: nothing that sounds like reading memory.
+// Without memory cards: nothing that sounds like picking cards.
 const PLAIN_NOTES = ['Thinking it through…', 'Drafting your answer…', 'Almost there…'];
 const MORE_NOTES = ['Weighing confirmed vs guessed…', 'Checking what changed lately…', 'Connecting the dots…', 'Thinking it through…', 'Drafting your answer…', 'Cross-checking the details…', 'Mulling it over…', 'Almost there…'];
 function typing(steps = STEP_NOTES, more = MORE_NOTES) {
@@ -443,7 +443,7 @@ async function send(message, { skipCue = false } = {}) {
 }
 async function sendInner(message, { skipCue = false } = {}) {
   if (!skipCue) addMsg('user', esc(message));
-  const t = chatMode() === 'none' ? typing(['Thinking…'], PLAIN_NOTES) : typing(skipCue ? ['Using your updated card…'] : STEP_NOTES);
+  const t = chatMode() === 'summary' ? typing(['Reading the notes it keeps about you…'], PLAIN_NOTES) : chatMode() === 'full' ? typing(['Re-reading every chat…'], PLAIN_NOTES) : typing(skipCue ? ['Using your updated card…'] : STEP_NOTES);
   try {
     const res = await api('/api/chat', { message, mode: chatMode(), conversationId, skipCue, demo: demoRunning, ...(demoRunning ? {} : chosenModel()) });
     t.remove();
@@ -481,7 +481,7 @@ function renderAnswer(res, question) {
       const pct = full ? Math.round((1 - ctx / full) * 100) : 0;
       const conf = used.filter((c) => c.status === 'confirmed').length;
       line = used.length ? `Gave the agent ${count(used.length, 'card')} that fit (${conf} confirmed, ${used.length - conf} ${used.length - conf === 1 ? 'guess' : 'guesses'}) · ~${ctx} tokens <span class="savings">(${pct}% less than full history)</span>` : 'No cards needed for this one';
-    } else line = res.mode === 'full' ? `Read the full chat history · ~${ctx.toLocaleString()} tokens` : 'Memory cards off — current chat still applies';
+    } else line = res.mode === 'full' ? `Full history: re-read every past chat · ~${ctx.toLocaleString()} tokens` : `Today’s agents: answered from a summary it wrote about you · ~${ctx.toLocaleString()} tokens · you never see or check it`;
     const u = res.tokens.usage;
     if (u?.prompt_tokens) line += `<div class="tok-row"><span>⬆ ${u.prompt_tokens.toLocaleString()} tokens in</span><span>⬇ ${(u.completion_tokens ?? 0).toLocaleString()} out</span>${res.model ? `<span>${esc(modelName(res.model))}</span>` : ''}</div>`;
     detail.innerHTML = `<div>${line}</div>${res.trace ? `<div class="trace-line">${traceLine(res.trace)}</div>` : ''}`;
@@ -583,7 +583,7 @@ const QUIET = {
   redo: 'redone with your change',
 };
 function traceLine(t) {
-  if (t.mode !== 'cards') return t.mode === 'none' ? 'Memory cards off — current chat still applies: no cards used, asked or learned' : 'Full history, no checks';
+  if (t.mode !== 'cards') return 'No cards you can see, so nothing to check';
   const parts = [`${t.stakes} stakes`];
   parts.push(t.check ? `checked “${esc(t.check)}”` : esc(QUIET[t.quiet] ?? 'no check'));
   if (t.quietYes) parts.push(`you carried on, so “${esc(t.quietYes.text)}” counts as a quiet yes (still a guess)`);
@@ -895,17 +895,16 @@ $('#drawerNewChat').addEventListener('click', newChat);
 // The memory chip in the message box: this chat only.
 function renderMemChip() {
   const m = chatMode();
-  $('#memChip').dataset.mode = data?.memoryOff ? 'off' : m;
-  $('#memChipLabel').textContent = data?.memoryOff ? 'Memory off' : MODES.find((x) => x.id === m).chip;
+  $('#memChip').dataset.mode = m;
+  $('#memChipLabel').textContent = MODES.find((x) => x.id === m).chip;
 }
 $('#memChip').addEventListener('click', (e) => {
   e.stopPropagation();
-  if (data.memoryOff) return open('memoryIntro');
   const menu = $('#memMenu');
   if (!menu.hidden) return (menu.hidden = true);
   const m = chatMode();
   menu.innerHTML = MODES.map((x) => `<button role="menuitemradio" aria-checked="${x.id === m}" data-m="${x.id}"><span><b>${esc(x.label)}</b><small>${esc(x.about)}</small></span>${x.id === m ? '✓' : ''}</button>`).join('') +
-    `<div class="mm-sep"></div><p class="mm-note">Only this chat. Turn memory off everywhere in Memory.</p>`;
+    `<div class="mm-sep"></div><p class="mm-note">Only this chat. The other two show how agents remember today.</p>`;
   menu.hidden = false;
 });
 $('#memMenu').addEventListener('click', (e) => {
@@ -916,7 +915,7 @@ $('#memMenu').addEventListener('click', (e) => {
   try { localStorage.setItem('dv-chat-modes', JSON.stringify(chatModes)); } catch {}
   $('#memMenu').hidden = true;
   renderMemChip();
-  toast({ cards: 'Memory on for this chat.', none: 'Memory cards off for this chat. What you say here still applies here; nothing is learned.', full: 'This chat reads your whole history, to compare.' }[id]);
+  toast({ cards: 'Déjà Vu memory for this chat.', summary: 'This chat answers like today’s agents: from a summary of you that you never see.', full: 'This chat re-reads your whole history, to compare.' }[id]);
 });
 document.addEventListener('click', () => { $('#memMenu').hidden = true; });
 
@@ -1592,7 +1591,6 @@ async function playDemo() {
     demoRunning = false;
     return toast(err.message);
   }
-  if (data.memoryOff) await refresh(await api('/api/memory/switch', { on: true }));
   learnedSeen = data.learned?.at(-1)?.at ?? '';
   conversationId = `demo-${newId()}`;
   thread.innerHTML = '';
@@ -1644,24 +1642,27 @@ async function playDemo() {
     if (!tourPrefs.voice) await spoken;
     else await sleep(700); // the line starts just before its action
     if (!demoRunning) break;
-    if (step.newChat) { conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); }
-    if (step.memoryOff) {
-      // Start like most agents today: nothing about the person is used.
-      await refresh(await api('/api/memory/switch', { on: false }));
-      renderMemSwitch();
-    }
-    if (step.memoryOn) {
-      // Turn memory on the way a person would: Memory → switch → the intro → fast-forward.
+    if (step.newChat) { conversationId = newId(); thread.append(el(`<p class="day-sep">${esc(step.newChat)}</p>`)); scrollDown(); renderMemChip(); }
+    if (step.mode) {
+      // Pick what this chat uses from the chip, the way a person would.
       await backToChat();
-      if (!wide.matches) { await press($('#menuBtn')); await sleep(400); }
-      await press(onScreen(['#drawer .drow[data-go="memory"]', '#menuBtn']));
-      await sleep(600);
-      await press($('#memToggle'));
-      await sleep(1100); // time to read the intro
-      await press($('#memOnBtn'));
-      await press(await until('#ffGo:not([hidden])', 20000));
-      conversationId = newId();
+      await press($('#memChip'));
       await sleep(500);
+      await press($(`#memMenu [data-m="${step.mode}"]`));
+      await sleep(400);
+    }
+    if (step.build) {
+      // Déjà Vu reads the same chats from an empty memory; Memory shows the progress.
+      await backToChat();
+      if (!wide.matches) { open('drawer'); await sleep(300); }
+      await press(onScreen(['#drawer .drow[data-go="memory"]', '#menuBtn']));
+      if (!$('#memory').classList.contains('open')) open('memory');
+      let job = await api('/api/demo/build', {});
+      for (let t = 0; t < 180000 && demoRunning && job && !job.done; t += 600) { showBuild(job); await sleep(600); job = await fetch('/api/build').then((r) => r.json()).catch(() => null); }
+      if (job) showBuild(job);
+      await refresh(await api('/api/state'));
+      renderMemory();
+      await sleep(1800);
     }
     if (step.ending) {
       // A short-term card's end date: show the prompt, then answer it.
@@ -1765,12 +1766,22 @@ async function playDemo() {
       const tile = [...document.querySelectorAll('#catGrid .cat-tile')].find((t) => t.getAttribute('aria-label').toLowerCase().startsWith(step.section.toLowerCase()));
       await press(tile);
     }
+    if (step.why) {
+      // Flip the top card: the message it was learned from.
+      await sleep(300);
+      await press($('#deck .swipe-card:last-child .why-btn') ?? lastCard('#deck .why-btn'));
+      await sleep(2600);
+      await press(lastCard('#deck .flip-back'));
+      await sleep(400);
+    }
     if (step.swipes) {
       await sleep(300);
-      for (let k = 0; k < 8 && demoRunning; k++) {
+      // Either one decision per card id, or a list in order: "no" swipes left.
+      const order = Array.isArray(step.swipes) ? step.swipes : null;
+      for (let k = 0; k < (order?.length ?? 8) && demoRunning; k++) {
         const card = currentCard();
         if (!card) break;
-        const act = step.swipes[card.id] === 'no' ? 'reject' : 'confirm';
+        const act = (order ? order[k] : step.swipes[card.id]) === 'no' ? 'reject' : 'confirm';
         await sleep(400); // time to read the card
         const at = deck.i;
         await press($(`#deckButtons [data-act="${act}"]`));
@@ -1812,68 +1823,8 @@ function showDemoEnd() {
 const PROFILE_COLORS = ['#0082FB', '#E5484D', '#1FA36A', '#B5541C', '#6250D6', '#0F7B8A'];
 function applyProfileChrome() {
   $('#profileInitial').textContent = (data.profile?.name ?? '?')[0];
-  renderMemSwitch();
-}
-
-// ---------------- memory on/off + the fast-forward ----------------
-function renderMemSwitch() {
-  const on = !data.memoryOff;
-  $('#memToggle').setAttribute('aria-checked', String(on));
-  $('#memSwitchSub').textContent = on ? 'On: I remember what matters to you.' : 'Off: no cards used or learned. Each chat still follows what you say in it.';
   renderMemChip();
 }
-$('#memToggle').addEventListener('click', async () => {
-  if (!data.memoryOff) {
-    await refresh(await api('/api/memory/switch', { on: false }));
-    renderMemSwitch();
-    return toast('Memory cards off — current chat still applies. Your cards are kept; I just won’t use them.');
-  }
-  open('memoryIntro');
-});
-$('#memOnBtn').addEventListener('click', async () => {
-  const res = await api('/api/memory/switch', { on: true });
-  await refresh(res);
-  renderMemSwitch();
-  closeAll();
-  // The guided demo shows memory being built; otherwise it picks up where it left off.
-  if (demoRunning || !res.resume) return fastForward();
-  const r = res.resume;
-  toast(`Memory is back on: kept your ${count(r.kept, 'card')}${r.updatedAt ? `, last updated ${fmtDay(r.updatedAt)}` : ''}.${r.newChats ? ` Reading only the ${count(r.newChats, 'newer chat')}.` : ''}`);
-  if (r.newChats) pollBuild();
-});
-
-// A time-lapse of the first weeks: cards collecting into topics. Front end only, no model calls.
-async function fastForward() {
-  const ff = $('#fastForward');
-  // One card per topic, preferences and lessons only: a varied, non-personal sample.
-  const pool = data.cards.filter((c) => c.status !== 'pending' && !c.sensitive && !['people', 'family', 'privacy', 'assistant', 'other', 'work'].includes(c.category) && !/\b(agent|avatar|charmander|pikachu|emoji)\b/i.test(c.text));
-  const shown = [...new Map(pool.map((c) => [c.category, c])).values()].slice(0, 6);
-  const total = data.cards.length;
-  const topics = new Set(data.cards.map((c) => c.category)).size;
-  const weeks = 5;
-  $('#ffCardsList').innerHTML = '';
-  $('#ffDone').textContent = '';
-  $('#ffGo').hidden = true;
-  ff.hidden = false;
-  requestAnimationFrame(() => ff.classList.add('on'));
-  for (let w = 1; w <= weeks; w++) {
-    $('#ffWeek').textContent = `Week ${w}`;
-    $('#ffCards').textContent = Math.round((total * w) / weeks);
-    $('#ffTopics').textContent = Math.max(1, Math.round((topics * w) / weeks));
-    for (const c of shown.slice(Math.floor(((w - 1) * shown.length) / weeks), Math.floor((w * shown.length) / weeks))) {
-      $('#ffCardsList').prepend(el(`<div class="ff-card"><span class="cat-icon">${catIcon(c.category)}</span><span>${esc(c.text)}</span></div>`));
-    }
-    await sleep(demoRunning ? 450 : 900);
-  }
-  $('#ffDone').textContent = `${weeks} weeks of chats → ${total} short cards, about ${data.budget.totalTokens.toLocaleString()} tokens instead of ${data.fullHistoryTokens.toLocaleString()}.`;
-  $('#ffGo').hidden = false;
-}
-$('#ffGo').addEventListener('click', () => {
-  const ff = $('#fastForward');
-  ff.classList.remove('on');
-  setTimeout(() => { ff.hidden = true; }, 300);
-  renderWelcome();
-});
 
 // ---------------- appearance ----------------
 // Dark by default; Light or System when picked. Kept in this browser only.

@@ -43,7 +43,7 @@ function show(n){{i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classL
 addEventListener('keydown',e=>{{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);else if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);
   else if(e.key==='n'||e.key==='N')document.body.classList.toggle('notes');else if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();
   else if(e.key==='p'||e.key==='P')print();else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1)}});
-addEventListener('click',e=>{{if(!e.target.closest('#notes'))show(e.clientX<innerWidth/3?i-1:i+1)}});
+addEventListener('click',e=>{{if(!e.target.closest('#notes, a'))show(e.clientX<innerWidth/3?i-1:i+1)}});
 addEventListener('resize',fit);fit();show(i);
 </script></body></html>
 """

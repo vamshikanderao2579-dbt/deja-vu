@@ -14,15 +14,20 @@
     ],
     "script": [
       {
-        "say": "Alex is about to book a hotel. One thing Déjà Vu remembers about Alex is out of date. Watch."
+        "say": "Meet Alex. Today’s agents remember you with a summary they write from your chats: about 450 tokens with every message, and Alex never sees it.",
+        "mode": "summary",
+        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs",
+        "info": true
       },
       {
-        "say": "Alex asks for a hotel. Déjà Vu uses only the few cards that fit, about 150 tokens instead of the whole history, and makes a pick.",
-        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs"
+        "say": "Now add Déjà Vu. It reads the same chats once and writes short cards Alex can see. Each one stays a guess until Alex confirms it.",
+        "build": true
       },
       {
-        "say": "Why a hotel? Tap the card: back in June, after an Airbnb cancelled, Alex said “never again with Airbnb”.",
-        "info": "Airbnb"
+        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, about 150 tokens, and one line checks the guess the pick depends on.",
+        "newChat": "New chat",
+        "text": "landing in san diego tomorrow! find us a hotel near sunset cliffs",
+        "info": true
       },
       {
         "say": "That changed. Your turn: tap ✕ Not anymore.",
@@ -37,12 +42,35 @@
         ]
       },
       {
-        "say": "The pick updates: an Airbnb with a kitchen. Nothing was booked without Alex.",
+        "say": "The pick updates. Nothing was booked without Alex.",
         "redo": true
       },
       {
-        "say": "Everything it knows lives in Memory, by topic: guesses, confirmed cards, private ones used carefully, and short-term ones with an end date.",
-        "glance": true
+        "say": "A small question gets no check: nothing is at stake, so it doesn’t nag.",
+        "text": "what should we watch tonight?",
+        "info": true
+      },
+      {
+        "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
+        "memory": true,
+        "section": "food",
+        "why": true
+      },
+      {
+        "say": "Swipe right if it’s still true, left if it’s not.",
+        "swipes": [
+          "no",
+          "no",
+          "yes",
+          "yes"
+        ]
+      },
+      {
+        "say": "Then say what’s true now, in your own words. Both cards update, confirmed.",
+        "chat": [
+          "TODO 1",
+          "TODO 2"
+        ]
       }
     ]
   },
@@ -60,20 +88,63 @@
     ],
     "script": [
       {
-        "say": "Meet Maria, a night-shift nurse with a teen son. In July she said “no takeout for 3 months”. Today is the end date, so Déjà Vu asks once: extend it, change it or let it end.",
-        "ending": "1"
+        "say": "Meet Maria. Today’s agents remember you with a summary they write from your chats: about 450 tokens with every message, and Maria never sees it.",
+        "mode": "summary",
+        "text": "book me a dentist appointment next week",
+        "info": true
       },
       {
-        "say": "A booking. Déjà Vu fits it to her shifts without her repeating them.",
-        "text": "book me a dentist appointment next week"
+        "say": "Now add Déjà Vu. It reads the same chats once and writes short cards Maria can see. Each one stays a guess until Maria confirms it.",
+        "build": true
       },
       {
-        "say": "A life change, said in passing, becomes a memory card.",
-        "text": "btw my mom moved in with us last month"
+        "say": "Same question, new chat. Déjà Vu sends only the cards that fit, about 150 tokens, and one line checks the guess the pick depends on.",
+        "newChat": "New chat",
+        "text": "book me a dentist appointment next week",
+        "info": true
       },
       {
-        "say": "The next answer uses what Déjà Vu knows about her mom.",
-        "text": "what should i watch with my mom tonight?"
+        "say": "That changed. Your turn: tap ✕ Not anymore.",
+        "back": true,
+        "yourTurn": "no"
+      },
+      {
+        "say": "Say what changed, in one tap.",
+        "choose": [
+          "I'm on day shifts now, 7am to 3pm",
+          "I only work weekends now"
+        ]
+      },
+      {
+        "say": "The pick updates. Nothing was booked without Maria.",
+        "redo": true
+      },
+      {
+        "say": "A small question gets no check: nothing is at stake, so it doesn’t nag.",
+        "text": "any show ideas for tonight?",
+        "info": true
+      },
+      {
+        "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
+        "memory": true,
+        "section": "food",
+        "why": true
+      },
+      {
+        "say": "Swipe right if it’s still true, left if it’s not.",
+        "swipes": [
+          "no",
+          "no",
+          "yes",
+          "yes"
+        ]
+      },
+      {
+        "say": "Then say what’s true now, in your own words. Both cards update, confirmed.",
+        "chat": [
+          "TODO 1",
+          "TODO 2"
+        ]
       }
     ],
     "demoMemory": "data/personas/maria-memory.json"
