@@ -1,0 +1,44 @@
+{
+  "_about": "What the pitch deck says in auto-play (/slides?narrate=1): per slide, one line per reveal step. Index 0 plays when the slide opens, index N after the Nth tap. An empty line is a silent beat. Record with scripts/make-deck-narration.js.",
+  "cover": [
+    "Hi, I'm Vamshi Kanderao.",
+    "Déjà Vu isn't a chatbot. It's a memory layer any personal agent can add,",
+    "whether that's Muse, ChatGPT, Claude, or your own.",
+    "It learns from your chats, checks with you when it matters, and shows its receipts."
+  ],
+  "problem": [
+    "Your agent remembers you. But it never checks if it's still true.",
+    "You can't see what it guessed.",
+    "So a guess from two years ago still books your hotel.",
+    "And every message, it re-reads a summary of your life. It forgets things, or it costs too much.",
+    ""
+  ],
+  "idea": [
+    "Today's agents run on what they guessed about you.",
+    "Déjà Vu runs on what you confirmed.",
+    "It still uses every guess.",
+    "And it asks once, only when a guess is about to book or buy something.",
+    "",
+    "No setup: drop in a ChatGPT, Claude, or Muse export."
+  ],
+  "demo": [
+    "Let me show you. Meet Alex, a parent planning a trip.",
+    "The chat is just a host.",
+    "Watch for the one tap. That tap is the whole product. Over to the demo."
+  ],
+  "proof": [
+    "Back to the slides. Here are the eval results: fourteen people, three hundred and twelve checks.",
+    "Déjà Vu got eighty percent right. A summary, seventy-two.",
+    "When life changed and nobody said so in chat: eighty-one percent, against about half.",
+    "And ninety-four percent fewer tokens than re-reading the history."
+  ],
+  "closer": [
+    "",
+    "Agents are great at guessing who you are.",
+    "But confirmed memory is always better than inferred memory.",
+    "It's live and open source. Try it with your own chat export."
+  ],
+  "end": [
+    "What would your agent have booked, if you'd never been asked? Déjà Vu makes sure it's still you. Thank you."
+  ]
+}

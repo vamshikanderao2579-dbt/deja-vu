@@ -27,6 +27,7 @@ body.notes #notes{{display:block}}
 #nav button{{width:46px;height:46px;border-radius:50%;border:1px solid #22344a;background:#0c1621cc;color:#c9cde0;font:22px/1 Geist,Arial,sans-serif;cursor:pointer;opacity:.55;transition:opacity .2s}}
 #nav button:hover{{opacity:1}}
 body.notes #nav{{bottom:calc(34vh + 18px)}}
+#narrGo{{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;padding:22px 40px;border-radius:999px;border:0;background:linear-gradient(90deg,#5CC8FF,#0082FB);color:#06121F;font:700 24px Geist,Arial,sans-serif;cursor:pointer;box-shadow:0 0 60px rgba(0,130,251,.5)}}
 @media print{{
   @page{{size:1920px 1080px;margin:0}}
   html,body{{overflow:visible;height:auto}}
@@ -61,6 +62,23 @@ addEventListener('keydown',e=>{{if(['ArrowRight','PageDown',' '].includes(e.key)
 document.getElementById('navNext').onclick=skip;document.getElementById('navPrev').onclick=()=>show(i-1,true);
 addEventListener('click',e=>{{if(!e.target.closest('#notes, a, #nav'))e.clientX<innerWidth/3?prev():next()}});
 addEventListener('resize',fit);fit();show(i);
+// Auto-play (?narrate=1): each reveal step says its line, then the deck moves on by itself.
+// The demo slide starts Alex's tour, which comes back here to the results when it ends.
+const NARR={narr};
+if(new URLSearchParams(location.search).has('narrate')&&Object.keys(NARR).length){{
+  const wait=(ms)=>new Promise((r)=>setTimeout(r,ms));
+  // If the browser won't play sound yet, a button asks for one click, then the line plays.
+  const ask=(label)=>new Promise((res)=>{{const b=document.createElement('button');b.id='narrGo';b.textContent=label;document.body.append(b);b.addEventListener('click',(e)=>{{e.stopPropagation();b.remove();res()}})}});
+  const say=(url)=>new Promise((res)=>{{if(!url)return wait(700).then(res);const a=new Audio(url);a.onended=a.onerror=()=>res();a.play().catch(()=>ask('▶ Continue').then(()=>a.play().catch(()=>res())))}});
+  const run=async()=>{{
+    for(;;){{const s=S[i],lines=NARR[s.id]||[];
+      if(s.id==='end'&&r===0)await wait(2800); // the clock turns back first
+      await say(lines[r]);await wait(300);
+      if(r>=steps(s)){{if(s.id==='demo'){{location.href='/?from=slides&narrate=1#/demo?as=alex';return}}if(i===S.length-1)return}}
+      next();await wait(r===0?800:350)}}}};
+  // From the start, it waits for one click; back from the demo, it carries on by itself.
+  if(i)wait(600).then(run);else ask('▶ Start the presentation').then(run);
+}}
 </script></body></html>
 """
 
@@ -125,5 +143,11 @@ for deck in sorted(p for p in ROOT.iterdir() if (p / 'deck.json').exists()):
     slides = draw('\n'.join((deck / 'slides' / f'{s}.html').read_text().strip() for s in meta['order']))
     assert '/_blob/' not in slides, f'{deck.name}: a slide uses an uploaded image; download it into the folder first'
     out = ROOT / f'{deck.name}.html'
-    out.write_text(PAGE.format(title=meta['title'], slides=slides))
+    # Auto-play narration: per slide, the recorded clip for each reveal step (make-deck-narration.js).
+    narr = {}
+    script, index = deck / 'narration.json', ROOT.parent.parent / 'src' / 'ui' / 'narration' / 'deck' / 'index.json'
+    if script.exists() and index.exists():
+        files = json.loads(index.read_text())
+        narr = {k: [f'/narration/deck/{files[t]}' if t else None for t in v] for k, v in json.loads(script.read_text()).items() if not k.startswith('_')}
+    out.write_text(PAGE.format(title=meta['title'], slides=slides, narr=json.dumps(narr)))
     print(f'{out.relative_to(ROOT.parent.parent)}: {len(meta["order"])} slides')

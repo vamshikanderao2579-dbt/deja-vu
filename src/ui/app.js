@@ -953,7 +953,8 @@ $('#memMenu').addEventListener('click', (e) => {
   try { localStorage.setItem('dv-chat-modes', JSON.stringify(chatModes)); } catch {}
   $('#memMenu').hidden = true;
   renderMemChip();
-  toast({ cards: 'Déjà Vu memory for this chat.', summary: 'This chat answers like today’s agents: from a summary of you that you never see.', full: 'This chat re-reads your whole history, to compare.' }[id]);
+  // A tour's caption already says this; the toast would cover the first message.
+  if (!demoRunning) toast({ cards: 'Déjà Vu memory for this chat.', summary: 'This chat answers like today’s agents: from a summary of you that you never see.', full: 'This chat re-reads your whole history, to compare.' }[id]);
 });
 document.addEventListener('click', () => { $('#memMenu').hidden = true; });
 
@@ -1598,6 +1599,8 @@ async function narrate(text) {
 // Before every play: voice or captions, so sound is never a surprise in a meeting.
 // Voice tucks the captions away; captions-only stays silent. The bar can switch either.
 function askNarration() {
+  // Auto-play from the slides: the voice is already chosen.
+  if (narrateFromSlides()) { Object.assign(tourPrefs, { asked: true, voice: true, hidden: true }); return Promise.resolve(); }
   return new Promise((resolve) => {
     const box = el(`<div class="narr-ask" role="dialog" aria-label="How to play the demo"><div class="narr-card">
       <div class="ct-icon">${ico('sound')}</div><h3>Play the demo with voice?</h3>
@@ -1859,6 +1862,9 @@ $('#playDemoBtn').addEventListener('click', playDemo);
 // Nothing else in the app links to the slides.
 try { if (new URLSearchParams(location.search).get('from') === 'slides') sessionStorage.setItem('dv-from-slides', '1'); } catch {}
 const fromSlides = () => { try { return sessionStorage.getItem('dv-from-slides') === '1'; } catch { return false; } };
+// ?narrate=1 too: the slides are playing themselves, so the demo does as well and hands back.
+try { if (new URLSearchParams(location.search).has('narrate')) sessionStorage.setItem('dv-narrate', '1'); } catch {}
+const narrateFromSlides = () => { try { return fromSlides() && sessionStorage.getItem('dv-narrate') === '1'; } catch { return false; } };
 
 function showDemoEnd() {
   const box = el(`<div class="narr-ask demo-end" role="dialog" aria-label="Demo finished"><div class="narr-card">
@@ -1866,6 +1872,7 @@ function showDemoEnd() {
     <p>Memory any agent can add: it uses what it learned, checks once when it matters, and you fix it in one tap.</p>
     <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button>${fromSlides() ? '<button class="ghost" data-x="slides">Back to the slides</button>' : ''}</div>
     <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice input by Muse Voice Transcribe 1.0 · narration by Kokoro (open weights)</p></div></div>`);
+  if (narrateFromSlides()) setTimeout(() => { location.href = '/slides?narrate=1#5'; }, 2500);
   box.addEventListener('click', (e) => {
     const x = e.target.closest('[data-x]')?.dataset.x;
     if (!x && e.target !== box) return;
