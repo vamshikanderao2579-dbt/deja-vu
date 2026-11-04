@@ -32,7 +32,7 @@ html,body{height:100%;background:#03070c;overflow:hidden;font-family:Geist,Arial
 .old.gone{color:#6B7A8F}.old.gone::after{transform:scaleX(1)}
 .new{display:block;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s,opacity .5s;color:#7FE0A8}
 .new.in{max-height:120px;opacity:1}
-.stamp{display:inline-block;margin-top:14px;font-family:'Geist Mono',monospace;font-size:26px;color:#FF9A62;opacity:0;transition:opacity .3s}
+.stamp{display:inline-block;margin-top:14px;font-family:'Geist Mono',monospace;font-size:34px;font-weight:600;color:#FFB089;opacity:0;transition:opacity .3s}
 .stamp.in{opacity:1;animation:pulse 1s 2}
 @keyframes pulse{50%{opacity:.35}}
 .check{position:absolute;left:70px;right:70px;top:740px;background:#0D1D33;border:2px solid #0064E0;border-radius:30px;padding:26px 30px;
@@ -107,7 +107,7 @@ async function play(){
   await wait(900);await tapAt($('no'));$('no').classList.add('hit');await wait(250);$('check').classList.add('fly');$('cursor').style.opacity=0;
   await wait(350);$('saved').classList.add('in');await say('One tap.',2);
   await wait(500);$('old').classList.add('gone');await wait(350);$('newp').classList.add('in');await say('Fixed. Just like that.',4);
-  const left=10600-(performance.now()-t0);await wait(Math.max(0,left));
+  const left=9800-(performance.now()-t0);await wait(Math.max(0,left));
   $('end').classList.add('in');
   await wait(Math.max(0,15000-(performance.now()-t0)));
 }
