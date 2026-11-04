@@ -18,6 +18,7 @@ body.notes #notes{display:block}
 #nav button{width:46px;height:46px;border-radius:50%;border:1px solid #22344a;background:#0c1621cc;color:#c9cde0;font:22px/1 Geist,Arial,sans-serif;cursor:pointer;opacity:.55;transition:opacity .2s}
 #nav button:hover{opacity:1}
 body.notes #nav{bottom:calc(34vh + 18px)}
+body.narrate #nav{display:none}
 #narrGo{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;padding:22px 40px;border-radius:999px;border:0;background:linear-gradient(90deg,#5CC8FF,#0082FB);color:#06121F;font:700 24px Geist,Arial,sans-serif;cursor:pointer;box-shadow:0 0 60px rgba(0,130,251,.5)}
 @media print{
   @page{size:1920px 1080px;margin:0}
@@ -583,6 +584,8 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 <script>
 const S=[...document.querySelectorAll('#stage>section')],stage=document.getElementById('stage');
 let i=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+const NARRATE=new URLSearchParams(location.search).has('narrate');
+if(NARRATE)document.body.classList.add('narrate'); // auto-play: nothing on screen but the slide
 function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`}
 // Tap-to-reveal: r parts of this slide are showing; a tap shows the next before moving on.
 let r=0;const steps=(s)=>Math.max(0,...[...s.querySelectorAll('[data-reveal]')].map(e=>+e.dataset.reveal));
@@ -603,18 +606,18 @@ addEventListener('resize',fit);fit();show(i);
 // Auto-play (?narrate=1): each reveal step says its line, then the deck moves on by itself.
 // The demo slide starts Alex's tour, which comes back here to the results when it ends.
 const NARR={};
-if(new URLSearchParams(location.search).has('narrate')&&Object.keys(NARR).length){
+if(NARRATE&&Object.keys(NARR).length){
   const wait=(ms)=>new Promise((r)=>setTimeout(r,ms));
   // If the browser won't play sound yet, a button asks for one click, then the line plays.
   const ask=(label)=>new Promise((res)=>{const b=document.createElement('button');b.id='narrGo';b.textContent=label;document.body.append(b);b.addEventListener('click',(e)=>{e.stopPropagation();b.remove();res()})});
-  const say=(url)=>new Promise((res)=>{if(!url)return wait(400).then(res);const a=new Audio(url);a.onended=a.onerror=()=>res();const guard=()=>setTimeout(res,((a.duration||10)+3)*1000);/* a stalled clip never hangs the deck */a.play().then(guard,()=>ask('▶ Continue').then(()=>a.play().then(guard,()=>res())))});
+  const say=(line)=>new Promise((res)=>{if(!line)return wait(400).then(res);const url=line[0];const a=new Audio(url);a.onended=a.onerror=()=>res();const guard=()=>setTimeout(res,((a.duration||10)+3)*1000);/* a stalled clip never hangs the deck */a.play().then(guard,()=>ask('▶ Continue').then(()=>a.play().then(guard,()=>res())))});
   const run=async()=>{
     for(;;){const s=S[i],lines=NARR[s.id]||[];
-      if(s.id==='end'&&r===0)await wait(2200); // the clock turns back first
       await say(lines[r]);await wait(150);
-      if(r>=steps(s)){if(s.id==='demo'){location.href='/?from=slides&narrate=1#/demo?as=alex';return}if(i===S.length-1)return}
+      if(r>=steps(s)){if(s.id==='demo'){location.href='/?from=slides&narrate=1#/demo?as=alex';return}if(i===S.length-1)return;
+        if(s.id==='proof'||s.id==='closer')await wait(800)} // the finished slide stays up a moment
       next();await wait(r===0?500:200)}};
   // From the start, it waits for one click; back from the demo, it carries on by itself.
-  if(i)wait(600).then(run);else ask('▶ Start the presentation').then(run);
+  if(i)wait(300).then(run);else ask('▶ Start the presentation').then(()=>wait(2000)).then(run); // two seconds to settle the recording
 }
 </script></body></html>

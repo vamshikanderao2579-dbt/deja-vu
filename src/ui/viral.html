@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Déjà Vu · 15 seconds</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap">
+<!--
+  A 15-second clip to screen-record for social (square, works muted). Press Start; it waits
+  1.5 s so the recording starts clean, plays once, and holds the last frame. R replays.
+  One moment only: the agent remembers an old you, Déjà Vu checks, one tap fixes it.
+-->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#03070c;overflow:hidden;font-family:Geist,Arial,sans-serif;color:#F2F3F7}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1080px;transform-origin:center;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 18%,#0b2f57 0%,#060c14 62%)}
+.bar{position:absolute;left:40px;right:40px;top:28px;height:6px;border-radius:3px;background:#ffffff1f;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5CC8FF,#0082FB)}
+.hook{position:absolute;left:70px;right:70px;top:70px;font-weight:800;font-size:64px;line-height:1.08;letter-spacing:-2px;min-height:150px}
+.hook span{display:inline-block;opacity:0;transform:translateY(16px);transition:opacity .25s,transform .25s}
+.hook span.in{opacity:1;transform:none}
+.hook .blue{background:linear-gradient(90deg,#5CC8FF,#0082FB);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.chat{position:absolute;left:70px;right:70px;top:300px;display:flex;flex-direction:column;gap:18px}
+.msg{max-width:84%;padding:24px 30px;border-radius:30px;font-size:40px;line-height:1.3;opacity:0;transform:translateY(20px);transition:opacity .3s,transform .3s}
+.msg.in{opacity:1;transform:none}
+.user{align-self:flex-end;background:linear-gradient(90deg,#3b8cf0,#2f6fe0);border-bottom-right-radius:8px}
+.bot{align-self:flex-start;background:#111a26;border:1px solid #22344a;border-bottom-left-radius:8px;position:relative}
+.dots{display:inline-flex;gap:8px}.dots b{width:12px;height:12px;border-radius:50%;background:#8FA3B8;animation:d 1s infinite}
+.dots b:nth-child(2){animation-delay:.15s}.dots b:nth-child(3){animation-delay:.3s}
+@keyframes d{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-6px)}}
+.pick{font-weight:800}
+.old{position:relative;transition:color .4s}
+.old::after{content:"";position:absolute;left:-4px;right:-4px;top:52%;height:6px;border-radius:3px;background:#FF6B6B;transform:scaleX(0);transform-origin:left;transition:transform .45s}
+.old.gone{color:#6B7A8F}.old.gone::after{transform:scaleX(1)}
+.new{display:block;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s,opacity .5s;color:#7FE0A8}
+.new.in{max-height:120px;opacity:1}
+.stamp{display:inline-block;margin-top:14px;font-family:'Geist Mono',monospace;font-size:26px;color:#FF9A62;opacity:0;transition:opacity .3s}
+.stamp.in{opacity:1;animation:pulse 1s 2}
+@keyframes pulse{50%{opacity:.35}}
+.check{position:absolute;left:70px;right:70px;top:740px;background:#0D1D33;border:2px solid #0064E0;border-radius:30px;padding:26px 30px;
+  box-shadow:0 0 70px rgba(0,130,251,.35);opacity:0;transform:translateY(40px);transition:opacity .35s,transform .35s}
+.check.in{opacity:1;transform:none}
+.check.fly{transition:transform .45s ease-in,opacity .45s ease-in;transform:translate(-900px,-30px) rotate(-14deg);opacity:0}
+.check small{font-family:'Geist Mono',monospace;font-size:20px;letter-spacing:3px;color:#5CC8FF}
+.check p{font-size:44px;font-weight:700;margin:12px 0 24px}
+.btns{display:flex;gap:16px}.btns span{flex:1;text-align:center;padding:20px;border-radius:999px;font-size:32px;font-weight:700;border:2px solid #2B4560}
+.btns .no{color:#FF6B6B;border-color:#FF6B6B66}.btns .yes{color:#7FE0A8}
+.btns .no.hit{background:#FF6B6B;color:#fff;transform:scale(.96)}
+.saved{position:absolute;left:50%;top:800px;transform:translate(-50%,20px);opacity:0;padding:22px 36px;border-radius:999px;background:#0f2a1c;border:2px solid #2f9e62;
+  font-size:36px;font-weight:700;color:#7FE0A8;white-space:nowrap;transition:opacity .3s,transform .3s}
+.saved.in{opacity:1;transform:translate(-50%,0)}
+.cursor{position:absolute;left:0;top:0;width:44px;height:44px;opacity:0;transition:transform .55s cubic-bezier(.3,.7,.3,1),opacity .2s;filter:drop-shadow(0 3px 6px #000a)}
+.cursor svg{width:44px;height:44px;fill:#fff;stroke:#0b1524;stroke-width:1.5}
+.ripple{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;border:5px solid #5CC8FF;animation:rip .6s ease-out forwards}
+@keyframes rip{from{transform:scale(.3);opacity:1}to{transform:scale(1.6);opacity:0}}
+.end{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center;
+  background:radial-gradient(ellipse at 50% 40%,#0a3f7a 0%,#060c14 66%);opacity:0;transition:opacity .5s;pointer-events:none}
+.end.in{opacity:1}
+.end svg.logo{width:190px;height:190px;filter:drop-shadow(0 0 50px rgba(0,130,251,.5))}
+.end.in .hands{transform-box:view-box;transform-origin:12px 12px;animation:hands 2.2s cubic-bezier(.12,.7,.18,1) both}
+.end.in .sweep{transform-box:view-box;transform-origin:12px 12px;animation:sweep 2.2s cubic-bezier(.12,.7,.18,1) both}
+@keyframes hands{from{transform:rotate(-1080deg)}to{transform:none}}@keyframes sweep{from{transform:rotate(-360deg)}to{transform:none}}
+.end h1{font-size:150px;font-weight:800;letter-spacing:-6px;line-height:1}
+.end h1 span{background:linear-gradient(90deg,#5CC8FF,#0082FB);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.end .tag{font-size:44px;font-weight:700}
+.end .sub{font-size:28px;color:#A3A9BD}
+.end .url{font-family:'Geist Mono',monospace;font-size:19px;color:#8FD3FF;padding:12px 22px;border:1px solid #1E4B7A;border-radius:999px;background:#0D1D33}
+#go{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;padding:22px 40px;border-radius:999px;border:0;cursor:pointer;
+  background:linear-gradient(90deg,#5CC8FF,#0082FB);color:#06121F;font:700 24px Geist,Arial,sans-serif;box-shadow:0 0 60px rgba(0,130,251,.5)}
+</style></head><body>
+<div id="stage">
+  <div class="bar"><i id="bar"></i></div>
+  <div class="hook" id="hook"></div>
+  <div class="chat">
+    <div class="msg user" id="u1">plan our winter break trip</div>
+    <div class="msg bot" id="b1"><span class="dots"><b></b><b></b><b></b></span></div>
+  </div>
+  <div class="check" id="check"><small>DÉJÀ VU · STILL TRUE?</small><p>Loves warm beach trips</p>
+    <div class="btns"><span class="no" id="no">✕ Not anymore</span><span class="yes">✓ Still true</span></div></div>
+  <div class="saved" id="saved">Memory updated ✓ Wants snow this year</div>
+  <div class="cursor" id="cursor"><svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.6L10 19z"/></svg></div>
+  <div class="end" id="end">
+    <svg class="logo" viewBox="0 0 24 24" aria-label="Déjà Vu logo"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs>
+      <g class="sweep"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" fill="none" stroke="url(#g)" stroke-width="1.8" stroke-linecap="round"/><path d="M6 2.5V6H2.5" fill="none" stroke="url(#g)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <path class="hands" d="M12 7.5V12l3 2" fill="none" stroke="url(#g)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <h1>Déjà <span>Vu</span></h1>
+    <p class="tag">Memory you can see, check, and fix.</p>
+    <p class="sub">For any AI agent · built on Meta’s Muse models</p>
+    <p class="url">Open source · github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory</p>
+  </div>
+</div>
+<button id="go">▶ Start (15 s)</button>
+<script>
+const $=(id)=>document.getElementById(id),stage=$('stage'),wait=(ms)=>new Promise((r)=>setTimeout(r,ms));
+const fit=()=>{const k=Math.min(innerWidth/1080,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`};addEventListener('resize',fit);fit();
+// The big line at the top, a word at a time; the last `blue` words in the brand gradient.
+async function say(text,blue=0){const h=$('hook'),words=text.split(' ');h.innerHTML=words.map((w,i)=>`<span class="${i>=words.length-blue?'blue':''}">${w}</span>`).join(' ');
+  for(const s of h.children){s.classList.add('in');await wait(70)}}
+async function tapAt(el){const c=$('cursor'),b=el.getBoundingClientRect(),s=stage.getBoundingClientRect(),k=s.width/1080;
+  const x=(b.left-s.left+b.width/2)/k,y=(b.top-s.top+b.height/2)/k;c.style.opacity=1;c.style.transform=`translate(${x}px,${y}px)`;await wait(600);
+  const r=document.createElement('div');r.className='ripple';r.style.left=x+'px';r.style.top=y+'px';stage.append(r);setTimeout(()=>r.remove(),700)}
+async function play(){
+  const t0=performance.now();const tick=()=>{const p=Math.min(1,(performance.now()-t0)/15000);$('bar').style.width=p*100+'%';if(p<1)requestAnimationFrame(tick)};tick();
+  await say('My AI planned a trip for someone I used to be.',5);
+  await wait(300);$('u1').classList.add('in');await wait(500);$('b1').classList.add('in');await wait(700);
+  $('b1').innerHTML='<span class="pick old" id="old">🏖️ Beach week in Cancún.</span> You love warm beaches!<span class="new" id="newp">⛷️ Park City. Ski school for Maya.</span><br><span class="stamp" id="stamp">remembered from Nov 2024</span>';
+  await wait(900);$('stamp').classList.add('in');await say('That was two years ago.',3);
+  await wait(700);await say('Then Déjà Vu asked.',2);$('check').classList.add('in');
+  await wait(900);await tapAt($('no'));$('no').classList.add('hit');await wait(250);$('check').classList.add('fly');$('cursor').style.opacity=0;
+  await wait(350);$('saved').classList.add('in');await say('One tap.',2);
+  await wait(500);$('old').classList.add('gone');await wait(350);$('newp').classList.add('in');await say('Fixed. Just like that.',4);
+  const left=10600-(performance.now()-t0);await wait(Math.max(0,left));
+  $('end').classList.add('in');
+  await wait(Math.max(0,15000-(performance.now()-t0)));
+}
+const start=()=>{$('go').remove();wait(1500).then(play)};
+$('go').addEventListener('click',start);
+addEventListener('keydown',(e)=>{if(e.key==='r'||e.key==='R')location.reload()});
+</script></body></html>

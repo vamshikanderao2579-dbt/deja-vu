@@ -344,6 +344,7 @@ function switchTourChat(k) {
   const to = tourChats[k];
   conversationId = to.id;
   thread.replaceChildren(...(to.nodes ?? []));
+  thread.querySelectorAll('.meta-detail').forEach((d) => d.classList.add('hidden')); // ⓘ starts closed
   closeAll();
   renderMemChip();
   renderChats();
@@ -1523,7 +1524,9 @@ function showTour() {
       <button class="tour-btn t-pause" type="button"></button>
       <button class="tour-btn t-stop" type="button" aria-label="Stop the demo">${ico('stop')}</button>
     </div></div>`);
-  document.body.append(tourBar);
+  // On a laptop the controls sit in the sidebar, above the settings row, off the chat.
+  const foot = wide.matches && $('#drawer .drawer-foot');
+  if (foot) { tourBar.classList.add('in-side'); foot.before(tourBar); } else document.body.append(tourBar);
   document.body.append(el(`<div class="tour-cursor" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.6L10 19z"/></svg></div>`));
   const sync = () => {
     tourBar.classList.toggle('mini', tourPrefs.hidden);
@@ -1581,7 +1584,8 @@ const stopClip = () => { clip?.pause(); clip = null; clipDone(true); };
 // Read a caption aloud; resolves when it's done (or right away when narration is off).
 async function narrate(text) {
   if (!tourPrefs.voice) return;
-  if (clips[text] && await playClip(clips[text])) return;
+  // A recorded clip: try it, once more if it didn't load, and never switch to a second voice.
+  if (clips[text]) { if (!(await playClip(clips[text]))) { await sleep(300); await playClip(clips[text]); } return; }
   if (!('speechSynthesis' in window)) return;
   return new Promise((resolve) => {
     speechSynthesis.cancel();
@@ -1705,7 +1709,7 @@ async function playDemo() {
         await press($(`#drawerChats [data-tour="${k}"]`));
         await sleep(700);
         await openInfo();
-        await sleep(k ? 400 : 2200);
+        await sleep(k ? 400 : 1400);
       }
     }
     if (step.mode) {
@@ -1726,7 +1730,7 @@ async function playDemo() {
       await sleep(1500); // time to read what turning it on means
       await press($('#turnOnGo'));
       const ok = await until('#tobOk:not([hidden])', 180000);
-      await sleep(1500); // time to see the cards it wrote
+      await sleep(1000); // time to see the cards it wrote
       await press(ok);
       await sleep(300);
     }
@@ -1817,16 +1821,18 @@ async function playDemo() {
     if (step.section) {
       // A moment on Memory as a whole, then into the topic.
       const tile = [...document.querySelectorAll('#catGrid .cat-tile')].find((t) => t.getAttribute('aria-label').toLowerCase().startsWith(step.section.toLowerCase()));
-      await sleep(1400);
+      await sleep(600);
+      $('#catGrid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); // every topic, then the one we open
+      await sleep(1200);
       tile?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      await sleep(1000);
+      await sleep(600);
       await press(tile);
     }
     if (step.why) {
       // Flip the top card: the message it was learned from.
       await sleep(300);
       await press($('#deck .swipe-card:last-child .why-btn') ?? lastCard('#deck .why-btn'));
-      await sleep(2000);
+      await sleep(1500);
       await press(lastCard('#deck .flip-back'));
       await sleep(400);
     }
@@ -1838,7 +1844,7 @@ async function playDemo() {
         const card = currentCard();
         if (!card) break;
         const act = (order ? order[k] : step.swipes[card.id]) === 'no' ? 'reject' : 'confirm';
-        await sleep(400); // time to read the card
+        await sleep(150); // time to read the card
         const at = deck.i;
         await press($(`#deckButtons [data-act="${act}"]`));
         for (let t = 0; t < 10000 && demoRunning && deck.i === at; t += 200) await sleep(200);
@@ -1872,7 +1878,12 @@ function showDemoEnd() {
     <p>Memory any agent can add: it uses what it learned, checks once when it matters, and you fix it in one tap.</p>
     <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button>${fromSlides() ? '<button class="ghost" data-x="slides">Back to the slides</button>' : ''}</div>
     <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice input by Muse Voice Transcribe 1.0 · narration by Kokoro (open weights)</p></div></div>`);
-  if (narrateFromSlides()) setTimeout(() => { location.href = '/slides?narrate=1#5'; }, 1200);
+  // Back to the slides: the tour's voice says so, and the slides' voice picks up from there.
+  if (narrateFromSlides()) {
+    const back = () => { location.href = '/slides?narrate=1#5'; };
+    setTimeout(back, 4000);
+    fetch('/narration/deck/index.json').then((r) => r.json()).then((ix) => { const a = new Audio(`/narration/deck/${ix.handback}`); a.onended = a.onerror = back; return a.play(); }).catch(back);
+  }
   box.addEventListener('click', (e) => {
     const x = e.target.closest('[data-x]')?.dataset.x;
     if (!x && e.target !== box) return;

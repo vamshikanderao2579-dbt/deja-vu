@@ -1,0 +1,29 @@
+<section id="build" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:110px 128px 140px;display:flex;flex-direction:column;gap:34px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— How it’s built</p>
+<h2 style="font-size:76px;font-weight:800;letter-spacing:-3px;line-height:1.05">Plain Node, zero dependencies. <span style="background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Built on Meta’s models.</span></h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;width:1664px">
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">STAGED BUILD</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">Guard → Muse Spark writes → self-review → Muse Wonder grades → contract</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">Secrets and steering removed first. Wonder checks each card against the chat it cites. A malformed build reruns; every stage is checkpointed.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">BOUNDED MEMORY</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">10 topics × 8 cards × 14 words</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">Each request picks the cards that fit and how high the stakes are. A topic cache makes a redo instant. Short-term cards carry an end date.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">DON’T-NAG RULE, IN CODE</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">Asks only when a key guess meets high stakes</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">A guess that changed or is a year old, a booking-level request, nothing asked in this chat yet. Never style, agent or private cards.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">ANY AGENT, OVER HTTP</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">recall · remember · confirm</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">Muse Spark answers, Muse Wonder grades, Muse Voice Transcribe takes spoken replies. 65 tests, a 14-person eval, live on Modal.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-family:'Geist Mono', 'Courier New', monospace;font-size:22px;color:#5B6178">github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory · README · docs/eval.md</p>
+<aside>For anyone who wants the depth. It’s plain Node with zero dependencies, built on Meta’s models. A staged build: a guard removes secrets and steering, Muse Spark writes the cards and reviews its own work, Muse Wonder grades each card against the chat it cites, and a contract check reruns a malformed build. Memory is bounded: ten topics, eight cards each, fourteen words a card. The don’t-nag rule is code, not a prompt. And any agent can use it over HTTP: recall, remember, confirm. The README and docs/eval.md have the rest.</aside>
+</section>

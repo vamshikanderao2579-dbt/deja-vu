@@ -1011,3 +1011,12 @@ body.touring #modelChip { display: none; }
 .cat-tile { min-width: 0; }
 /* During a tour the ⓘ under an answer appears with the step that explains it. */
 body.touring #thread .meta:not(.shown) .info { visibility: hidden; }
+/* Tour controls in the laptop sidebar, just above the settings row. */
+.tour.in-side { position: static; transform: none; width: auto; margin: auto 0 10px; padding: 0; border: 0; background: none; box-shadow: none; flex-wrap: wrap; }
+.tour.in-side + .drawer-foot { margin-top: 0; }
+.tour.in-side.mini { padding: 0; border-radius: 0; }
+/* Same size and places as the four buttons under it: two on the left, two on the right. */
+.tour.in-side .tour-actions { flex: 1 0 100%; gap: 10px; }
+.tour.in-side .tour-actions .tour-btn { width: 52px; height: 52px; background: var(--surface); border-color: var(--accent); }
+.tour.in-side .tour-actions .t-pause { margin-left: auto; }
+.tour.in-side .tour-text { flex: 1 0 100%; margin-bottom: 8px; }

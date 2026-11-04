@@ -26,6 +26,10 @@ const script = JSON.parse(readFileSync(join(ROOT, 'docs', 'decks', 'pitch', 'nar
 const lines = [...new Set(Object.entries(script).filter(([k]) => !k.startsWith('_')).flatMap(([, v]) => v).filter(Boolean))];
 const fileFor = (text) => `${createHash('sha1').update(`${VOICE}|${text}`).digest('hex').slice(0, 12)}.m4a`;
 
+// The tour's voice hands back to the slides in its own voice (af_heart, as in the tours).
+const HANDBACK = { text: 'Back to the slides.', voice: 'af_heart', speed: '0.9', pause: '0.35' };
+const handbackFile = `${createHash('sha1').update(`kokoro:${HANDBACK.voice}@${HANDBACK.speed}/${HANDBACK.pause}|${HANDBACK.text}`).digest('hex').slice(0, 12)}.m4a`;
+
 mkdirSync(OUT, { recursive: true });
 const index = {};
 const todo = [];
@@ -34,12 +38,17 @@ for (const text of lines) {
   index[text] = file;
   if (!existsSync(join(OUT, file))) todo.push({ text, file, raw: join(tmpdir(), `dv-deck-${file}.wav`) });
 }
-if (todo.length) {
-  execFileSync(process.env.KOKORO_PY ?? 'python3', [join(ROOT, 'scripts', 'kokoro-say.py')], {
-    input: JSON.stringify(todo.map((t) => ({ text: t.text, out: t.raw }))),
-    env: { ...process.env, KOKORO_VOICE: voice, KOKORO_SPEED: speed, KOKORO_PAUSE: pause },
-    stdio: ['pipe', 'inherit', 'inherit'],
-  });
+const say = (items, env) => items.length && execFileSync(process.env.KOKORO_PY ?? 'python3', [join(ROOT, 'scripts', 'kokoro-say.py')], {
+  input: JSON.stringify(items.map((t) => ({ text: t.text, out: t.raw }))),
+  env: { ...process.env, ...env },
+  stdio: ['pipe', 'inherit', 'inherit'],
+});
+say(todo, { KOKORO_VOICE: voice, KOKORO_SPEED: speed, KOKORO_PAUSE: pause });
+index.handback = handbackFile;
+if (!existsSync(join(OUT, handbackFile))) {
+  const t = { text: HANDBACK.text, file: handbackFile, raw: join(tmpdir(), `dv-deck-${handbackFile}.wav`) };
+  say([t], { KOKORO_VOICE: HANDBACK.voice, KOKORO_SPEED: HANDBACK.speed, KOKORO_PAUSE: HANDBACK.pause });
+  todo.push(t);
 }
 for (const t of todo) {
   execFileSync('afconvert', ['-f', 'm4af', '-d', 'aac', '-b', '64000', t.raw, join(OUT, t.file)]);

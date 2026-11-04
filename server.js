@@ -542,6 +542,8 @@ createServer(async (req, res) => {
       }
       return send(res, 404, JSON.stringify({ error: 'not found' }));
     }
+    // A 15-second clip to screen-record for social, at a link nothing else in the app shows.
+    if (url.pathname === '/viral') url.pathname = '/viral.html';
     // The pitch deck, at a link only the slides and the presenter know.
     if (url.pathname === '/slides') {
       const deck = await readFile(join(ROOT, 'docs', 'decks', 'pitch.html')).catch(() => null);

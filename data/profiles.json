@@ -23,7 +23,7 @@
         "info": true
       },
       {
-        "say": "Turn on Déjà Vu. It asks first, then turns past chats into short cards, each one a guess.",
+        "say": "Turn on Déjà Vu. Muse Spark writes short cards from past chats, Muse Wonder grades every one, and each card stays a guess.",
         "build": true
       },
       {
@@ -70,7 +70,6 @@
         "swipes": [
           "no",
           "no",
-          "yes",
           "yes"
         ]
       }
@@ -99,7 +98,7 @@
         "info": true
       },
       {
-        "say": "Turn on Déjà Vu. It asks first, then turns past chats into short cards, each one a guess.",
+        "say": "Turn on Déjà Vu. Muse Spark writes short cards from past chats, Muse Wonder grades every one, and each card stays a guess.",
         "build": true
       },
       {

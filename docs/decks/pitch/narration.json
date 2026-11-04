@@ -4,7 +4,7 @@
     "Hi, I'm Vamshi Kanderao.",
     "Déjà Vu isn't a chatbot. It's a memory layer any personal agent can add,",
     "Muse, ChatGPT, Claude, or your own.",
-    "It learns from your chats, checks with you when it matters, and runs on Meta's Muse models."
+    "It learns from your chats, checks when it matters, and runs on Meta's Muse models."
   ],
   "problem": [
     "Your agent remembers you. But it never checks if it's still true.",
@@ -22,12 +22,12 @@
     "No setup: just drop in your chat export."
   ],
   "demo": [
-    "Meet Alex, planning a family trip.",
-    "The chat is just a host.",
-    "Watch for the one tap. That tap is the whole product. Over to the demo."
+    "Let's watch a live demo.",
+    "The chat is just a host. Déjà Vu is the memory inside it.",
+    ""
   ],
   "proof": [
-    "Back to the slides. The eval: fourteen people, three hundred and twelve checks.",
+    "The eval: fourteen people, three hundred and twelve checks.",
     "Déjà Vu got eighty percent right. A summary, seventy-two.",
     "When a preference changed and was never mentioned: eighty-one percent. The others, about half.",
     "And ninety-four percent fewer tokens than re-reading the history."
@@ -36,9 +36,12 @@
     "",
     "Agents will keep getting better at guessing who you are.",
     "But a guess is still a guess. Confirmed memory beats inferred memory.",
-    "It's live, and it's open source."
+    ""
   ],
   "end": [
     "Next time an agent says it knows you, ask it to show you. Thank you."
+  ],
+  "build": [
+    "Under the hood: Muse Spark writes, Muse Wonder grades, and any agent can plug in."
   ]
 }

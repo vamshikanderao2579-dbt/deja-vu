@@ -18,6 +18,7 @@ body.notes #notes{display:block}
 #nav button{width:46px;height:46px;border-radius:50%;border:1px solid #22344a;background:#0c1621cc;color:#c9cde0;font:22px/1 Geist,Arial,sans-serif;cursor:pointer;opacity:.55;transition:opacity .2s}
 #nav button:hover{opacity:1}
 body.notes #nav{bottom:calc(34vh + 18px)}
+body.narrate #nav{display:none}
 #narrGo{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;padding:22px 40px;border-radius:999px;border:0;background:linear-gradient(90deg,#5CC8FF,#0082FB);color:#06121F;font:700 24px Geist,Arial,sans-serif;cursor:pointer;box-shadow:0 0 60px rgba(0,130,251,.5)}
 @media print{
   @page{size:1920px 1080px;margin:0}
@@ -80,6 +81,14 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 <p data-reveal="1" style="font-size:30px;color:#A3A9BD;width:860px;line-height:1.35;background:#0D1D33;border:1px solid #1E4B7A;border-radius:20px;padding:20px 26px"><b style="color:#F2F3F7">Not a chatbot.</b> A memory layer any personal agent can add, so it feels like it knows you.</p>
 </div>
 
+<style>
+/* Meta's models sit at the bottom from the start, next to the name; when the right side
+   fills in, they move up into it, under the feature cards. */
+#cover .cv-meta{position:absolute;left:470px;bottom:56px;display:flex;align-items:center;gap:12px;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+#cover .cv-meta{transition:opacity .5s,transform .5s}
+#cover[data-r="3"] .cv-meta,#cover:not([data-r]) .cv-meta{opacity:0;transform:translateY(12px);pointer-events:none}
+</style>
+<div class="cv-meta"><p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:17px;letter-spacing:3px;color:#5CC8FF;text-transform:uppercase;white-space:nowrap">Built on Meta</p><p style="display:flex;align-items:baseline;gap:8px;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:8px 16px;font-size:20px;color:#A3A9BD;white-space:nowrap"><b style="color:#F2F3F7;font-weight:700">Muse Spark</b>writes, answers</p><p style="display:flex;align-items:baseline;gap:8px;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:8px 16px;font-size:20px;color:#A3A9BD;white-space:nowrap"><b style="color:#F2F3F7;font-weight:700">Muse Wonder</b>grades cards</p><p style="display:flex;align-items:baseline;gap:8px;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:8px 16px;font-size:20px;color:#A3A9BD;white-space:nowrap"><b style="color:#F2F3F7;font-weight:700">Voice Transcribe</b>voice input</p></div>
 <p style="position:absolute;left:128px;bottom:64px;width:700px;font-size:30px;font-weight:700;color:#F2F3F7">Vamshi Kanderao</p>
 
 <aside>Hi, I’m Vamshi Kanderao. [tap] First, what Déjà Vu is not: it’s not another chatbot. It’s a memory layer any personal agent can add, [tap] Muse, ChatGPT, Claude or your own. [tap] It learns short cards from your chats, uses the ones that fit each request, checks with you once when a guess really matters, and shows where every card came from. The chat you’ll see is just a host to show it.</aside>
@@ -150,7 +159,7 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 </section>
 <section id="demo" data-transition="fade" style="background:radial-gradient(ellipse at 50% 45%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;gap:44px">
 <div style="position:absolute;left:0;top:0;width:1280px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
-<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— The demo · Alex, a parent planning a trip</p>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase">— Live demo</p>
 <h2 style="font-size:72px;font-weight:800;letter-spacing:-2px;line-height:1.12;width:1500px">Let’s see how Déjà Vu makes you the <span style="background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">driver, not a passenger,</span> for any AI agent.</h2>
 <p data-reveal="1" style="font-size:34px;color:#A3A9BD;background:#0D1D33;border:1px solid #1E4B7A;border-radius:18px;padding:18px 26px;width:1500px"><b style="color:#F2F3F7">Not a chatbot.</b> The chat is just a host: Déjà Vu is the memory layer inside it.</p>
 <div data-reveal="2" style="display:flex;flex-direction:column;gap:12px">
@@ -158,7 +167,7 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 <p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:2px;color:#5CC8FF">Click it: Alex’s demo starts, and “Back to the slides” returns here</p>
 </div>
 <p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">04 / 07</p>
-<aside>Let’s see how Déjà Vu makes you the driver, not a passenger, for any AI agent. [tap] One thing first: it’s not a chatbot. The chat you’ll see is just a host; Déjà Vu is the memory layer inside it. [tap] Here’s the link: click it and Alex’s demo starts. When it ends, Back to the slides brings you to the results. The tour runs the same question twice. First as today’s agents do it: a hidden summary of Alex, sent with every message, that Alex never sees. Then Déjà Vu reads the same chats and writes short cards, each a guess. In a new chat, the same question uses only the cards that fit, and one line checks the guess the pick depends on. Alex taps ✕, says what changed in one tap, and the pick updates; nothing is booked without Alex. A small question gets no check, so it doesn’t nag. Then Memory: flip a card to see where it came from, swipe two left and two right, and say what’s true now: both cards update, confirmed.</aside>
+<aside>Let’s watch a live demo. [tap] The chat is just a host; Déjà Vu is the memory inside it. [tap] Click the link: the demo starts, and its end card brings you back to the results.</aside>
 </section>
 <section id="proof" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:120px 128px 150px;display:flex;flex-direction:column;gap:34px">
 <div style="position:absolute;left:0;top:0;width:1600px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
@@ -197,11 +206,40 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 <p>Try it · <a href="https://vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run" target="_blank" rel="noopener" style="color:#F2F3F7;text-decoration:none;border-bottom:2px solid #0064E0">vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run</a></p>
 <p>Code · <a href="https://github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory" target="_blank" rel="noopener" style="color:#F2F3F7;text-decoration:none;border-bottom:2px solid #0064E0">github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory</a></p>
 </div>
-<div data-reveal="3" style="position:absolute;left:128px;bottom:72px;width:1664px;height:64px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1C2B3A">
+<div style="position:absolute;left:128px;bottom:72px;width:1664px;height:64px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1C2B3A">
 <p style="font-size:40px;font-weight:800;letter-spacing:-1px">Déjà Vu</p>
 <p style="font-size:30px;font-weight:600;color:#A3A9BD">Vamshi Kanderao</p>
 </div>
 <aside>So to close. [tap] Agents will keep getting better at guessing who you are. [tap] But confirmed memory is always better than inferred memory. Use everything, ask once at the right moment, show the receipts, and you get an agent people trust, that stays right as life changes, and that’s cheap enough to run for everyone. [tap] Both links are on the slide: try it with your own ChatGPT or Claude export. I’m Vamshi Kanderao, this is Déjà Vu. Thank you. If asked how it works: Muse Spark writes the cards, Muse Wonder grades every one before it’s kept, cards are short and bounded, and it never asks the same chat twice. The full deck and docs/eval.md go deeper.</aside>
+</section>
+<section id="build" data-transition="fade" style="background:radial-gradient(ellipse at 18% 12%, #0b2747 0%, #060c14 62%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:110px 128px 140px;display:flex;flex-direction:column;gap:34px">
+<div style="position:absolute;left:0;top:0;width:1920px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;letter-spacing:5px;color:#5CC8FF;text-transform:uppercase">— How it’s built</p>
+<h2 style="font-size:76px;font-weight:800;letter-spacing:-3px;line-height:1.05">Plain Node, zero dependencies. <span style="background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Built on Meta’s models.</span></h2>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;width:1664px">
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">STAGED BUILD</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">Guard → Muse Spark writes → self-review → Muse Wonder grades → contract</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">Secrets and steering removed first. Wonder checks each card against the chat it cites. A malformed build reruns; every stage is checkpointed.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">BOUNDED MEMORY</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">10 topics × 8 cards × 14 words</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">Each request picks the cards that fit and how high the stakes are. A topic cache makes a redo instant. Short-term cards carry an end date.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">DON’T-NAG RULE, IN CODE</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">Asks only when a key guess meets high stakes</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">A guess that changed or is a year old, a booking-level request, nothing asked in this chat yet. Never style, agent or private cards.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:26px;padding:30px">
+<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#5CC8FF">ANY AGENT, OVER HTTP</p>
+<h3 style="font-size:32px;font-weight:700;line-height:1.25">recall · remember · confirm</h3>
+<p style="font-size:24px;color:#A3A9BD;line-height:1.35">Muse Spark answers, Muse Wonder grades, Muse Voice Transcribe takes spoken replies. 65 tests, a 14-person eval, live on Modal.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;font-family:'Geist Mono', 'Courier New', monospace;font-size:22px;color:#5B6178">github.com/vamshikanderao2579-dbt/deja-vu-confirmed-memory · README · docs/eval.md</p>
+<aside>For anyone who wants the depth. It’s plain Node with zero dependencies, built on Meta’s models. A staged build: a guard removes secrets and steering, Muse Spark writes the cards and reviews its own work, Muse Wonder grades each card against the chat it cites, and a contract check reruns a malformed build. Memory is bounded: ten topics, eight cards each, fourteen words a card. The don’t-nag rule is code, not a prompt. And any agent can use it over HTTP: recall, remember, confirm. The README and docs/eval.md have the rest.</aside>
 </section>
 <section id="end" data-transition="fade" style="background:radial-gradient(ellipse at 50% 42%, #0a3f7a 0%, #060c14 64%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px">
 <style>
@@ -216,6 +254,7 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 <svg aria-label="Déjà Vu logo, a clock turning back" viewBox="0 0 24 24" style="width:260px;height:260px;filter:drop-shadow(0 0 60px rgba(0,130,251,0.45))"><defs><linearGradient id="endLogo" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5CC8FF"/><stop offset="1" stop-color="#0082FB"/></linearGradient></defs><g class="end-sweep"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" fill="none" stroke="url(#endLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 2.5V6H2.5" fill="none" stroke="url(#endLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g><path class="end-hands" d="M12 7.5V12l3 2" fill="none" stroke="url(#endLogo)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <h1 style="font-size:200px;font-weight:800;letter-spacing:-8px;line-height:1">Déjà <span style="background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Vu</span></h1>
 <p style="font-size:48px;font-weight:600;color:#A3A9BD">Memory you can see, check, and fix.</p>
+<div style="display:flex;align-items:center;gap:12px;margin-top:8px"><p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:18px;letter-spacing:4px;color:#5CC8FF;text-transform:uppercase;white-space:nowrap">Built on Meta’s models</p><p style="display:flex;align-items:baseline;gap:10px;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:10px 20px;font-size:22px;color:#A3A9BD;white-space:nowrap"><b style="color:#F2F3F7;font-weight:700">Muse Spark</b>writes cards, answers</p><p style="display:flex;align-items:baseline;gap:10px;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:10px 20px;font-size:22px;color:#A3A9BD;white-space:nowrap"><b style="color:#F2F3F7;font-weight:700">Muse Wonder</b>grades every card</p><p style="display:flex;align-items:baseline;gap:10px;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:10px 20px;font-size:22px;color:#A3A9BD;white-space:nowrap"><b style="color:#F2F3F7;font-weight:700">Voice Transcribe</b>talk, don’t type</p></div>
 <p style="position:absolute;left:128px;bottom:64px;font-size:30px;font-weight:700">Vamshi Kanderao</p>
 <p style="position:absolute;right:128px;bottom:68px;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">vamshikanderao2579-dbt--deja-vu-web.us-east.modal.run</p>
 <p style="position:absolute;right:128px;bottom:108px;font-family:'Geist Mono', 'Courier New', monospace;font-size:20px;color:#3E4A5E">Narration: Kokoro, open-weights voices</p>
@@ -227,6 +266,8 @@ body.notes #nav{bottom:calc(34vh + 18px)}
 <script>
 const S=[...document.querySelectorAll('#stage>section')],stage=document.getElementById('stage');
 let i=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
+const NARRATE=new URLSearchParams(location.search).has('narrate');
+if(NARRATE)document.body.classList.add('narrate'); // auto-play: nothing on screen but the slide
 function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${k})`}
 // Tap-to-reveal: r parts of this slide are showing; a tap shows the next before moving on.
 let r=0;const steps=(s)=>Math.max(0,...[...s.querySelectorAll('[data-reveal]')].map(e=>+e.dataset.reveal));
@@ -246,19 +287,19 @@ addEventListener('click',e=>{if(!e.target.closest('#notes, a, #nav'))e.clientX<i
 addEventListener('resize',fit);fit();show(i);
 // Auto-play (?narrate=1): each reveal step says its line, then the deck moves on by itself.
 // The demo slide starts Alex's tour, which comes back here to the results when it ends.
-const NARR={"cover": ["/narration/deck/933ab3c0228b.m4a", "/narration/deck/b9ee75484155.m4a", "/narration/deck/fddcd7e03a5d.m4a", "/narration/deck/4189439feada.m4a"], "problem": ["/narration/deck/8bd209d79ec9.m4a", "/narration/deck/600ec0fba857.m4a", "/narration/deck/79737c3e8450.m4a", "/narration/deck/74473bf8c50a.m4a", null], "idea": ["/narration/deck/20dda3cb09a7.m4a", "/narration/deck/d4f07570e1a0.m4a", "/narration/deck/2f26fbb3a3ac.m4a", "/narration/deck/cc3c4a256d80.m4a", null, "/narration/deck/271c97c03ff8.m4a"], "demo": ["/narration/deck/e2c427b40e58.m4a", "/narration/deck/b9d3bdd7081a.m4a", "/narration/deck/bd8aa156bfdc.m4a"], "proof": ["/narration/deck/3a4eb44b4414.m4a", "/narration/deck/b19e061ca480.m4a", "/narration/deck/8bc718aebf8d.m4a", "/narration/deck/9e4c7504256e.m4a"], "closer": [null, "/narration/deck/493a0f0ff662.m4a", "/narration/deck/c0d31e7fa5b8.m4a", "/narration/deck/2f5f0ae0a587.m4a"], "end": ["/narration/deck/b87544779ddd.m4a"]};
-if(new URLSearchParams(location.search).has('narrate')&&Object.keys(NARR).length){
+const NARR={"cover": [["/narration/deck/933ab3c0228b.m4a", "Hi, I'm Vamshi Kanderao."], ["/narration/deck/b9ee75484155.m4a", "D\u00e9j\u00e0 Vu isn't a chatbot. It's a memory layer any personal agent can add,"], ["/narration/deck/fddcd7e03a5d.m4a", "Muse, ChatGPT, Claude, or your own."], ["/narration/deck/0ea25f5b18fe.m4a", "It learns from your chats, checks when it matters, and runs on Meta's Muse models."]], "problem": [["/narration/deck/8bd209d79ec9.m4a", "Your agent remembers you. But it never checks if it's still true."], ["/narration/deck/600ec0fba857.m4a", "You can't see what it guessed."], ["/narration/deck/79737c3e8450.m4a", "So a guess from two years ago still books your hotel."], ["/narration/deck/74473bf8c50a.m4a", "And it re-reads a summary of you on every message: costly, and easy to get wrong."], null], "idea": [["/narration/deck/20dda3cb09a7.m4a", "Today's agents run on what they guessed about you."], ["/narration/deck/d4f07570e1a0.m4a", "D\u00e9j\u00e0 Vu runs on what you confirmed."], ["/narration/deck/2f26fbb3a3ac.m4a", "It still uses every guess."], ["/narration/deck/cc3c4a256d80.m4a", "And it asks once, only when a guess is about to book or buy something."], null, ["/narration/deck/271c97c03ff8.m4a", "No setup: just drop in your chat export."]], "demo": [["/narration/deck/5d1f14764a3b.m4a", "Let's watch a live demo."], ["/narration/deck/8e60f9f1ad06.m4a", "The chat is just a host. D\u00e9j\u00e0 Vu is the memory inside it."], null], "proof": [["/narration/deck/25d4aab3978d.m4a", "The eval: fourteen people, three hundred and twelve checks."], ["/narration/deck/b19e061ca480.m4a", "D\u00e9j\u00e0 Vu got eighty percent right. A summary, seventy-two."], ["/narration/deck/8bc718aebf8d.m4a", "When a preference changed and was never mentioned: eighty-one percent. The others, about half."], ["/narration/deck/9e4c7504256e.m4a", "And ninety-four percent fewer tokens than re-reading the history."]], "closer": [null, ["/narration/deck/493a0f0ff662.m4a", "Agents will keep getting better at guessing who you are."], ["/narration/deck/c0d31e7fa5b8.m4a", "But a guess is still a guess. Confirmed memory beats inferred memory."], null], "end": [["/narration/deck/b87544779ddd.m4a", "Next time an agent says it knows you, ask it to show you. Thank you."]], "build": [["/narration/deck/8633630cd75b.m4a", "Under the hood: Muse Spark writes, Muse Wonder grades, and any agent can plug in."]]};
+if(NARRATE&&Object.keys(NARR).length){
   const wait=(ms)=>new Promise((r)=>setTimeout(r,ms));
   // If the browser won't play sound yet, a button asks for one click, then the line plays.
   const ask=(label)=>new Promise((res)=>{const b=document.createElement('button');b.id='narrGo';b.textContent=label;document.body.append(b);b.addEventListener('click',(e)=>{e.stopPropagation();b.remove();res()})});
-  const say=(url)=>new Promise((res)=>{if(!url)return wait(400).then(res);const a=new Audio(url);a.onended=a.onerror=()=>res();const guard=()=>setTimeout(res,((a.duration||10)+3)*1000);/* a stalled clip never hangs the deck */a.play().then(guard,()=>ask('▶ Continue').then(()=>a.play().then(guard,()=>res())))});
+  const say=(line)=>new Promise((res)=>{if(!line)return wait(400).then(res);const url=line[0];const a=new Audio(url);a.onended=a.onerror=()=>res();const guard=()=>setTimeout(res,((a.duration||10)+3)*1000);/* a stalled clip never hangs the deck */a.play().then(guard,()=>ask('▶ Continue').then(()=>a.play().then(guard,()=>res())))});
   const run=async()=>{
     for(;;){const s=S[i],lines=NARR[s.id]||[];
-      if(s.id==='end'&&r===0)await wait(2200); // the clock turns back first
       await say(lines[r]);await wait(150);
-      if(r>=steps(s)){if(s.id==='demo'){location.href='/?from=slides&narrate=1#/demo?as=alex';return}if(i===S.length-1)return}
+      if(r>=steps(s)){if(s.id==='demo'){location.href='/?from=slides&narrate=1#/demo?as=alex';return}if(i===S.length-1)return;
+        if(s.id==='proof'||s.id==='closer')await wait(800)} // the finished slide stays up a moment
       next();await wait(r===0?500:200)}};
   // From the start, it waits for one click; back from the demo, it carries on by itself.
-  if(i)wait(600).then(run);else ask('▶ Start the presentation').then(run);
+  if(i)wait(300).then(run);else ask('▶ Start the presentation').then(()=>wait(2000)).then(run); // two seconds to settle the recording
 }
 </script></body></html>
