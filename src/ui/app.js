@@ -1723,10 +1723,10 @@ async function playDemo() {
       await press($('#memChip'));
       await sleep(500);
       await press($('#memMenu [data-m="cards"]'));
-      await sleep(2500); // time to read what turning it on means
+      await sleep(1500); // time to read what turning it on means
       await press($('#turnOnGo'));
       const ok = await until('#tobOk:not([hidden])', 180000);
-      await sleep(2000); // time to see the cards it wrote
+      await sleep(1500); // time to see the cards it wrote
       await press(ok);
       await sleep(300);
     }
@@ -1848,7 +1848,7 @@ async function playDemo() {
     const acted = Date.now();
     await spoken; // the line finishes before the next one starts
     await whilePaused();
-    await sleep(Math.max(400, 1200 - (Date.now() - acted))); // the result stays up long enough to see
+    await sleep(Math.max(400, 1000 - (Date.now() - acted))); // the result stays up long enough to see
   }
   await sleep(600);
   const finished = demoRunning;
@@ -1872,7 +1872,7 @@ function showDemoEnd() {
     <p>Memory any agent can add: it uses what it learned, checks once when it matters, and you fix it in one tap.</p>
     <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button>${fromSlides() ? '<button class="ghost" data-x="slides">Back to the slides</button>' : ''}</div>
     <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice input by Muse Voice Transcribe 1.0 · narration by Kokoro (open weights)</p></div></div>`);
-  if (narrateFromSlides()) setTimeout(() => { location.href = '/slides?narrate=1#5'; }, 2500);
+  if (narrateFromSlides()) setTimeout(() => { location.href = '/slides?narrate=1#5'; }, 1200);
   box.addEventListener('click', (e) => {
     const x = e.target.closest('[data-x]')?.dataset.x;
     if (!x && e.target !== box) return;
@@ -1919,7 +1919,7 @@ $('#turnOnGo').addEventListener('click', async () => {
       shown++;
       steps.forEach((li, k) => { li.className = k < shown ? 'done' : k === shown ? 'now' : ''; });
       if (shown === 0 && job?.label?.startsWith('Reading')) steps[0].textContent = job.label;
-      await sleep(900);
+      await sleep(demoRunning ? 450 : 900); // a tour moves on faster
     } else if (job?.done) break;
     else await sleep(500);
     if (!job?.done) job = await fetch('/api/build').then((r) => r.json()).catch(() => job);
@@ -1930,7 +1930,7 @@ $('#turnOnGo').addEventListener('click', async () => {
   const show = data.cards.filter((c) => !c.sensitive && c.status !== 'pending').slice(0, 10);
   for (const c of show) {
     $('#tobCards').append(el(`<div class="ff-card"><span class="cat-icon">${catIcon(c.category)}</span><span>${esc(c.text)}</span></div>`));
-    await sleep(250);
+    await sleep(demoRunning ? 120 : 250);
   }
   const topics = new Set(data.cards.map((c) => c.category)).size;
   $('#tobDone').textContent = `${data.cards.length} cards in ${topics} topics, all in Memory${data.cards.length > show.length ? ` (the first ${show.length} above)` : ''}. Each one is a guess until you confirm it.`;

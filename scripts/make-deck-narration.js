@@ -4,7 +4,7 @@
 //
 //   KOKORO_DIR=<model folder> KOKORO_PY=<venv>/bin/python node scripts/make-deck-narration.js
 //
-// A male voice for the slides (am_michael at 1.1); the tours keep their own voice.
+// A male voice for the slides (am_michael at 1.15); the tours keep their own voice.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -18,7 +18,7 @@ const OUT = join(ROOT, 'src', 'ui', 'narration', 'deck');
 const KOKORO = process.env.KOKORO_DIR;
 if (!KOKORO) { console.error('Set KOKORO_DIR (and KOKORO_PY): see scripts/kokoro-say.py.'); process.exit(1); }
 const voice = process.env.KOKORO_VOICE ?? 'am_michael';
-const speed = process.env.KOKORO_SPEED ?? '1.1';
+const speed = process.env.KOKORO_SPEED ?? '1.15';
 const pause = process.env.KOKORO_PAUSE ?? '0.25';
 const VOICE = `kokoro:${voice}@${speed}/${pause}`;
 

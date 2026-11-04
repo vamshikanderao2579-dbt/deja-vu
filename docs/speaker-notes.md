@@ -18,7 +18,7 @@ Hi, I'm Vamshi. *(beat)*
 Your agent remembers you. *(beat)* It never checks if it's still true.
 **[tap]** You can't see what it guessed.
 **[tap]** A guess from two years ago still books your hotel. *(beat)*
-**[tap]** And every message, it re-reads a summary of your life. It forgets things in the bloat, or it costs too much.
+**[tap]** And every message, it re-reads a summary of everything you've told it. It forgets things, or it costs too much.
 **[tap]** *(Say nothing. Let the line on the slide land.)*
 
 ## 3. The idea · ~18 s
@@ -40,7 +40,7 @@ Today's agents run on what they inferred.
 
 Fourteen people, 312 checks.
 **[tap]** Déjà Vu got 80 percent right, against 72 for a summary.
-**[tap]** When life changed and nobody said so in chat: 81 percent. *(beat)* The others, about half.
+**[tap]** When a preference changed and was never mentioned in chat: 81 percent. *(beat)* The others, about half.
 **[tap]** And 94 percent fewer tokens than re-reading the history.
 
 ## 6. The takeaway · ~12 s

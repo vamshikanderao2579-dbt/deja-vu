@@ -3,14 +3,14 @@
   "cover": [
     "Hi, I'm Vamshi Kanderao.",
     "Déjà Vu isn't a chatbot. It's a memory layer any personal agent can add,",
-    "whether that's Muse, ChatGPT, Claude, or your own.",
-    "It learns from your chats, checks with you when it matters, and shows its receipts."
+    "Muse, ChatGPT, Claude, or your own.",
+    "It learns from your chats, checks with you when it matters, and runs on Meta's Muse models."
   ],
   "problem": [
     "Your agent remembers you. But it never checks if it's still true.",
     "You can't see what it guessed.",
     "So a guess from two years ago still books your hotel.",
-    "And every message, it re-reads a summary of your life. It forgets things, or it costs too much.",
+    "And it re-reads a summary of you on every message: costly, and easy to get wrong.",
     ""
   ],
   "idea": [
@@ -19,26 +19,26 @@
     "It still uses every guess.",
     "And it asks once, only when a guess is about to book or buy something.",
     "",
-    "No setup: drop in a ChatGPT, Claude, or Muse export."
+    "No setup: just drop in your chat export."
   ],
   "demo": [
-    "Let me show you. Meet Alex, a parent planning a trip.",
+    "Meet Alex, planning a family trip.",
     "The chat is just a host.",
     "Watch for the one tap. That tap is the whole product. Over to the demo."
   ],
   "proof": [
-    "Back to the slides. Here are the eval results: fourteen people, three hundred and twelve checks.",
+    "Back to the slides. The eval: fourteen people, three hundred and twelve checks.",
     "Déjà Vu got eighty percent right. A summary, seventy-two.",
-    "When life changed and nobody said so in chat: eighty-one percent, against about half.",
+    "When a preference changed and was never mentioned: eighty-one percent. The others, about half.",
     "And ninety-four percent fewer tokens than re-reading the history."
   ],
   "closer": [
     "",
-    "Agents are great at guessing who you are.",
-    "But confirmed memory is always better than inferred memory.",
-    "It's live and open source. Try it with your own chat export."
+    "Agents will keep getting better at guessing who you are.",
+    "But a guess is still a guess. Confirmed memory beats inferred memory.",
+    "It's live, and it's open source."
   ],
   "end": [
-    "What would your agent have booked, if you'd never been asked? Déjà Vu makes sure it's still you. Thank you."
+    "Next time an agent says it knows you, ask it to show you. Thank you."
   ]
 }

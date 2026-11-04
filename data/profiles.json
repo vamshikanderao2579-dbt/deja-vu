@@ -56,13 +56,17 @@
         "redo": true
       },
       {
+        "say": "A small question gets no check. It only asks when it matters.",
+        "text": "what should we watch tonight?"
+      },
+      {
         "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
         "memory": true,
         "section": "food",
         "why": true
       },
       {
-        "say": "Swipe right if it’s still true, left if not. That’s Déjà Vu: memory you can see, check, and fix.",
+        "say": "Checking cards is one swipe: right if it’s still true, left if not.",
         "swipes": [
           "no",
           "no",
@@ -128,13 +132,17 @@
         "redo": true
       },
       {
+        "say": "A small question gets no check. It only asks when it matters.",
+        "text": "any show ideas for tonight?"
+      },
+      {
         "say": "Everything lives in Memory, by topic. Flip a card to see the chat it came from.",
         "memory": true,
         "section": "family",
         "why": true
       },
       {
-        "say": "Swipe right if it’s still true, left if not. That’s Déjà Vu: memory you can see, check, and fix.",
+        "say": "Checking cards is one swipe: right if it’s still true, left if not.",
         "swipes": [
           "no",
           "no",

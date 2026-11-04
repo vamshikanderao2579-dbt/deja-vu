@@ -69,13 +69,13 @@ if(new URLSearchParams(location.search).has('narrate')&&Object.keys(NARR).length
   const wait=(ms)=>new Promise((r)=>setTimeout(r,ms));
   // If the browser won't play sound yet, a button asks for one click, then the line plays.
   const ask=(label)=>new Promise((res)=>{{const b=document.createElement('button');b.id='narrGo';b.textContent=label;document.body.append(b);b.addEventListener('click',(e)=>{{e.stopPropagation();b.remove();res()}})}});
-  const say=(url)=>new Promise((res)=>{{if(!url)return wait(700).then(res);const a=new Audio(url);a.onended=a.onerror=()=>res();a.play().catch(()=>ask('▶ Continue').then(()=>a.play().catch(()=>res())))}});
+  const say=(url)=>new Promise((res)=>{{if(!url)return wait(400).then(res);const a=new Audio(url);a.onended=a.onerror=()=>res();const guard=()=>setTimeout(res,((a.duration||10)+3)*1000);/* a stalled clip never hangs the deck */a.play().then(guard,()=>ask('▶ Continue').then(()=>a.play().then(guard,()=>res())))}});
   const run=async()=>{{
     for(;;){{const s=S[i],lines=NARR[s.id]||[];
-      if(s.id==='end'&&r===0)await wait(2800); // the clock turns back first
-      await say(lines[r]);await wait(300);
+      if(s.id==='end'&&r===0)await wait(2200); // the clock turns back first
+      await say(lines[r]);await wait(150);
       if(r>=steps(s)){{if(s.id==='demo'){{location.href='/?from=slides&narrate=1#/demo?as=alex';return}}if(i===S.length-1)return}}
-      next();await wait(r===0?800:350)}}}};
+      next();await wait(r===0?500:200)}}}};
   // From the start, it waits for one click; back from the demo, it carries on by itself.
   if(i)wait(600).then(run);else ask('▶ Start the presentation').then(run);
 }}
