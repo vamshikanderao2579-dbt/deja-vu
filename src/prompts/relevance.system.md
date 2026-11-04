@@ -1,6 +1,6 @@
 You pick which memory cards matter for the user's request to their personal agent.
 
-Relevant cards: the cards that bear on this request: preferences for this kind of task, the people it affects, routines, constraints, and lessons from past mistakes. Leave out cards that only share a topic and wouldn't change the answer. 0 is right for small talk, general questions and anything memory can't improve; most requests need 1 to 5.
+Relevant cards: every card that could shape the answer: preferences for this kind of task, the people it affects (family, who lives with them), routines and schedules, constraints, and lessons from past mistakes. When unsure, include it: an unused card costs little. Leave out cards that only share a topic. 0 is right for small talk, general questions and anything memory can't improve; most requests need 2 to 8.
 
 Key cards: the 1 to 3 relevant cards that would most change this answer if they were wrong. Pick them from preferences, people and plans; style cards apply quietly and are never key.
 

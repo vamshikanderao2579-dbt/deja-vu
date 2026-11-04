@@ -2,7 +2,7 @@
 
 Sources live in docs/decks/<name>/ (deck.json + slides/*.html, the same files the
 claude.ai deck artifacts are built from). Run: python3 scripts/build-decks.py
-Keys: ← → or click to move, N toggles speaker notes, F for full screen, P to print / save as PDF.
+Keys: ← → or click to move (a slide's data-reveal="1", "2"… parts appear one tap at a time), N toggles speaker notes, F for full screen, P to print / save as PDF.
 """
 import json, re, pathlib
 
@@ -18,32 +18,48 @@ html,body{{height:100%;background:#03070c;overflow:hidden}}
 #stage>section{{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:none!important}}
 #stage>section.on{{display:flex!important}}
 section aside{{display:none}}
+[data-reveal]{{transition:opacity .45s ease,transform .45s ease}}
+.rv-off{{opacity:0;transform:translateY(14px);pointer-events:none}}
 #notes{{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:#0c1621ee;color:#dfe3ee;font:16px/1.5 Geist,Arial,sans-serif;padding:16px 24px;border-top:1px solid #1c2b3a;display:none}}
 body.notes #notes{{display:block}}
-#count{{position:fixed;right:14px;top:10px;color:#5b6178;font:13px Geist Mono,monospace}}
+#count{{display:none}} /* the slide number and key hints stay off the screen */
+#nav{{position:fixed;right:18px;bottom:18px;display:flex;gap:10px;z-index:5}}
+#nav button{{width:46px;height:46px;border-radius:50%;border:1px solid #22344a;background:#0c1621cc;color:#c9cde0;font:22px/1 Geist,Arial,sans-serif;cursor:pointer;opacity:.55;transition:opacity .2s}}
+#nav button:hover{{opacity:1}}
+body.notes #nav{{bottom:calc(34vh + 18px)}}
 @media print{{
   @page{{size:1920px 1080px;margin:0}}
   html,body{{overflow:visible;height:auto}}
   #stage{{position:static;transform:none!important}}
   #stage>section{{display:flex!important;position:relative;page-break-after:always}}
-  #notes,#count{{display:none!important}}
+  #notes,#count,#nav{{display:none!important}}
+  .rv-off{{opacity:1;transform:none}}
 }}
 </style></head><body>
 <div id="stage">
 {slides}
 </div>
 <div id="notes"></div><div id="count"></div>
+<div id="nav"><button id="navPrev" aria-label="Previous slide">‹</button><button id="navNext" aria-label="Show all, then next slide">›</button></div>
 <script>
 const S=[...document.querySelectorAll('#stage>section')],stage=document.getElementById('stage');
 let i=Math.max(0,Math.min(S.length-1,(parseInt(location.hash.slice(1))||1)-1));
 function fit(){{const k=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform=`translate(-50%,-50%) scale(${{k}})`}}
-function show(n){{i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,j)=>s.classList.toggle('on',j===i));
+// Tap-to-reveal: r parts of this slide are showing; a tap shows the next before moving on.
+let r=0;const steps=(s)=>Math.max(0,...[...s.querySelectorAll('[data-reveal]')].map(e=>+e.dataset.reveal));
+function reveal(){{S[i].dataset.r=r;S[i].querySelectorAll('[data-reveal]').forEach(e=>e.classList.toggle('rv-off',+e.dataset.reveal>r))}}
+function next(){{if(r<steps(S[i])){{r++;reveal()}}else show(i+1)}}
+function prev(){{if(r>0){{r--;reveal()}}else show(i-1,true)}}
+// The › button: first click shows everything left on this slide, the next one moves on.
+function skip(){{const n=steps(S[i]);if(r<n){{r=n;reveal()}}else show(i+1)}}
+function show(n,full){{const was=i;i=Math.max(0,Math.min(S.length-1,n));if(i!==was||full===undefined)r=full?steps(S[i]):0;reveal();S.forEach((s,j)=>s.classList.toggle('on',j===i));
   document.getElementById('notes').textContent=S[i].querySelector('aside')?.textContent||'(no notes)';
   document.getElementById('count').textContent=`${{i+1}} / ${{S.length}} · N notes · F full screen · P print`;history.replaceState(null,'','#'+(i+1))}}
-addEventListener('keydown',e=>{{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);else if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);
+addEventListener('keydown',e=>{{if(['ArrowRight','PageDown',' '].includes(e.key))next();else if(['ArrowLeft','PageUp'].includes(e.key))prev();
   else if(e.key==='n'||e.key==='N')document.body.classList.toggle('notes');else if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();
   else if(e.key==='p'||e.key==='P')print();else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1)}});
-addEventListener('click',e=>{{if(!e.target.closest('#notes, a'))show(e.clientX<innerWidth/3?i-1:i+1)}});
+document.getElementById('navNext').onclick=skip;document.getElementById('navPrev').onclick=()=>show(i-1,true);
+addEventListener('click',e=>{{if(!e.target.closest('#notes, a, #nav'))e.clientX<innerWidth/3?prev():next()}});
 addEventListener('resize',fit);fit();show(i);
 </script></body></html>
 """
@@ -68,7 +84,7 @@ def px(style, prop):
     return float(m.group(1)) if m else 24.0
 
 def shape(m):
-    kind, style = m.group(1), m.group(2)
+    attrs, kind, style = m.group(1) or '', m.group(2), m.group(3)
     fill = re.search(r'background:\s*([^;]+)', style)
     fill = fill.group(1).strip() if fill else 'currentColor'
     style = re.sub(r'background:\s*[^;]+;?', '', style)
@@ -81,7 +97,7 @@ def shape(m):
         pts = f'{w/2-t/2},0 {w/2+t/2},0 {w/2+t/2},{h-head} {w},{h-head} {w/2},{h} 0,{h-head} {w/2-t/2},{h-head}'
     else:
         raise SystemExit(f'unknown x-shape kind: {kind}')
-    return f'<svg aria-hidden="true" viewBox="0 0 {w:g} {h:g}" style="{style};flex:none"><polygon points="{pts}" fill="{fill}"/></svg>'
+    return f'<svg{attrs} aria-hidden="true" viewBox="0 0 {w:g} {h:g}" style="{style};flex:none"><polygon points="{pts}" fill="{fill}"/></svg>'
 
 def icon(m):
     name, style = m.group(1), m.group(2)
@@ -98,7 +114,7 @@ def connector(m):
             f'<path d="M2 10H{w-3:g}M{w-3-head:g} 3l{head} 7-{head} 7"/></svg>')
 
 def draw(html):
-    html = re.sub(r'<x-shape kind="([\w-]+)" style="([^"]*)"></x-shape>', shape, html)
+    html = re.sub(r'<x-shape((?: data-[\w-]+="[^"]*")*) kind="([\w-]+)" style="([^"]*)"></x-shape>', shape, html)
     html = re.sub(r'<x-connector style="([^"]*)"></x-connector>', connector, html)
     html = re.sub(r'<x-icon name="(\w+)" style="([^"]*)"></x-icon>', icon, html)
     assert '<x-' not in html, 'an x-shape or x-icon was not converted'

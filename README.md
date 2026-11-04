@@ -19,7 +19,7 @@ Built for the [Meta Global AI Developer Hackathon](https://dev.meta.ai/events/gl
  chat message
       │
       ▼
- ┌─────────────────────┐   cards picked for THIS request (≈150 tokens, not the history)
+ ┌─────────────────────┐   cards picked for THIS request (a few hundred tokens, not the history)
  │ relevance + stakes  │── one call over a bounded index (≤ 80 cards); a similar request
  └─────────────────────┘   reuses the pick (topic cache) so a redo is instant
       │
@@ -50,17 +50,17 @@ Memory built by the staged build (Muse Spark writes, Muse Wonder grades), every 
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| **All 14 people, 312 checks, each counted once** | **81.7%** | 71.8% | 70.5% |
-| … preferences that changed outside chat | **82.3%** | 49.2% | 48.4% |
-| Memory tokens per question | **~138–153** | ~395–486 | ~1,650–39,000 |
-| *Breakdown:* **Main set, 4 people** (2 synthetic, 2 real histories), 76 checks | **88.2%** | 78.9% | 73.7% |
-| … preferences that changed outside chat | **91.7%** | 58.3% | 41.7% |
-| … stale answers | **0** | 4 | 4 |
-| **10 more synthetic people**, 236 checks | **79.7%** | 69.5% | 69.5% |
-| … preferences that changed outside chat | **81.3%** | 48.2% | 49.1% |
-| … stale answers | **7** | 13 | 11 |
+| **All 14 people, 312 checks, each counted once** | **80.4%** | 72.4% | 75.0% |
+| … preferences that changed outside chat | **80.6%** | 49.2% | 55.6% |
+| Tokens in per answer (the API's count, average of 242) | **381** | 603 | 6,945 |
+| *Breakdown:* **Main set, 4 people** (2 synthetic, 2 real histories), 76 checks | **86.8%** | 75.0% | 80.3% |
+| … preferences that changed outside chat | **91.7%** | 41.7% | 50.0% |
+| … stale answers | **1** | 3 | 2 |
+| **10 more synthetic people**, 236 checks | **78.4%** | 71.6% | 73.3% |
+| … preferences that changed outside chat | **79.5%** | 50.0% | 56.3% |
+| … stale answers | **5** | 13 | 10 |
 
-The 10 more synthetic people each have a week of chats and 20 questions. The 10 synthetic people were written after the engine was built, and the builder was tuned with two of their builds (Grace, James) in view, so they are not a clean held-out set. Per person Déjà Vu is best or tied for 13 of 14; it loses on Tom (65% vs 70%). Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the 10 synthetic people are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
+The 10 more synthetic people each have a week of chats and 20 questions. The 10 synthetic people were written after the engine was built, and the builder was tuned with two of their builds (Grace, James) in view, so they are not a clean held-out set. Per person Déjà Vu is best or tied for 12 of 14. It loses on Sofia (74% vs 83% for the summary), where the card builder missed facts about someone she plans for (her mother's favourite dessert and books) that the summary kept, and on Grace (72% vs 76% for full history). Déjà Vu is a few seconds slower per answer, because it picks the cards first. Per person: [`data/eval-summary.json`](data/eval-summary.json), also in the app under Insights. Method: [`docs/eval.md`](docs/eval.md); the 10 synthetic people are made by [`scripts/make-personas.js`](scripts/make-personas.js) from [`eval/PERSONA_BRIEF.md`](eval/PERSONA_BRIEF.md).
 
 ## Building memory from a whole history
 
@@ -201,3 +201,7 @@ This writes `data/private/history.json`. Set `HISTORY_FILE=data/private/history.
 ## Data and privacy
 
 All history in `data/` is **synthetic test data**. No ads, no segments, no selling data: user-owned memory is the point.
+
+## License
+
+MIT, see [`LICENSE`](LICENSE).

@@ -630,6 +630,7 @@ svg.line path.s3 { stroke: var(--series-3); }
 .chat-row { display: block; width: 100%; border: 0; background: transparent; text-align: left; padding: 9px 12px; border-radius: 14px; font-size: 15px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-row:hover { background: rgba(127,127,127,.1); }
 .chat-row.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+.chat-row.tour-chat small { display: block; font-size: 12px; font-weight: 500; color: var(--muted); }
 .chats .hint-line { padding: 0 6px; }
 
 /* ---------- First visit: demos or your own chats; the import sheet ---------- */
@@ -990,9 +991,6 @@ html { zoom: var(--z, 1); }
 body.touring #modelChip { display: none; }
 .tour-tap { animation: tour-tap 1s ease-in-out infinite; outline: 3px solid var(--accent); outline-offset: 3px; }
 @keyframes tour-tap { 50% { transform: scale(1.06); } }
-.tour-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 12px; }
-.tour-choices button { padding: 10px 14px; border-radius: 999px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--text); font-size: 14px; cursor: pointer; }
-.tour-choices .own { border-style: dashed; background: transparent; color: var(--muted); }
 .tour-glow { box-shadow: 0 0 0 3px var(--accent), 0 0 40px color-mix(in srgb, var(--accent) 45%, transparent); transition: box-shadow .4s; border-radius: 16px; }
 .demo-end .end-grid { display: grid; gap: 8px; margin: 16px 0 10px; }
 .demo-end .end-grid button { border-radius: 999px; padding: 10px 16px; font-size: 15px; }
@@ -1011,3 +1009,5 @@ body.touring #modelChip { display: none; }
 /* A long card line in a topic tile pushed the tile past the screen's edge on phones. */
 .cat-grid { grid-template-columns: minmax(0, 1fr); }
 .cat-tile { min-width: 0; }
+/* During a tour the ⓘ under an answer appears with the step that explains it. */
+body.touring #thread .meta:not(.shown) .info { visibility: hidden; }

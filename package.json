@@ -1,5 +1,6 @@
 {
   "name": "personal-context",
+  "license": "MIT",
   "version": "0.1.0",
   "private": true,
   "description": "User-owned, confirmed context for personal AI agents. Meta Global AI Developer Hackathon prototype.",

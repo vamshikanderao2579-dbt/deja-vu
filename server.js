@@ -196,7 +196,9 @@ route('POST', '/api/chat', async (body) => {
   // request may come back with a booking or order draft built from the same cards.
   const prior = s.live.find((c) => c.id === `live-${conversationId}`)?.messages ?? [];
   // Draft tools only for requests that are about acting: booking, ordering, a stay or a flight.
-  const actions = stakes === 'high' && ACTION_WORDS.test(message);
+  // The summary and full-history chats get them too (today's agents can draft a booking), so
+  // the three compare like for like: only what each remembers differs, not the tools sent.
+  const actions = (mode === 'cards' ? stakes === 'high' : true) && ACTION_WORDS.test(message);
   // The chat's model picker: only allowed models and effort levels; the default otherwise.
   const model = config.answerModels.includes(body.model) && body.model !== config.providers.main.model ? body.model : null;
   // A redo after a change thinks a little harder, so it switches to what the user now wants.
@@ -539,6 +541,11 @@ createServer(async (req, res) => {
         return send(res, 200, JSON.stringify(out));
       }
       return send(res, 404, JSON.stringify({ error: 'not found' }));
+    }
+    // The pitch deck, at a link only the slides and the presenter know.
+    if (url.pathname === '/slides') {
+      const deck = await readFile(join(ROOT, 'docs', 'decks', 'pitch.html')).catch(() => null);
+      return deck ? send(res, 200, deck, 'text/html; charset=utf-8', { 'Cache-Control': 'no-cache' }) : send(res, 404, 'not found', 'text/plain');
     }
     // static files
     const path = normalize(url.pathname === '/' ? '/index.html' : url.pathname).replace(/^(\.\.[/\\])+/, '');

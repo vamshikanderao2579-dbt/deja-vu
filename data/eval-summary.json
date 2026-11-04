@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-02T15:16:29.696Z",
+  "generated": "2026-11-04T00:42:35.194Z",
   "build": "staged (guard → writer → self-review → grader → contract)",
   "models": {
     "answers": "muse-spark-1.3",
@@ -13,30 +13,30 @@
   "combined": [
     {
       "mode": "full",
-      "accuracy": 73.7,
-      "accuracyDrifted": 41.7,
-      "staleErrors": 4,
+      "accuracy": 80.3,
+      "accuracyDrifted": 50,
+      "staleErrors": 2,
       "avgContextTokens": 39022,
       "maxContextTokens": 113619,
-      "avgLatencyMs": 5631
+      "avgLatencyMs": 16855
     },
     {
       "mode": "summary",
-      "accuracy": 78.9,
-      "accuracyDrifted": 58.3,
-      "staleErrors": 4,
-      "avgContextTokens": 486,
-      "maxContextTokens": 583,
-      "avgLatencyMs": 5077
+      "accuracy": 75,
+      "accuracyDrifted": 41.7,
+      "staleErrors": 3,
+      "avgContextTokens": 518,
+      "maxContextTokens": 612,
+      "avgLatencyMs": 6887
     },
     {
       "mode": "confirmed",
-      "accuracy": 88.2,
+      "accuracy": 86.8,
       "accuracyDrifted": 91.7,
-      "staleErrors": 0,
-      "avgContextTokens": 153,
-      "maxContextTokens": 177,
-      "avgLatencyMs": 9818
+      "staleErrors": 1,
+      "avgContextTokens": 233,
+      "maxContextTokens": 254,
+      "avgLatencyMs": 12563
     }
   ],
   "all": {
@@ -45,30 +45,30 @@
     "combined": [
       {
         "mode": "full",
-        "accuracy": 70.5,
-        "accuracyDrifted": 48.4,
-        "staleErrors": 15,
+        "accuracy": 75,
+        "accuracyDrifted": 55.6,
+        "staleErrors": 12,
         "avgContextTokens": 12329,
         "maxContextTokens": 113619,
-        "avgLatencyMs": 4745
+        "avgLatencyMs": 8524
       },
       {
         "mode": "summary",
-        "accuracy": 71.8,
+        "accuracy": 72.4,
         "accuracyDrifted": 49.2,
-        "staleErrors": 17,
-        "avgContextTokens": 421,
-        "maxContextTokens": 583,
-        "avgLatencyMs": 4331
+        "staleErrors": 16,
+        "avgContextTokens": 447,
+        "maxContextTokens": 612,
+        "avgLatencyMs": 6196
       },
       {
         "mode": "confirmed",
-        "accuracy": 81.7,
-        "accuracyDrifted": 82.3,
-        "staleErrors": 7,
-        "avgContextTokens": 143,
-        "maxContextTokens": 177,
-        "avgLatencyMs": 9059
+        "accuracy": 80.4,
+        "accuracyDrifted": 80.6,
+        "staleErrors": 6,
+        "avgContextTokens": 219,
+        "maxContextTokens": 254,
+        "avgLatencyMs": 12023
       }
     ]
   },
@@ -78,30 +78,30 @@
     "combined": [
       {
         "mode": "full",
-        "accuracy": 69.5,
-        "accuracyDrifted": 49.1,
-        "staleErrors": 11,
+        "accuracy": 73.3,
+        "accuracyDrifted": 56.3,
+        "staleErrors": 10,
         "avgContextTokens": 1652,
         "maxContextTokens": 1881,
-        "avgLatencyMs": 4390
+        "avgLatencyMs": 5192
       },
       {
         "mode": "summary",
-        "accuracy": 69.5,
-        "accuracyDrifted": 48.2,
+        "accuracy": 71.6,
+        "accuracyDrifted": 50,
         "staleErrors": 13,
-        "avgContextTokens": 395,
-        "maxContextTokens": 459,
-        "avgLatencyMs": 4033
+        "avgContextTokens": 418,
+        "maxContextTokens": 469,
+        "avgLatencyMs": 5919
       },
       {
         "mode": "confirmed",
-        "accuracy": 79.7,
-        "accuracyDrifted": 81.3,
-        "staleErrors": 7,
-        "avgContextTokens": 138,
-        "maxContextTokens": 150,
-        "avgLatencyMs": 8755
+        "accuracy": 78.4,
+        "accuracyDrifted": 79.5,
+        "staleErrors": 5,
+        "avgContextTokens": 214,
+        "maxContextTokens": 228,
+        "avgLatencyMs": 11806
       }
     ]
   },
@@ -114,24 +114,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 79,
+          "accuracy": 83,
           "accuracyDrifted": 25,
           "staleErrors": 1,
           "avgContextTokens": 1996
         },
         {
           "mode": "summary",
-          "accuracy": 79,
+          "accuracy": 76,
           "accuracyDrifted": 25,
           "staleErrors": 1,
-          "avgContextTokens": 499
+          "avgContextTokens": 489
         },
         {
           "mode": "confirmed",
-          "accuracy": 90,
+          "accuracy": 93,
           "accuracyDrifted": 100,
           "staleErrors": 0,
-          "avgContextTokens": 149
+          "avgContextTokens": 228
         }
       ]
     },
@@ -143,24 +143,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 70,
-          "accuracyDrifted": 50,
-          "staleErrors": 2,
+          "accuracy": 85,
+          "accuracyDrifted": 63,
+          "staleErrors": 1,
           "avgContextTokens": 1513
         },
         {
           "mode": "summary",
-          "accuracy": 90,
-          "accuracyDrifted": 75,
+          "accuracy": 80,
+          "accuracyDrifted": 50,
           "staleErrors": 1,
-          "avgContextTokens": 304
+          "avgContextTokens": 399
         },
         {
           "mode": "confirmed",
           "accuracy": 95,
           "accuracyDrifted": 88,
           "staleErrors": 0,
-          "avgContextTokens": 130
+          "avgContextTokens": 213
         }
       ]
     },
@@ -172,24 +172,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 71,
+          "accuracy": 86,
           "accuracyDrifted": null,
-          "staleErrors": 1,
+          "staleErrors": 0,
           "avgContextTokens": 38961
         },
         {
           "mode": "summary",
-          "accuracy": 86,
+          "accuracy": 79,
           "accuracyDrifted": null,
-          "staleErrors": 2,
-          "avgContextTokens": 556
+          "staleErrors": 1,
+          "avgContextTokens": 572
         },
         {
           "mode": "confirmed",
-          "accuracy": 93,
+          "accuracy": 86,
           "accuracyDrifted": null,
-          "staleErrors": 0,
-          "avgContextTokens": 177
+          "staleErrors": 1,
+          "avgContextTokens": 254
         }
       ]
     },
@@ -201,24 +201,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 69,
+          "accuracy": 62,
           "accuracyDrifted": null,
           "staleErrors": 0,
           "avgContextTokens": 113619
         },
         {
           "mode": "summary",
-          "accuracy": 54,
+          "accuracy": 62,
           "accuracyDrifted": null,
           "staleErrors": 0,
-          "avgContextTokens": 583
+          "avgContextTokens": 612
         },
         {
           "mode": "confirmed",
-          "accuracy": 69,
+          "accuracy": 62,
           "accuracyDrifted": null,
           "staleErrors": 0,
-          "avgContextTokens": 157
+          "avgContextTokens": 235
         }
       ]
     },
@@ -230,24 +230,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 68,
+          "accuracy": 72,
           "accuracyDrifted": 42,
           "staleErrors": 3,
           "avgContextTokens": 1801
         },
         {
           "mode": "summary",
-          "accuracy": 72,
-          "accuracyDrifted": 42,
+          "accuracy": 60,
+          "accuracyDrifted": 33,
           "staleErrors": 3,
-          "avgContextTokens": 371
+          "avgContextTokens": 374
         },
         {
           "mode": "confirmed",
           "accuracy": 84,
-          "accuracyDrifted": 92,
-          "staleErrors": 1,
-          "avgContextTokens": 135
+          "accuracyDrifted": 83,
+          "staleErrors": 2,
+          "avgContextTokens": 217
         }
       ]
     },
@@ -259,24 +259,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 63,
-          "accuracyDrifted": 45,
+          "accuracy": 67,
+          "accuracyDrifted": 55,
           "staleErrors": 1,
           "avgContextTokens": 1599
         },
         {
           "mode": "summary",
-          "accuracy": 67,
+          "accuracy": 71,
           "accuracyDrifted": 55,
           "staleErrors": 1,
-          "avgContextTokens": 331
+          "avgContextTokens": 336
         },
         {
           "mode": "confirmed",
-          "accuracy": 67,
+          "accuracy": 75,
           "accuracyDrifted": 82,
-          "staleErrors": 2,
-          "avgContextTokens": 134
+          "staleErrors": 0,
+          "avgContextTokens": 197
         }
       ]
     },
@@ -288,24 +288,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 57,
-          "accuracyDrifted": 10,
-          "staleErrors": 2,
+          "accuracy": 65,
+          "accuracyDrifted": 30,
+          "staleErrors": 0,
           "avgContextTokens": 1601
         },
         {
           "mode": "summary",
-          "accuracy": 65,
-          "accuracyDrifted": 30,
+          "accuracy": 61,
+          "accuracyDrifted": 20,
           "staleErrors": 1,
-          "avgContextTokens": 413
+          "avgContextTokens": 469
         },
         {
           "mode": "confirmed",
-          "accuracy": 78,
-          "accuracyDrifted": 60,
+          "accuracy": 65,
+          "accuracyDrifted": 40,
           "staleErrors": 1,
-          "avgContextTokens": 150
+          "avgContextTokens": 228
         }
       ]
     },
@@ -317,24 +317,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 70,
+          "accuracy": 74,
           "accuracyDrifted": 40,
-          "staleErrors": 2,
+          "staleErrors": 1,
           "avgContextTokens": 1749
         },
         {
           "mode": "summary",
           "accuracy": 61,
-          "accuracyDrifted": 30,
+          "accuracyDrifted": 10,
           "staleErrors": 2,
-          "avgContextTokens": 410
+          "avgContextTokens": 443
         },
         {
           "mode": "confirmed",
-          "accuracy": 91,
-          "accuracyDrifted": 100,
+          "accuracy": 87,
+          "accuracyDrifted": 90,
           "staleErrors": 0,
-          "avgContextTokens": 150
+          "avgContextTokens": 227
         }
       ]
     },
@@ -346,8 +346,8 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 64,
-          "accuracyDrifted": 42,
+          "accuracy": 76,
+          "accuracyDrifted": 58,
           "staleErrors": 0,
           "avgContextTokens": 1507
         },
@@ -356,14 +356,14 @@
           "accuracy": 68,
           "accuracyDrifted": 42,
           "staleErrors": 1,
-          "avgContextTokens": 420
+          "avgContextTokens": 465
         },
         {
           "mode": "confirmed",
-          "accuracy": 76,
-          "accuracyDrifted": 67,
+          "accuracy": 72,
+          "accuracyDrifted": 75,
           "staleErrors": 0,
-          "avgContextTokens": 135
+          "avgContextTokens": 201
         }
       ]
     },
@@ -375,7 +375,7 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 79,
+          "accuracy": 83,
           "accuracyDrifted": 67,
           "staleErrors": 0,
           "avgContextTokens": 1614
@@ -385,14 +385,14 @@
           "accuracy": 83,
           "accuracyDrifted": 67,
           "staleErrors": 0,
-          "avgContextTokens": 369
+          "avgContextTokens": 455
         },
         {
           "mode": "confirmed",
           "accuracy": 92,
           "accuracyDrifted": 100,
           "staleErrors": 0,
-          "avgContextTokens": 133
+          "avgContextTokens": 210
         }
       ]
     },
@@ -404,9 +404,9 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 74,
-          "accuracyDrifted": 60,
-          "staleErrors": 2,
+          "accuracy": 78,
+          "accuracyDrifted": 70,
+          "staleErrors": 1,
           "avgContextTokens": 1584
         },
         {
@@ -418,10 +418,10 @@
         },
         {
           "mode": "confirmed",
-          "accuracy": 74,
+          "accuracy": 78,
           "accuracyDrifted": 80,
-          "staleErrors": 2,
-          "avgContextTokens": 140
+          "staleErrors": 1,
+          "avgContextTokens": 219
         }
       ]
     },
@@ -434,23 +434,23 @@
         {
           "mode": "full",
           "accuracy": 74,
-          "accuracyDrifted": 67,
+          "accuracyDrifted": 75,
           "staleErrors": 0,
           "avgContextTokens": 1643
         },
         {
           "mode": "summary",
-          "accuracy": 74,
+          "accuracy": 78,
           "accuracyDrifted": 58,
           "staleErrors": 0,
-          "avgContextTokens": 459
+          "avgContextTokens": 435
         },
         {
           "mode": "confirmed",
-          "accuracy": 87,
-          "accuracyDrifted": 75,
+          "accuracy": 78,
+          "accuracyDrifted": 83,
           "staleErrors": 0,
-          "avgContextTokens": 133
+          "avgContextTokens": 214
         }
       ]
     },
@@ -462,24 +462,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 78,
-          "accuracyDrifted": 60,
-          "staleErrors": 1,
+          "accuracy": 65,
+          "accuracyDrifted": 40,
+          "staleErrors": 3,
           "avgContextTokens": 1881
         },
         {
           "mode": "summary",
-          "accuracy": 70,
-          "accuracyDrifted": 50,
-          "staleErrors": 3,
-          "avgContextTokens": 397
+          "accuracy": 83,
+          "accuracyDrifted": 70,
+          "staleErrors": 2,
+          "avgContextTokens": 421
         },
         {
           "mode": "confirmed",
-          "accuracy": 83,
-          "accuracyDrifted": 90,
+          "accuracy": 74,
+          "accuracyDrifted": 80,
           "staleErrors": 1,
-          "avgContextTokens": 148
+          "avgContextTokens": 225
         }
       ]
     },
@@ -491,24 +491,24 @@
       "summary": [
         {
           "mode": "full",
-          "accuracy": 70,
-          "accuracyDrifted": 54,
-          "staleErrors": 0,
+          "accuracy": 78,
+          "accuracyDrifted": 77,
+          "staleErrors": 1,
           "avgContextTokens": 1543
         },
         {
           "mode": "summary",
-          "accuracy": 61,
-          "accuracyDrifted": 46,
-          "staleErrors": 0,
-          "avgContextTokens": 367
+          "accuracy": 78,
+          "accuracyDrifted": 77,
+          "staleErrors": 1,
+          "avgContextTokens": 373
         },
         {
           "mode": "confirmed",
-          "accuracy": 65,
-          "accuracyDrifted": 69,
+          "accuracy": 78,
+          "accuracyDrifted": 77,
           "staleErrors": 0,
-          "avgContextTokens": 124
+          "avgContextTokens": 197
         }
       ]
     }
@@ -522,36 +522,36 @@
       {
         "months": 1,
         "fullHistory": 3846,
-        "cardsPerQuestion": 149,
-        "summaryPerMessage": 485,
+        "cardsPerQuestion": 228,
+        "summaryPerMessage": 475,
         "cardsCeiling": 1568
       },
       {
         "months": 3,
         "fullHistory": 11537,
-        "cardsPerQuestion": 149,
-        "summaryPerMessage": 485,
+        "cardsPerQuestion": 228,
+        "summaryPerMessage": 475,
         "cardsCeiling": 1568
       },
       {
         "months": 6,
         "fullHistory": 23075,
-        "cardsPerQuestion": 149,
-        "summaryPerMessage": 485,
+        "cardsPerQuestion": 228,
+        "summaryPerMessage": 475,
         "cardsCeiling": 1568
       },
       {
         "months": 12,
         "fullHistory": 46150,
-        "cardsPerQuestion": 149,
-        "summaryPerMessage": 485,
+        "cardsPerQuestion": 228,
+        "summaryPerMessage": 475,
         "cardsCeiling": 1568
       },
       {
         "months": 24,
         "fullHistory": 92299,
-        "cardsPerQuestion": 149,
-        "summaryPerMessage": 485,
+        "cardsPerQuestion": 228,
+        "summaryPerMessage": 475,
         "cardsCeiling": 1568
       }
     ]

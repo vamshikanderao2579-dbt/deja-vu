@@ -25,8 +25,9 @@ npm run eval -- --persona alex     # alex | maria (synthetic, in repo) · nidhi 
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| **All checks** | **81.7%** | 71.8% | 70.5% |
-| Changed outside chat | **82.3%** | 49.2% | 48.4% |
+| **All checks** | **80.4%** | 72.4% | 75.0% |
+| Changed outside chat | **80.6%** | 49.2% | 55.6% |
+| Tokens in per answer (the API's count, average of 242) | **381** | 603 | 6,945 |
 
 The two sets below are the breakdown. Averaging them doesn't give the headline, because the sets have different numbers of checks.
 
@@ -34,14 +35,14 @@ The two sets below are the breakdown. Averaging them doesn't give the headline, 
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| Alex · synthetic | **90%** | 79% | 79% |
-| Maria · synthetic | **95%** | 90% | 70% |
-| Real history A · 194 user msgs | **93%** | 86% | 71% |
-| Real history B · 304 user msgs | **69%** | 54% | **69%** |
-| **This set** | **88.2%** | 78.9% | 73.7% |
-| Changed outside chat | **91.7%** | 58.3% | 41.7% |
-| Stale answers | **0** | 4 | 4 |
-| Memory tokens per message | **~150** | ~490 | ~39,000 |
+| Alex · synthetic | **93%** | 76% | 83% |
+| Maria · synthetic | **95%** | 80% | 85% |
+| Real history A · 194 user msgs | **86%** | 79% | **86%** |
+| Real history B · 304 user msgs | **62%** | **62%** | **62%** |
+| **This set** | **86.8%** | 75.0% | 80.3% |
+| Changed outside chat | **91.7%** | 41.7% | 50.0% |
+| Stale answers | **1** | 3 | 2 |
+| Tokens in per answer | **393** | 704 | 30,436 |
 
 ### 10 more synthetic people, 200 questions, 236 checks
 
@@ -49,34 +50,35 @@ Written with [`scripts/make-personas.js`](../scripts/make-personas.js) from [`ev
 
 | | Déjà Vu memory | Memory summary | Full history |
 |---|---|---|---|
-| James | **92%** | 83% | 79% |
-| Fatima | **91%** | 61% | 70% |
-| Rosa | **87%** | 74% | 74% |
-| Aisha | **84%** | 72% | 68% |
-| Sofia | **83%** | 70% | 78% |
-| Ethan | **78%** | 65% | 57% |
-| Grace | **76%** | 68% | 64% |
-| Luis | **74%** | **74%** | **74%** |
-| Daniel | **67%** | **67%** | 63% |
-| Tom | 65% | 61% | **70%** |
-| **This set** | **79.7%** | 69.5% | 69.5% |
-| Changed outside chat | **81.3%** | 48.2% | 49.1% |
-| Stale answers | **7** | 13 | 11 |
-| Memory tokens per message | **~138** | ~395 | ~1,650 |
+| James | **92%** | 83% | 83% |
+| Fatima | **87%** | 61% | 74% |
+| Aisha | **84%** | 60% | 72% |
+| Rosa | **78%** | **78%** | 74% |
+| Luis | **78%** | 74% | **78%** |
+| Tom | **78%** | **78%** | **78%** |
+| Daniel | **75%** | 71% | 67% |
+| Sofia | 74% | **83%** | 65% |
+| Grace | 72% | 68% | **76%** |
+| Ethan | **65%** | 61% | **65%** |
+| **This set** | **78.4%** | 71.6% | 73.3% |
+| Changed outside chat | **79.5%** | 50.0% | 56.3% |
+| Stale answers | **5** | 13 | 10 |
+| Tokens in per answer | **379** | 582 | 2,012 |
 
 How the builder works: the writer makes a second pass over each conversation for missed facts, and the grader rewords a card with one unsupported detail instead of rejecting it, reading up to three cited spots. Each person ends up with 11 to 16 cards from about 50 messages. Treat single-run differences of a few points as noise.
 
 ## What it shows
 
-- **Confirmation catches what inference can't.** Over all 14 people and 312 checks, each counted once: Déjà Vu memory 81.7%, summary 71.8%, full history 70.5%. When a preference changed and never came up in chat, the summary and full history got it right about half the time (49.2% and 48.4%); Déjà Vu memory got 82.3%.
-- **Reading only what's needed is cheaper without costing accuracy.** Déjà Vu memory reads ~3× fewer tokens per message than a summary and far fewer than full history, while scoring higher than both on each set.
-- **Full history is the worst of both.** It's the most expensive *and* the least accurate: years of noise drown the signal.
-- **Honest caveat.** On one real history where nothing had changed, the summary scored higher (93% vs 86%). A good summary is strong when life is static; confirmed memory wins on cost everywhere and on accuracy as soon as things change.
+- **Confirmation catches what inference can't.** Over all 14 people and 312 checks, each counted once: Déjà Vu memory 80.4%, summary 72.4%, full history 75.0%. When a preference changed and never came up in chat, the summary and full history got it right about half the time (49.2% and 55.6%); Déjà Vu memory got 80.6%.
+- **Reading only what's needed costs fewer tokens.** Déjà Vu sent 381 tokens per answer on average (the API's own count), against 603 for a summary and 6,945 for the full history: 94% fewer than the full history. It is a few seconds slower per answer (about 12 s against 6 to 7 s), because it picks the cards first.
+- **Full history is expensive and no more accurate.** Up to 111,000 tokens a message on the longest real history, and still behind confirmed cards.
+- **Where it lost.** Déjà Vu is best or tied for 12 of 14 people. It lost to the summary on Sofia (74% vs 83%): her chats say her mother loves lemon desserts and mystery novels, and the card builder made no card for either, though its rules already ask for what the people the user plans for like. It lost to full history on Grace (72% vs 76%).
+- **How these prompts were reached (Nov 3).** A first rerun with leaner prompts dropped Déjà Vu to 77.2%: it sent too few cards ("most requests need 1 to 5"), was told not every card needs using, and stopped acknowledging worries. Restoring "when unsure, include it", "use every card that fits" and one line on acknowledging news or worries brought it back to 80.4%, while checks stay limited to bookings, purchases, appointments, trips and events.
 
 ## Design choices the eval supports
 
 - **Style cards.** Real users have strong rules about *how* they want answers ("no em dashes", "exactly 5 hashtags", "just give the hook"). These are cards too (topic `style`), always included, since they're tiny and apply everywhere.
-- **Answers apply the cards.** The answer prompt says the cards were picked for this request and asks the answer to name what it applied, so a card that's sent isn't ignored.
+- **Answers apply the cards.** The cards come with one line: use every card that fits this request, inferred ones too, and skip any that don't bear on it. An answer may say in passing which card shaped it.
 - **Relevance includes the people a plan affects** (who lives with you, who you're buying for) and leans toward inclusion.
 - **Known gap:** one-off purchases (concert tickets) sometimes don't become cards, so the agent can't recall them later.
 

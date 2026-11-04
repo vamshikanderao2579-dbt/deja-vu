@@ -298,6 +298,8 @@ async function refresh(next) {
   $('#drawerCount').textContent = `${toCheck} to check`;
   // On a laptop the menu is a sidebar that's always showing, so keep it current.
   if (wide.matches) renderDrawer();
+  // Memory on screen keeps up too (cards learned in the background change its counts).
+  if ($('#memory').classList.contains('open') && !$('#category').classList.contains('open')) renderMemory();
 }
 const wide = matchMedia('(min-width: 1100px)');
 wide.addEventListener('change', () => { if (wide.matches) { renderDrawer(); $('#scrim').classList.remove('on'); } });
@@ -322,10 +324,31 @@ async function renderChats() {
   // The guided demo's chat is a replay, not one of yours: it stays out of the list.
   const chats = (await api('/api/chats').catch(() => ({ chats: [] }))).chats.filter((c) => !c.id.startsWith('demo-'));
   const box = $('#drawerChats');
+  // While a tour runs, its chats are listed so it can switch between them like a person would.
+  if (tourChats.length) {
+    box.innerHTML = tourChats.map((c, k) => `<button class="chat-row tour-chat${c.id === conversationId ? ' active' : ''}" data-tour="${k}" title="${esc(c.title)}">${esc(c.title)}<small>${esc(c.label)}</small></button>`).join('');
+    $$('#drawerChats .tour-chat').forEach((b) => b.addEventListener('click', () => switchTourChat(+b.dataset.tour)));
+    return;
+  }
   box.innerHTML = chats.length
     ? chats.slice(0, 30).map((c) => `<button class="chat-row${c.id === conversationId ? ' active' : ''}" data-id="${esc(c.id)}" title="${esc(c.title)}">${esc(c.title)}</button>`).join('')
     : `<p class="hint-line">Your chats show up here.</p>`;
   $$('#drawerChats .chat-row').forEach((b) => b.addEventListener('click', () => openChat(b.dataset.id)));
+}
+
+// The tour's chats, kept on the page as they were shown (answers, ⓘ and all).
+let tourChats = [];
+function switchTourChat(k) {
+  const cur = tourChats.find((c) => c.id === conversationId);
+  if (cur) cur.nodes = [...thread.childNodes];
+  const to = tourChats[k];
+  conversationId = to.id;
+  thread.replaceChildren(...(to.nodes ?? []));
+  closeAll();
+  renderMemChip();
+  renderChats();
+  const v = $('#view-chat');
+  requestAnimationFrame(() => { v.scrollTop = v.scrollHeight; });
 }
 
 // Reopen a saved chat: its messages and any pick, as they were. Keep chatting in it.
@@ -333,6 +356,7 @@ async function openChat(id) {
   let chat;
   try { chat = await api(`/api/chats/${encodeURIComponent(id)}`); } catch { try { localStorage.removeItem(chatKey()); } catch {} return renderWelcome(); }
   demoRunning = false;
+  tourChats = [];
   conversationId = id;
   renderMemChip();
   thread.innerHTML = '';
@@ -446,9 +470,14 @@ async function send(message, { skipCue = false } = {}) {
 }
 async function sendInner(message, { skipCue = false } = {}) {
   if (!skipCue) addMsg('user', esc(message));
+  // A recorded tour answers instantly; let it read like a real chat: the question on its own,
+  // then the agent thinking, then the answer.
+  if (demoRunning && !skipCue) { scrollDown(); await sleep(400); }
+  const thinkingSince = Date.now();
   const t = chatMode() === 'summary' ? typing(['Reading the notes it keeps about you…'], PLAIN_NOTES) : chatMode() === 'full' ? typing(['Re-reading every chat…'], PLAIN_NOTES) : typing(skipCue ? ['Using your updated card…'] : STEP_NOTES);
   try {
     const res = await api('/api/chat', { message, mode: chatMode(), conversationId, skipCue, demo: demoRunning, ...(demoRunning ? {} : chosenModel()) });
+    if (demoRunning) await sleep(Math.max(0, 500 - (Date.now() - thinkingSince)));
     t.remove();
     rememberChat();
     renderChats();
@@ -893,7 +922,7 @@ $('#composer').addEventListener('submit', (e) => {
 });
 $('#plusBtn').addEventListener('click', () => { if (!thread.querySelector('.suggestions')) renderWelcome(); });
 voiceButton($('#micBtn'), (v) => { if (v.transcript) { $('#input').value = v.transcript; $('#input').focus(); } else toast('Didn’t catch that.'); }, $('#micBtn').innerHTML);
-const newChat = () => { demoRunning = false; conversationId = newId(); try { localStorage.removeItem(chatKey()); } catch {} renderWelcome(); renderChats(); closeAll(); $('#view-chat').scrollTop = 0; $('#input').value = ''; growInput(); if (wide.matches) $('#input').focus(); };
+const newChat = () => { demoRunning = false; tourChats = []; conversationId = newId(); try { localStorage.removeItem(chatKey()); } catch {} renderWelcome(); renderChats(); closeAll(); $('#view-chat').scrollTop = 0; $('#input').value = ''; growInput(); if (wide.matches) $('#input').focus(); };
 // Pressed on a chat that's still empty: say so, instead of seeming to do nothing.
 const newChatPressed = () => { const empty = !thread.querySelector('.msg.user'); newChat(); if (empty) toast('You’re already in a new chat.'); };
 $('#newChatBtn').addEventListener('click', newChatPressed);
@@ -1601,6 +1630,7 @@ async function playDemo() {
     return toast(err.message);
   }
   learnedSeen = data.learned?.at(-1)?.at ?? '';
+  tourChats = [];
   conversationId = `demo-${newId()}`;
   thread.innerHTML = '';
   renderMemChip();
@@ -1651,7 +1681,30 @@ async function playDemo() {
     await sleep(700); // the line starts just before its action
     if (!demoRunning) break;
     // A fresh chat, as a person would see it: the old one is gone from the screen.
-    if (step.newChat) { conversationId = `demo-${newId()}`; thread.innerHTML = ''; $('#view-chat').scrollTop = 0; renderMemChip(); }
+    if (step.newChat) {
+      const label = { summary: 'Today’s agents', full: 'Full history' }[chatMode()] ?? 'Déjà Vu';
+      tourChats.push({ id: conversationId, title: thread.querySelector('.msg.user')?.textContent ?? 'Chat', label, nodes: [...thread.childNodes] });
+      conversationId = `demo-${newId()}`;
+      tourChats.push({ id: conversationId, title: step.text ?? 'New chat', label: 'Déjà Vu', nodes: null });
+      thread.innerHTML = ''; $('#view-chat').scrollTop = 0; renderMemChip(); renderChats();
+    }
+    if (step.compare) {
+      // Switch to the first chat and back, from the chat list, with each answer's ⓘ open.
+      const openInfo = async () => {
+        const btn = lastCard('#thread .meta .info');
+        btn?.closest('.meta').classList.add('shown');
+        if (btn?.closest('.meta').querySelector('.meta-detail').classList.contains('hidden')) await press(btn);
+        $('#view-chat').scrollTo({ top: $('#view-chat').scrollHeight, behavior: 'smooth' });
+      };
+      for (const k of [0, 1]) {
+        await backToChat();
+        if (!wide.matches) { open('drawer'); await sleep(400); }
+        await press($(`#drawerChats [data-tour="${k}"]`));
+        await sleep(700);
+        await openInfo();
+        await sleep(k ? 400 : 2200);
+      }
+    }
     if (step.mode) {
       // Pick what this chat uses from the chip, the way a person would.
       await backToChat();
@@ -1663,13 +1716,14 @@ async function playDemo() {
     if (step.build) {
       // Turn Déjà Vu on the way a person would: the chip, the sheet, agree, watch it build.
       await backToChat();
+      document.querySelectorAll('#thread .meta-detail').forEach((d) => d.classList.add('hidden'));
       await press($('#memChip'));
       await sleep(500);
       await press($('#memMenu [data-m="cards"]'));
-      await sleep(4500); // time to read what turning it on means
+      await sleep(2500); // time to read what turning it on means
       await press($('#turnOnGo'));
       const ok = await until('#tobOk:not([hidden])', 180000);
-      await sleep(2500); // time to see the cards it wrote
+      await sleep(2000); // time to see the cards it wrote
       await press(ok);
       await sleep(300);
     }
@@ -1686,6 +1740,7 @@ async function playDemo() {
     if (step.text) { await backToChat(); await press(input); await typeIn(step.text); $('#composer').requestSubmit(); await settled(); }
     if (step.info) {
       const btn = lastCard('#thread .meta .info');
+      btn?.closest('.meta').classList.add('shown'); // the ⓘ appears with the step that explains it
       await press(btn);
       if (step.info !== true) {
         // Then open the card it names, and the message it was learned from.
@@ -1730,34 +1785,19 @@ async function playDemo() {
       if (btn) {
         btn.scrollIntoView({ block: 'center', behavior: 'smooth' });
         btn.classList.add('tour-tap');
-        for (let t = 0; t < 9000 && demoRunning && actions.isConnected; t += 200) await sleep(200);
+        for (let t = 0; t < 1200 && demoRunning && actions.isConnected; t += 200) await sleep(200);
         btn.classList.remove('tour-tap');
         if (actions.isConnected) await press(btn);
       }
       await settled();
     }
     if (step.choose) {
-      // Say what changed in one tap: a chip (the recorded answer), or type your own.
-      await until('#thread .inline-actions .chat');
-      const box = el(`<div class="tour-choices">${step.choose.map((c, k) => `<button type="button" data-k="${k}">${esc(c)}</button>`).join('')}<button type="button" data-k="own" class="own">Type my own…</button></div>`);
-      thread.append(box);
-      scrollDown();
-      let picked = null;
-      box.addEventListener('click', (e) => { const k = e.target.closest('button')?.dataset.k; if (k != null) picked = k; });
-      for (let t = 0; t < 9000 && demoRunning && picked == null; t += 200) await sleep(200);
-      if (picked == null) { await press(box.querySelector('[data-k="0"]')); picked = '0'; }
-      box.remove();
+      // Say what changed: open the reply and type it, quickly (the first recorded answer).
       await press(await until('#thread .inline-actions .chat'));
       const said = document.querySelectorAll('#thread .msg.assistant').length;
-      if (picked === 'own') {
-        tourBar.querySelector('p').textContent = 'Finish the sentence and press Enter.';
-        input.focus();
-        for (let t = 0; t < 120000 && demoRunning && document.querySelectorAll('#thread .msg.assistant:not(.typing)').length <= said; t += 300) await sleep(300);
-      } else {
-        await typeIn(step.choose[Number(picked)]);
-        $('#composer').requestSubmit();
-        for (let t = 0; t < 20000 && demoRunning && document.querySelectorAll('#thread .msg.assistant:not(.typing)').length <= said; t += 300) await sleep(300);
-      }
+      await typeIn(step.choose[0]);
+      $('#composer').requestSubmit();
+      for (let t = 0; t < 20000 && demoRunning && document.querySelectorAll('#thread .msg.assistant:not(.typing)').length <= said; t += 300) await sleep(300);
       await sleep(300);
     }
     if (step.redo) {
@@ -1772,14 +1812,18 @@ async function playDemo() {
     if (step.glance) { await backToChat(); if (!wide.matches) { open('drawer'); await sleep(300); } await press(onScreen(['#drawer .drow[data-go="memory"]', '#menuBtn'])); if (!$('#memory').classList.contains('open')) open('memory'); await sleep(1800); }
     if (step.memory) { closeAll(); open('drawer'); await sleep(350); await press($('#drawer [data-go="memory"]')); if (!$('#memory').classList.contains('open')) open('memory'); }
     if (step.section) {
+      // A moment on Memory as a whole, then into the topic.
       const tile = [...document.querySelectorAll('#catGrid .cat-tile')].find((t) => t.getAttribute('aria-label').toLowerCase().startsWith(step.section.toLowerCase()));
+      await sleep(1400);
+      tile?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await sleep(1000);
       await press(tile);
     }
     if (step.why) {
       // Flip the top card: the message it was learned from.
       await sleep(300);
       await press($('#deck .swipe-card:last-child .why-btn') ?? lastCard('#deck .why-btn'));
-      await sleep(2600);
+      await sleep(2000);
       await press(lastCard('#deck .flip-back'));
       await sleep(400);
     }
@@ -1798,9 +1842,10 @@ async function playDemo() {
         await sleep(200);
       }
     }
+    const acted = Date.now();
     await spoken; // the line finishes before the next one starts
     await whilePaused();
-    await sleep(450); // a moment on the result before the next caption
+    await sleep(Math.max(400, 1200 - (Date.now() - acted))); // the result stays up long enough to see
   }
   await sleep(600);
   const finished = demoRunning;
@@ -1810,15 +1855,21 @@ async function playDemo() {
 $('#playDemoBtn').addEventListener('click', playDemo);
 
 // After the tour: a clear next step, and a clean chat to start from.
+// A demo opened from the pitch slides (?from=slides) offers a way back to them when it ends.
+// Nothing else in the app links to the slides.
+try { if (new URLSearchParams(location.search).get('from') === 'slides') sessionStorage.setItem('dv-from-slides', '1'); } catch {}
+const fromSlides = () => { try { return sessionStorage.getItem('dv-from-slides') === '1'; } catch { return false; } };
+
 function showDemoEnd() {
   const box = el(`<div class="narr-ask demo-end" role="dialog" aria-label="Demo finished"><div class="narr-card">
     <div class="ct-icon">${ico('logo')}</div><h3>That’s Déjà Vu</h3>
     <p>Memory any agent can add: it uses what it learned, checks once when it matters, and you fix it in one tap.</p>
-    <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button></div>
-    <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice by Muse Voice Transcribe 1.0</p></div></div>`);
+    <div class="end-grid"><button class="primary" data-x="try">Try it yourself</button><button class="ghost" data-x="memory">Open Memory</button><button class="ghost" data-x="numbers">See the numbers</button>${fromSlides() ? '<button class="ghost" data-x="slides">Back to the slides</button>' : ''}</div>
+    <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice input by Muse Voice Transcribe 1.0 · narration by Kokoro (open weights)</p></div></div>`);
   box.addEventListener('click', (e) => {
     const x = e.target.closest('[data-x]')?.dataset.x;
     if (!x && e.target !== box) return;
+    if (x === 'slides') { location.href = '/slides#5'; return; }
     box.remove();
     newChat();
     if (x === 'memory') open('memory');
