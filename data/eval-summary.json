@@ -17,6 +17,7 @@
       "accuracyDrifted": 50,
       "staleErrors": 2,
       "avgContextTokens": 39022,
+      "avgPromptTokens": 30436,
       "maxContextTokens": 113619,
       "avgLatencyMs": 16855
     },
@@ -26,6 +27,7 @@
       "accuracyDrifted": 41.7,
       "staleErrors": 3,
       "avgContextTokens": 518,
+      "avgPromptTokens": 704,
       "maxContextTokens": 612,
       "avgLatencyMs": 6887
     },
@@ -35,6 +37,7 @@
       "accuracyDrifted": 91.7,
       "staleErrors": 1,
       "avgContextTokens": 233,
+      "avgPromptTokens": 393,
       "maxContextTokens": 254,
       "avgLatencyMs": 12563
     }
@@ -49,6 +52,7 @@
         "accuracyDrifted": 55.6,
         "staleErrors": 12,
         "avgContextTokens": 12329,
+        "avgPromptTokens": 6945,
         "maxContextTokens": 113619,
         "avgLatencyMs": 8524
       },
@@ -58,6 +62,7 @@
         "accuracyDrifted": 49.2,
         "staleErrors": 16,
         "avgContextTokens": 447,
+        "avgPromptTokens": 603,
         "maxContextTokens": 612,
         "avgLatencyMs": 6196
       },
@@ -67,6 +72,7 @@
         "accuracyDrifted": 80.6,
         "staleErrors": 6,
         "avgContextTokens": 219,
+        "avgPromptTokens": 381,
         "maxContextTokens": 254,
         "avgLatencyMs": 12023
       }
@@ -82,6 +88,7 @@
         "accuracyDrifted": 56.3,
         "staleErrors": 10,
         "avgContextTokens": 1652,
+        "avgPromptTokens": 2012,
         "maxContextTokens": 1881,
         "avgLatencyMs": 5192
       },
@@ -91,6 +98,7 @@
         "accuracyDrifted": 50,
         "staleErrors": 13,
         "avgContextTokens": 418,
+        "avgPromptTokens": 582,
         "maxContextTokens": 469,
         "avgLatencyMs": 5919
       },
@@ -100,6 +108,7 @@
         "accuracyDrifted": 79.5,
         "staleErrors": 5,
         "avgContextTokens": 214,
+        "avgPromptTokens": 379,
         "maxContextTokens": 228,
         "avgLatencyMs": 11806
       }

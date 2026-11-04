@@ -43,6 +43,8 @@ const pool = (runs) => modes.map((mode) => {
     accuracyDrifted: pct(drifted),
     staleErrors: per.reduce((a, s) => a + s.staleErrors, 0),
     avgContextTokens: avg(per.map((s) => s.avgContextTokens)),
+    // The API's own count of tokens in, averaged over every answer (each answer counts once).
+    avgPromptTokens: avg(runs.flatMap(({ r }) => r.rows.filter((x) => x.mode === mode && x.promptTokens).map((x) => x.promptTokens))),
     maxContextTokens: Math.max(...per.map((s) => s.avgContextTokens)),
     avgLatencyMs: avg(per.map((s) => s.avgLatencyMs)),
   };
