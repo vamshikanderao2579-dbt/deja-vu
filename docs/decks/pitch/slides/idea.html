@@ -1,38 +1,56 @@
-<section id="idea" data-transition="fade" style="background:radial-gradient(ellipse at 50% 50%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:56px">
-<div style="position:absolute;left:0;top:0;width:960px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
-<p style="font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase;text-align:center">— The idea</p>
+<section id="idea" data-transition="fade" style="background:radial-gradient(ellipse at 50% 45%, #0a3566 0%, #060c14 70%);color:#F2F3F7;font-family:'Geist', Arial, sans-serif;padding:96px 128px 120px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:40px">
+<div style="position:absolute;left:0;top:0;width:640px;height:4px;background:linear-gradient(90deg, #5CC8FF, #0082FB)"></div>
 <style>
-/* Opens on "Inferred" alone. First tap: "Confirmed >" grows in on the left, pushing Inferred
-   right, and Inferred dims and gets struck through. */
-#idea .id-in{max-width:1100px;overflow:hidden;white-space:nowrap;transition:max-width .8s cubic-bezier(.2,.8,.2,1),opacity .6s,margin .8s cubic-bezier(.2,.8,.2,1)}
-#idea .id-gt{margin:0 56px}
-#idea[data-r="0"] .id-in{max-width:0;opacity:0;margin:0}
+/* One slide, problem then idea. Reveals 0–3: "Inferred" alone over the three problems.
+   4: the label turns to "The idea", "Confirmed >" grows in and Inferred is struck through.
+   5–7: each problem card flips over to its fix. 8: zero setup. */
+#idea .id-in{max-width:1000px;overflow:hidden;white-space:nowrap;transition:max-width .8s cubic-bezier(.2,.8,.2,1),opacity .6s,margin .8s cubic-bezier(.2,.8,.2,1)}
+#idea .id-gt{margin:0 48px}
 #idea .id-inf{position:relative;color:#4A5068;transition:color .6s}
-#idea[data-r="0"] .id-inf{color:#F2F3F7}
-#idea .id-inf::after{content:"";position:absolute;left:-3%;top:50%;height:12px;width:106%;border-radius:6px;background:#FF9A62;transition:width .6s .45s}
-#idea[data-r="0"] .id-inf::after{width:0}
-@media print{#idea .id-in{max-width:none!important;opacity:1!important;margin:0 56px 0 0!important}#idea .id-inf{color:#4A5068!important}#idea .id-inf::after{width:106%!important}}
+#idea .id-inf::after{content:"";position:absolute;left:-3%;top:50%;height:11px;width:106%;border-radius:6px;background:#FF9A62;transition:width .6s .45s}
+#idea .lab{position:relative;height:30px}
+#idea .lab span,#idea .sub span{position:absolute;left:0;right:0;text-align:center;transition:opacity .5s}
+#idea .sub{position:relative;height:44px;width:1664px}
+#idea .pb{opacity:0}
+#idea:is([data-r="0"],[data-r="1"],[data-r="2"],[data-r="3"]) .id-in{max-width:0;opacity:0;margin:0}
+#idea:is([data-r="0"],[data-r="1"],[data-r="2"],[data-r="3"]) .id-inf{color:#F2F3F7}
+#idea:is([data-r="0"],[data-r="1"],[data-r="2"],[data-r="3"]) .id-inf::after{width:0}
+#idea:is([data-r="0"],[data-r="1"],[data-r="2"],[data-r="3"]) .pb{opacity:1}
+#idea:is([data-r="0"],[data-r="1"],[data-r="2"],[data-r="3"]) .ib{opacity:0}
+#idea .fc{flex:1;height:330px;perspective:1800px}
+#idea .fi{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .9s cubic-bezier(.3,.7,.2,1)}
+#idea .ff,#idea .fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;gap:12px;border-radius:28px;padding:40px}
+#idea .ff{background:#0C1621;border:1px solid #1C2B3A}
+#idea .fb{transform:rotateY(180deg);background:#0C1621;border:1px solid #1E4B7A}
+#idea .f2 .fb{background:#0D1D33;border-color:#0064E0;box-shadow:0 0 70px rgba(0,130,251,0.3)}
+#idea .tag{font-family:'Geist Mono','Courier New',monospace;font-size:24px}
+#idea h3{font-size:42px;font-weight:800;line-height:1.18;color:#FFFFFF}
+#idea .fb p:not(.tag){font-size:30px;color:#A3A9BD;line-height:1.3}
+#idea[data-r="5"] .f1 .fi,#idea[data-r="6"] .f1 .fi,#idea[data-r="7"] .f1 .fi,#idea[data-r="8"] .f1 .fi,#idea[data-r="6"] .f2 .fi,#idea[data-r="7"] .f2 .fi,#idea[data-r="8"] .f2 .fi,#idea[data-r="7"] .f3 .fi,#idea[data-r="8"] .f3 .fi{transform:rotateY(180deg)}
+@media print{#idea .id-in{max-width:none!important;opacity:1!important}#idea .id-inf{color:#4A5068!important}#idea .fi{transform:rotateY(180deg)!important}#idea .pb{opacity:0!important}#idea .ib{opacity:1!important}}
 </style>
+<p class="lab" style="width:600px;font-family:'Geist Mono', 'Courier New', monospace;font-size:26px;letter-spacing:6px;color:#5CC8FF;text-transform:uppercase"><span class="pb">— The problem</span><span class="ib">— The idea</span></p>
 <div style="display:flex;align-items:center">
-<h1 class="id-in" style="font-size:150px;font-weight:800;letter-spacing:-5px;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Confirmed</h1>
-<h1 class="id-in id-gt" style="font-size:150px;font-weight:800;color:#0082FB">&gt;</h1>
-<h1 class="id-inf" style="font-size:150px;font-weight:800;letter-spacing:-5px">Inferred</h1>
+<h1 class="id-in" style="font-size:140px;font-weight:800;letter-spacing:-5px;background:linear-gradient(90deg, #5CC8FF, #0082FB);background-clip:text;-webkit-text-fill-color:transparent">Confirmed</h1>
+<h1 class="id-in id-gt" style="font-size:140px;font-weight:800;color:#0082FB">&gt;</h1>
+<h1 class="id-inf" style="font-size:140px;font-weight:800;letter-spacing:-5px">Inferred</h1>
 </div>
+<p class="sub" style="font-size:34px;color:#C9CDE0"><span class="pb">Your agent remembers you. It never checks if it’s still true.</span><span class="ib">It still uses every guess. Confirming is never a gate.</span></p>
 <div style="display:flex;gap:28px;width:1664px">
-<div data-reveal="2" style="flex:1;display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
-<h3 style="font-size:40px;font-weight:700">Uses every card</h3>
-<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Guesses included. Confirming is never a gate.</p>
+<div class="fc f1" data-reveal="1"><div class="fi">
+<div class="ff"><p class="tag" style="color:#5CC8FF">invisible</p><h3>You can’t see what it inferred</h3></div>
+<div class="fb"><p class="tag" style="color:#5CC8FF">receipts</p><h3>Shows its receipts</h3><p>Every card links to the chat it came from.</p></div>
+</div></div>
+<div class="fc f2" data-reveal="2"><div class="fi">
+<div class="ff"><p class="tag" style="color:#FF9A62">stale</p><h3>A guess from 2 years ago still books your hotel</h3></div>
+<div class="fb"><p class="tag" style="color:#5CC8FF">asks once</p><h3>Asks before it acts</h3><p>Only when it matters most.</p></div>
+</div></div>
+<div class="fc f3" data-reveal="3"><div class="fi">
+<div class="ff"><p class="tag" style="color:#5CC8FF">costly</p><h3>It re-reads a summary of years of chat every time</h3><p style="font-size:28px;color:#A3A9BD;line-height:1.3">Either it forgets in the bloat, or it costs too much.</p></div>
+<div class="fb"><p class="tag" style="color:#5CC8FF">short cards</p><h3>Short cards, not a summary</h3><p>Only the cards that fit each request.</p></div>
+</div></div>
 </div>
-<div data-reveal="3" style="flex:1;display:flex;flex-direction:column;gap:10px;background:#0D1D33;border:1px solid #0064E0;border-radius:28px;padding:36px;box-shadow:0 0 70px rgba(0,130,251,0.3)">
-<h3 style="font-size:40px;font-weight:700">Asks once</h3>
-<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Only when a guess shapes a booking or plan.</p>
-</div>
-<div data-reveal="4" style="flex:1;display:flex;flex-direction:column;gap:10px;background:#0C1621;border:1px solid #1C2B3A;border-radius:28px;padding:36px">
-<h3 style="font-size:40px;font-weight:700">Shows receipts</h3>
-<p style="font-size:28px;color:#A3A9BD;line-height:1.3">Every card links to the chat it came from.</p>
-</div>
-</div>
-<p data-reveal="5" style="font-size:28px;color:#C9CDE0;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:14px 30px"><b style="color:#F2F3F7">Zero setup.</b> Import a ChatGPT, Claude or Muse chat export, and it writes your first cards from it.</p>
-<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">03 / 07</p>
-<aside>Today’s agents run on what they inferred about you. [tap] The idea is one line: confirmed beats inferred. [tap] Déjà Vu keeps learning and keeps using everything it learned, guesses included: confirming is never a gate in front of memory. What changes is that every card is marked as a guess or as confirmed, [tap] and when a guess is about to shape something that matters, like a booking, it asks once, in one line, and the answer still comes first. [tap] And every card shows where it came from. [tap] Zero setup: import a ChatGPT, Claude or Muse chat export and it writes your first cards from it, each one a guess until you confirm it. Let me show you.</aside>
+<p data-reveal="8" style="font-size:28px;color:#C9CDE0;background:#0D1D33;border:1px solid #1E4B7A;border-radius:999px;padding:14px 30px"><b style="color:#F2F3F7">Zero setup.</b> Import a ChatGPT, Claude or Muse chat export, and it writes your first cards from it.</p>
+<p style="position:absolute;right:128px;bottom:64px;width:300px;text-align:right;font-family:'Geist Mono', 'Courier New', monospace;font-size:24px;color:#5B6178">02 / 06</p>
+<aside>Here is the issue. Your agent remembers you; it never checks if it’s still true. [tap] You can’t see what it guessed, or why. [tap] [tap] So an old assumption from a few years ago either gets buried, or gets too expensive to get to the agent. [tap] Déjà Vu flips it: it runs on what you confirm, and it still uses every guess. [tap] Every card shows where it came from. [tap] It asks once, only when it matters most. [tap] And it reads short cards, not a summary: only the ones that fit each request. [tap] No setup: just drop in your chat export.</aside>
 </section>

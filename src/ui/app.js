@@ -1869,8 +1869,10 @@ $('#playDemoBtn').addEventListener('click', playDemo);
 try { if (new URLSearchParams(location.search).get('from') === 'slides') sessionStorage.setItem('dv-from-slides', '1'); } catch {}
 const fromSlides = () => { try { return sessionStorage.getItem('dv-from-slides') === '1'; } catch { return false; } };
 // ?narrate=1 too: the slides are playing themselves, so the demo does as well and hands back.
-try { if (new URLSearchParams(location.search).has('narrate')) sessionStorage.setItem('dv-narrate', '1'); } catch {}
-const narrateFromSlides = () => { try { return fromSlides() && sessionStorage.getItem('dv-narrate') === '1'; } catch { return false; } };
+// ?narrate=v2 came from /narration-v2, the muted slides the presenter talks over: the demo keeps its voice.
+try { const n = new URLSearchParams(location.search).get('narrate'); if (n !== null) sessionStorage.setItem('dv-narrate', n === 'v2' ? 'v2' : '1'); } catch {}
+const narrateMode = () => { try { return fromSlides() ? sessionStorage.getItem('dv-narrate') : null; } catch { return null; } };
+const narrateFromSlides = () => !!narrateMode();
 
 function showDemoEnd() {
   const box = el(`<div class="narr-ask demo-end" role="dialog" aria-label="Demo finished"><div class="narr-card">
@@ -1880,14 +1882,14 @@ function showDemoEnd() {
     <p class="fine">Answers by Muse Spark 1.3 · cards graded by Muse Wonder 1.0 · voice input by Muse Voice Transcribe 1.0 · narration by Kokoro (open weights)</p></div></div>`);
   // Back to the slides: the tour's voice says so, and the slides' voice picks up from there.
   if (narrateFromSlides()) {
-    const back = () => { location.href = '/slides?narrate=1#5'; };
+    const back = () => { location.href = narrateMode() === 'v2' ? '/narration-v2#4' : '/slides?narrate=1#4'; };
     setTimeout(back, 4000);
     fetch('/narration/deck/index.json').then((r) => r.json()).then((ix) => { const a = new Audio(`/narration/deck/${ix.handback}`); a.onended = a.onerror = back; return a.play(); }).catch(back);
   }
   box.addEventListener('click', (e) => {
     const x = e.target.closest('[data-x]')?.dataset.x;
     if (!x && e.target !== box) return;
-    if (x === 'slides') { location.href = '/slides#5'; return; }
+    if (x === 'slides') { location.href = '/slides#4'; return; }
     box.remove();
     newChat();
     if (x === 'memory') open('memory');

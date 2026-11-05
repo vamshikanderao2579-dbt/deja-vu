@@ -5,10 +5,9 @@
     "at": "2026-11-02T08:30:00Z"
   },
   "lists": "css",
-  "title": "Déjà Vu · pitch",
+  "title": "Déjà Vu",
   "order": [
     "cover",
-    "problem",
     "idea",
     "demo",
     "proof",
@@ -18,12 +17,12 @@
   ],
   "sections": {
     "s1": {
-      "description": "Who it’s for and the problem: agents remember you and never check",
+      "description": "Who it’s for, the problem, and the idea that fixes it",
       "start": "cover"
     },
     "s2": {
-      "description": "The idea, then the real Alex demo",
-      "start": "idea"
+      "description": "The real Alex demo",
+      "start": "demo"
     },
     "s3": {
       "description": "Proof on 14 people, and the close",

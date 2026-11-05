@@ -545,7 +545,8 @@ createServer(async (req, res) => {
     // A 15-second clip to screen-record for social, at a link nothing else in the app shows.
     if (url.pathname === '/viral') url.pathname = '/viral.html';
     // The pitch deck, at a link only the slides and the presenter know.
-    if (url.pathname === '/slides') {
+    // /narration-v2 is the same deck playing itself with the slide voice muted, for a live voice-over.
+    if (url.pathname === '/slides' || url.pathname === '/narration-v2') {
       const deck = await readFile(join(ROOT, 'docs', 'decks', 'pitch.html')).catch(() => null);
       return deck ? send(res, 200, deck, 'text/html; charset=utf-8', { 'Cache-Control': 'no-cache' }) : send(res, 404, 'not found', 'text/plain');
     }

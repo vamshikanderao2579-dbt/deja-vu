@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Déjà Vu · 15 seconds</title>
+<title>Déjà Vu</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230082FB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 12a8.5 8.5 0 1 0 2.5-6'/%3E%3Cpath d='M6 2.5V6H2.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&family=Geist+Mono:wght@400..600&display=swap">
 <!--
   A 15-second clip to screen-record for social (square, works muted). Press Start; it waits
@@ -27,9 +28,9 @@ html,body{height:100%;background:#03070c;overflow:hidden;font-family:Geist,Arial
 .dots b:nth-child(2){animation-delay:.15s}.dots b:nth-child(3){animation-delay:.3s}
 @keyframes d{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-6px)}}
 .pick{font-weight:800}
-.old{position:relative;transition:color .4s}
-.old::after{content:"";position:absolute;left:-4px;right:-4px;top:52%;height:6px;border-radius:3px;background:#FF6B6B;transform:scaleX(0);transform-origin:left;transition:transform .45s}
-.old.gone{color:#6B7A8F}.old.gone::after{transform:scaleX(1)}
+/* The whole stale answer is struck, on every line it wraps to. */
+.old{text-decoration:line-through;text-decoration-thickness:5px;text-decoration-color:transparent;transition:color .4s,text-decoration-color .45s}
+.old.gone{color:#6B7A8F;text-decoration-color:#FF6B6B}
 .new{display:block;max-height:0;opacity:0;overflow:hidden;transition:max-height .5s,opacity .5s;color:#7FE0A8}
 .new.in{max-height:120px;opacity:1}
 .stamp{display:inline-block;margin-top:14px;font-family:'Geist Mono',monospace;font-size:34px;font-weight:600;color:#FFB089;opacity:0;transition:opacity .3s}
@@ -101,7 +102,7 @@ async function play(){
   const t0=performance.now();const tick=()=>{const p=Math.min(1,(performance.now()-t0)/15000);$('bar').style.width=p*100+'%';if(p<1)requestAnimationFrame(tick)};tick();
   await say('My AI planned a trip for someone I used to be.',5);
   await wait(300);$('u1').classList.add('in');await wait(500);$('b1').classList.add('in');await wait(700);
-  $('b1').innerHTML='<span class="pick old" id="old">🏖️ Beach week in Cancún.</span> You love warm beaches!<span class="new" id="newp">⛷️ Park City. Ski school for Maya.</span><br><span class="stamp" id="stamp">remembered from Nov 2024</span>';
+  $('b1').innerHTML='<span class="old" id="old"><b class="pick">🏖️ Beach week in Cancún.</b> You love warm beaches!</span><span class="new" id="newp">⛷️ Park City. Ski school for Maya.</span><br><span class="stamp" id="stamp">remembered from Nov 2024</span>';
   await wait(900);$('stamp').classList.add('in');await say('That was two years ago.',3);
   await wait(700);await say('Then Déjà Vu asked.',2);$('check').classList.add('in');
   await wait(900);await tapAt($('no'));$('no').classList.add('hit');await wait(250);$('check').classList.add('fly');$('cursor').style.opacity=0;
