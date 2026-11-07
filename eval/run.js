@@ -23,9 +23,11 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+// A flag given without a value ("--modes" last, or followed by another flag) keeps its default.
 const arg = (name, d) => {
   const i = process.argv.indexOf(`--${name}`);
-  return i > -1 ? process.argv[i + 1] : d;
+  const v = i > -1 ? process.argv[i + 1] : undefined;
+  return v === undefined || v.startsWith('--') ? d : v;
 };
 
 // Personas: synthetic ones live in the repo; real ones stay in data/private.
@@ -68,7 +70,17 @@ const { getHistory, historyAsText } = await import('../src/platform/store.js');
 const history = getHistory();
 
 const CONCURRENCY = Number(arg('concurrency', 3));
-const MODES = arg('modes', 'full,summary,confirmed').split(',');
+// Zero or a non-number would start no workers and save an empty run as the latest result.
+if (!Number.isInteger(CONCURRENCY) || CONCURRENCY < 1) { console.error('--concurrency takes a whole number of 1 or more'); process.exit(1); }
+// Checked before any paid call: an unknown or blank mode would quietly run as cards with none
+// picked, and a repeated one would be counted twice when the results are pooled.
+const KNOWN_MODES = ['full', 'summary', 'inferred', 'confirmed', 'none'];
+const MODES = [...new Set(arg('modes', 'full,summary,confirmed').split(',').map((m) => m.trim()).filter(Boolean))];
+const badModes = MODES.filter((m) => !KNOWN_MODES.includes(m));
+if (!MODES.length || badModes.length) {
+  console.error(`--modes takes a comma list of ${KNOWN_MODES.join(', ')}${badModes.length ? `; unknown: ${badModes.join(', ')}` : ''}`);
+  process.exit(1);
+}
 const factsById = Object.fromEntries(key.facts.map((f) => [f.id, f]));
 
 const log = (...a) => console.log(...a);
@@ -80,11 +92,13 @@ log(`\nEval · persona ${PERSONA} · ${config.mock ? 'MOCK (keyword judge, plumb
 // (ids, statuses, dates). --reuse-build reads the last build's cards instead.
 let t0 = Date.now();
 const buildDir = join(ROOT, 'data', 'private', 'eval-build', `${PERSONA}${arg('grader') ? `-grader-${arg('grader')}` : ''}`);
-const reuse = process.argv.includes('--reuse-build') && existsSync(join(buildDir, 'cards.json'));
+const reuse = process.argv.includes('--reuse-build') && existsSync(join(buildDir, 'cards.json')) && existsSync(join(buildDir, 'report.json'));
 let built;
 if (reuse) built = { cards: JSON.parse(readFileSync(join(buildDir, 'cards.json'), 'utf8')), report: JSON.parse(readFileSync(join(buildDir, 'report.json'), 'utf8')) };
 else {
-  rmSync(buildDir, { recursive: true, force: true });
+  // A finished build is cleared for a fresh one; an unfinished one (a crash, the spend cap)
+  // keeps its checkpoint, so this run resumes it instead of paying for the same stages again.
+  if (existsSync(join(buildDir, 'cards.json'))) rmSync(buildDir, { recursive: true, force: true });
   built = await buildMemory({ conversations: history.conversations, profileId: buildDir });
 }
 const inferredCards = applyBuild([], built.cards, [], { partial: false });
@@ -207,7 +221,17 @@ let done = 0;
 async function worker() {
   while (jobs.length) {
     const { q, mode } = jobs.shift();
-    const row = await runOne(q, mode);
+    // One failed answer (an API error, the spend cap) is recorded and the run goes on:
+    // everything already answered and judged is still saved.
+    let row;
+    try {
+      row = await runOne(q, mode);
+    } catch (err) {
+      console.warn(`\n  answer failed on ${q.id} (${mode}): ${err.message}`);
+      rows.push({ question: q.id, mode, error: err.message, judged: false, checks: [] });
+      done++;
+      continue;
+    }
     const said = config.mock && q.checks.every((c) => c.kw) ? keywordJudge(row.text, q.checks) : await judgeSafely(q, row.text);
     row.judged = !!said;
     row.checks = said ? q.checks.map((c, i) => ({ text: c.text, fact: c.fact, want: c.want, said: said[i], pass: said[i] === c.want })) : [];
@@ -228,18 +252,20 @@ const pct = (xs) => (xs.length ? Math.round((xs.filter((c) => c.pass).length / x
 
 const summary = MODES.map((mode) => {
   const rs = rows.filter((r) => r.mode === mode);
+  const ok = rs.filter((r) => !r.error); // tokens and timing only from answers that came back
   const checks = rs.flatMap((r) => r.checks);
   return {
     mode,
     unjudged: rs.filter((r) => !r.judged).length,
+    failed: rs.filter((r) => r.error).length,
     accuracy: pct(checks),
     accuracyDrifted: pct(checks.filter((c) => drifted.has(c.fact))),
     accuracyChangedInChat: pct(checks.filter((c) => changedInChat.has(c.fact))),
     accuracyStable: pct(checks.filter((c) => !drifted.has(c.fact) && !changedInChat.has(c.fact))),
     staleErrors: checks.filter((c) => !c.want && c.said).length,
-    avgContextTokens: Math.round(avg(rs.map((r) => r.contextTokens))),
-    avgPromptTokens: rs.every((r) => r.promptTokens != null) ? Math.round(avg(rs.map((r) => r.promptTokens))) : null,
-    avgLatencyMs: Math.round(avg(rs.map((r) => r.latencyMs))),
+    avgContextTokens: Math.round(avg(ok.map((r) => r.contextTokens))),
+    avgPromptTokens: ok.every((r) => r.promptTokens != null) ? Math.round(avg(ok.map((r) => r.promptTokens))) : null,
+    avgLatencyMs: Math.round(avg(ok.map((r) => r.latencyMs))),
   };
 });
 
@@ -282,10 +308,15 @@ result.persona = PERSONA;
 const dir = join(ROOT, P.private ? 'data/private/eval' : 'eval/results');
 mkdirSync(dir, { recursive: true });
 const stamp = result.generated.replace(/[:.]/g, '-');
-// A mock run (format check) never replaces a real result.
-if (!config.mock) writeFileSync(join(dir, `${PERSONA}-latest.json`), JSON.stringify(result, null, 2));
-writeFileSync(join(dir, `${PERSONA}-${stamp}${config.mock ? '-mock' : ''}.json`), JSON.stringify(result, null, 2));
-if (PERSONA === 'alex' && !config.mock) writeFileSync(join(ROOT, 'eval/results/latest.json'), JSON.stringify(result, null, 2));
+// A mock run (format check) never replaces a real result. Neither does a partial one: a run
+// that left out one of the main setups, or lost answers to errors, is kept under its timestamp
+// only, so the summary and the app keep reading the last complete run.
+const MAIN_MODES = ['full', 'summary', 'confirmed'];
+const failedAnswers = rows.filter((r) => r.error).length;
+const isComplete = !config.mock && MAIN_MODES.every((m) => MODES.includes(m)) && !failedAnswers;
+if (isComplete) writeFileSync(join(dir, `${PERSONA}-latest.json`), JSON.stringify(result, null, 2));
+writeFileSync(join(dir, `${PERSONA}-${stamp}${config.mock ? '-mock' : isComplete ? '' : '-partial'}.json`), JSON.stringify(result, null, 2));
+if (PERSONA === 'alex' && isComplete) writeFileSync(join(ROOT, 'eval/results/latest.json'), JSON.stringify(result, null, 2));
 
 log('');
 console.table(
@@ -305,4 +336,7 @@ console.table(
   )
 );
 log(`Projection at ${CONV_PER_DAY} chats/day: 12 months of full history ≈ ${projection[3].fullHistory.toLocaleString()} tokens per prompt; ${confirmedAvg === null ? 'confirmed not run' : `confirmed cards ≈ ${confirmedAvg} per question`} (ceiling ${cardCeiling}).`);
-log(config.mock ? `Mock run: the files read fine. Real results were left as they are.\n` : `Saved ${P.private ? 'data/private/eval' : 'eval/results'}/${PERSONA}-latest.json\n`);
+const saved = `${P.private ? 'data/private/eval' : 'eval/results'}/${PERSONA}`;
+log(config.mock ? `Mock run: the files read fine. Real results were left as they are.\n`
+  : isComplete ? `Saved ${saved}-latest.json\n`
+  : `Partial run (${failedAnswers ? `${failedAnswers} answers failed` : `not all of ${MAIN_MODES.join(', ')}`}): saved ${saved}-${stamp}-partial.json; ${PERSONA}-latest.json is unchanged.\n`);

@@ -27,7 +27,18 @@ for (const f of readdirSync(join(ROOT, 'data', 'personas'))) {
 // `drifted`: facts that changed outside chat (only a confirmation can catch them).
 const runs = PEOPLE.filter((p) => existsSync(join(ROOT, p.file))).map((p) => ({ ...p, r: read(p.file), drifted: new Set(Object.keys(read(p.key).current_truth ?? {})) }));
 if (runs.some(({ r }) => r.mock)) throw new Error('A mock run is in the mix; rerun the eval live first.');
-const modes = runs[0].r.summary.map((s) => s.mode);
+// Results that rest on fewer checks than they claim, or on unchecked cards, are flagged before they're pooled.
+for (const { id, r } of runs) {
+  const unjudged = r.summary.reduce((n, s) => n + (s.unjudged ?? 0), 0);
+  if (unjudged) console.warn(`${id}: ${unjudged} answers were never judged; their checks are missing from the pooled figures.`);
+  if (r.cards?.gate?.graderFailed) console.warn(`${id}: the grader failed during the build, so its cards were not graded.`);
+}
+// Pool only the modes every person ran: a pooled figure over a different set of people per mode
+// isn't comparable, and a person without a mode has nothing to add to it.
+const modes = runs[0].r.summary.map((s) => s.mode).filter((m) => runs.every(({ r }) => r.summary.some((s) => s.mode === m)));
+const dropped = [...new Set(runs.flatMap(({ r }) => r.summary.map((s) => s.mode)))].filter((m) => !modes.includes(m));
+if (dropped.length) console.warn(`Left out of the pooled figures (not run for every person): ${dropped.join(', ')}`);
+if (!modes.length) throw new Error('No mode was run for every person; rerun the eval with a shared --modes.');
 const pct = (xs) => (xs.length ? Math.round((xs.filter((c) => c.pass).length / xs.length) * 1000) / 10 : null);
 const avg = (xs) => Math.round(xs.reduce((a, b) => a + b, 0) / (xs.length || 1));
 

@@ -1425,7 +1425,7 @@ async function renderEval() {
 }
 
 // The eval across every person (data/eval-summary.json): pooled over all checks.
-const modelName = (id = '') => id.split('/').pop().replace(/-(\d)/, ' $1').split('-').map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
+const modelName = (id = '') => (id ?? '').split('/').pop().replace(/-(\d)/, ' $1').split('-').filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
 function renderCombinedEval(box, ev) {
   const rows = MODE_ORDER.map((m) => ev.combined.find((s) => s.mode === m)).filter(Boolean);
   const when = new Date(ev.generated).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
@@ -1435,7 +1435,7 @@ function renderCombinedEval(box, ev) {
   box.innerHTML = `
     <div class="card-box viz">
       <div class="viz-head"><h3>Eval: ${ev.people} people, ${ev.questions} questions, ${ev.checks} checks</h3></div>
-      <p class="fine">${when} · memory built by the staged build: ${esc(modelName(ev.models.memory))} writes, ${esc(modelName(ev.models.grader ?? ''))} grades · answers ${esc(modelName(ev.models.answers))} · judge ${esc(modelName(ev.models.judge))}</p>
+      <p class="fine">${when} · memory built by the staged build: ${esc(modelName(ev.models.memory))} writes, ${ev.models.grader ? `${esc(modelName(ev.models.grader))} grades` : 'code rules check'} · answers ${esc(modelName(ev.models.answers))} · judge ${esc(modelName(ev.models.judge))}</p>
       ${barChart('Answer accuracy', 'Share of checklist items each setup got right, all people', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracy, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100)}
       ${rows.some((r) => r.accuracyDrifted != null) ? barChart('Preferences that changed outside chat', 'Only a confirmation can catch these', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.accuracyDrifted ?? 0, emph: r.mode === 'confirmed' })), (v) => `${v}%`, 100) : ''}
       ${barChart('Tokens in per answer', 'The API’s own count, averaged over every answer', rows.map((r) => ({ label: MODE_NAMES[r.mode], value: r.avgPromptTokens ?? r.avgContextTokens, emph: r.mode === 'confirmed' })), (v) => `${v.toLocaleString()} tok`)}
@@ -1467,16 +1467,18 @@ function lineChart(proj) {
   const y = (v) => H - B - (v / maxY) * (H - T - B);
   const path = (k) => pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.months).toFixed(1)},${y(p[k]).toFixed(1)}`).join('');
   const last = pts.at(-1);
+  // An eval run without confirmed has no cards figure: leave that line out rather than draw it at 0.
+  const cards = last.cardsPerQuestion != null;
   const grid = [0.5, 1].map((f) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(maxY * f)}" y2="${y(maxY * f)}"/>`).join('');
   const dots = (k, cls, name) => pts.map((p) => `<circle class="${cls}" cx="${x(p.months)}" cy="${y(p[k])}" r="4"/><circle class="hit" cx="${x(p.months)}" cy="${y(p[k])}" r="11" data-tip="${name}, ${p.months} mo: ${p[k].toLocaleString()} tokens"/>`).join('');
   return `<figure class="chart"><figcaption><b>As the history grows</b><span>Tokens per prompt at ${proj.assumptions.conversationsPerDay} chats/day (projection)</span></figcaption>
-    <div class="legend-row"><span><i class="sw s2"></i>Full history</span>${pts[0].summaryPerMessage ? '<span><i class="sw s3"></i>Memory summary</span>' : ''}<span><i class="sw s1"></i>Confirmed cards</span></div>
-    <svg class="line" viewBox="0 0 ${W} ${H}" role="img" aria-label="Full history tokens grow to ${last.fullHistory.toLocaleString()} at ${last.months} months while confirmed cards stay near ${last.cardsPerQuestion}">
+    <div class="legend-row"><span><i class="sw s2"></i>Full history</span>${pts[0].summaryPerMessage ? '<span><i class="sw s3"></i>Memory summary</span>' : ''}${cards ? '<span><i class="sw s1"></i>Confirmed cards</span>' : ''}</div>
+    <svg class="line" viewBox="0 0 ${W} ${H}" role="img" aria-label="Full history tokens grow to ${last.fullHistory.toLocaleString()} at ${last.months} months${cards ? ` while confirmed cards stay near ${last.cardsPerQuestion}` : ''}">
       ${grid}<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>
-      <path class="s2" d="${path('fullHistory')}"/>${pts[0].summaryPerMessage ? `<path class="s3" d="${path('summaryPerMessage')}"/>` : ''}<path class="s1" d="${path('cardsPerQuestion')}"/>
-      ${dots('fullHistory', 'm2', 'Full history')}${dots('cardsPerQuestion', 'm1', 'Confirmed cards')}
+      <path class="s2" d="${path('fullHistory')}"/>${pts[0].summaryPerMessage ? `<path class="s3" d="${path('summaryPerMessage')}"/>` : ''}${cards ? `<path class="s1" d="${path('cardsPerQuestion')}"/>` : ''}
+      ${dots('fullHistory', 'm2', 'Full history')}${cards ? dots('cardsPerQuestion', 'm1', 'Confirmed cards') : ''}
       <text class="dl" x="${x(last.months) + 8}" y="${y(last.fullHistory) + 4}">${(last.fullHistory / 1000).toFixed(0)}k</text>
-      <text class="dl" x="${x(last.months) + 8}" y="${y(last.cardsPerQuestion) - 2}">${last.cardsPerQuestion}</text>
+      ${cards ? `<text class="dl" x="${x(last.months) + 8}" y="${y(last.cardsPerQuestion) - 2}">${last.cardsPerQuestion}</text>` : ''}
       ${pts.filter((p) => p.months >= 6).map((p) => `<text class="tick" x="${x(p.months)}" y="${H - 8}" text-anchor="middle">${p.months}mo</text>`).join('')}
     </svg></figure>`;
 }

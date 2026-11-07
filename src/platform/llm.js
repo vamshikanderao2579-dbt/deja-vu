@@ -158,18 +158,23 @@ export async function complete(role, messages, { json = false, maxTokens = 1500,
     loadCache()[key] = { text, ...(toolCalls.length ? { toolCalls } : {}), usage: data.usage ?? null, at: new Date().toISOString() };
     saveCache();
   }
-  return { text, toolCalls, usage: data.usage ?? null, model: p.model };
+  return { text, toolCalls, usage: data.usage ?? null, model: body.model };
   }
 }
 
-// A dropped connection (DNS, reset) is retried twice before the call fails.
+// A dropped connection (DNS, reset), a rate limit or a busy server is retried twice before the call fails.
+const RETRY_STATUS = new Set([429, 502, 503, 504]);
 async function post(p, body, tries = 3) {
   try {
-    return await fetch(`${p.baseUrl.replace(/\/$/, '')}/chat/completions`, {
+    const res = await fetch(`${p.baseUrl.replace(/\/$/, '')}/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${p.apiKey}` },
       body: JSON.stringify(body),
     });
+    if (!RETRY_STATUS.has(res.status) || tries <= 1) return res;
+    await res.body?.cancel().catch(() => {});
+    await new Promise((r) => setTimeout(r, 800 * (4 - tries)));
+    return post(p, body, tries - 1);
   } catch (err) {
     if (tries <= 1) throw err;
     await new Promise((r) => setTimeout(r, 800 * (4 - tries)));
