@@ -26,6 +26,7 @@ for (const f of readdirSync(join(ROOT, 'data', 'personas'))) {
 }
 // `drifted`: facts that changed outside chat (only a confirmation can catch them).
 const runs = PEOPLE.filter((p) => existsSync(join(ROOT, p.file))).map((p) => ({ ...p, r: read(p.file), drifted: new Set(Object.keys(read(p.key).current_truth ?? {})) }));
+if (!runs.length) throw new Error('No eval results yet: run node eval/run.js first.');
 if (runs.some(({ r }) => r.mock)) throw new Error('A mock run is in the mix; rerun the eval live first.');
 // Results that rest on fewer checks than they claim, or on unchecked cards, are flagged before they're pooled.
 for (const { id, r } of runs) {
