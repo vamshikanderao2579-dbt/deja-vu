@@ -250,7 +250,8 @@ const CONV_PER_DAY = 2;
 const allCardsTokens = estimateTokens(renderContext(confirmedCards));
 const b = config.budget;
 const cardCeiling = Math.round(b.maxCategories * b.maxCardsPerCategory * b.maxWordsPerCard * 1.4);
-const confirmedAvg = summary.find((s) => s.mode === 'confirmed').avgContextTokens;
+// --modes can leave confirmed out; the projection then has no cards figure instead of crashing.
+const confirmedAvg = summary.find((s) => s.mode === 'confirmed')?.avgContextTokens ?? null;
 const projection = [1, 3, 6, 12, 24].map((months) => ({
   months,
   fullHistory: Math.round(tokensPerConversation * CONV_PER_DAY * 30 * months),
@@ -303,5 +304,5 @@ console.table(
     ])
   )
 );
-log(`Projection at ${CONV_PER_DAY} chats/day: 12 months of full history ≈ ${projection[3].fullHistory.toLocaleString()} tokens per prompt; confirmed cards ≈ ${confirmedAvg} per question (ceiling ${cardCeiling}).`);
+log(`Projection at ${CONV_PER_DAY} chats/day: 12 months of full history ≈ ${projection[3].fullHistory.toLocaleString()} tokens per prompt; ${confirmedAvg === null ? 'confirmed not run' : `confirmed cards ≈ ${confirmedAvg} per question`} (ceiling ${cardCeiling}).`);
 log(config.mock ? `Mock run: the files read fine. Real results were left as they are.\n` : `Saved ${P.private ? 'data/private/eval' : 'eval/results'}/${PERSONA}-latest.json\n`);
